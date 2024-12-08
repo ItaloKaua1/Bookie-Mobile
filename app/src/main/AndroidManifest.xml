@@ -5,9 +5,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/bookie_logo_foreground"
+        android:icon="@mipmap/icon_foreground"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/bookie_logo_foreground"
+        android:roundIcon="@mipmap/icon_foreground"
         android:supportsRtl="true"
         android:theme="@style/Theme.Bookie">
 
