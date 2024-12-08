@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.SplashScreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@mipmap/bookie_logo_foreground</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.Launcher" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@null</item>
+    </style>
+
+</resources>
