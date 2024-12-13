@@ -161,9 +161,12 @@ fun NavigationDrawer(themeViewModel: ThemeViewModel) {
         }
 
         ScreenType.CONFIGURACOES -> {
-            // Tela de Configurações
-            ConfiguracoesScreen(themeViewModel = themeViewModel)
+            ConfiguracoesScreen(
+                themeViewModel = themeViewModel,
+                onBackClick = { currentScreen.value = ScreenType.DRAWER }
+            )
         }
+
     }
 }
 
