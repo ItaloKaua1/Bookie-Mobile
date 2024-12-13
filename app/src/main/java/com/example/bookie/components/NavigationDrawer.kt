@@ -27,6 +27,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,14 +36,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.bookie.models.NavigationItem
+import com.example.bookie.ui.screens.ConfiguracoesScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 fun NavigationDrawer() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
     val scope = rememberCoroutineScope()
+    val currentScreen = remember { mutableStateOf("drawer") } // Estado para alternar telas
 
     val navigationItems = listOf(
         NavigationItem(
@@ -74,78 +77,89 @@ fun NavigationDrawer() {
         ),
     )
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet {
-                Row (
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
-                ) {
-                    Icon(
-                        modifier = Modifier.size(48.dp).fillMaxWidth().padding(end = 8.dp),
-                        imageVector = Icons.Outlined.AccountCircle,
-                        contentDescription = "Imagem de Usuário"
-                    )
-                    Column {
-                        Text(text = "Olivia")
-                        Text(text = "@oliviarodri")
-                    }
-                }
-                Row (
-                    horizontalArrangement = Arrangement.spacedBy(24.dp),
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                ) {
-                    Text(text = "19 livros")
-                    Text(text = "89 amigos")
-                }
-                HorizontalDivider(
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(vertical = 24.dp)
-                )
-                navigationItems.forEachIndexed { index, item ->
-                    NavigationDrawerItem (
-                        label = { Text(text = item.title) },
-//                            selected = index == selectedItemIndex,
-                        selected = false,
-                        onClick = {
-                            //  navController.navigate(item.route)
-
-//                                selectedItemIndex = index
-//                                scope.launch {
-//                                    drawerState.close()
-//                                }
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = item.icon,
-                                contentDescription = item.title
-                            )
-                        },
-                        modifier = Modifier.padding(vertical = 8.dp).height(24.dp)
-                    )
-                }
-            }
-        },
-    ) {
-        Scaffold(
-            topBar = {
-                TopBar(
-                    onOpenDrawer = {
-                        scope.launch {
-                            drawerState.apply {
-                                if (isOpen)
-                                    close()
-                                else
-                                    open()
-                            }
+    if (currentScreen.value == "drawer") {
+        // Tela inicial com o Drawer
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(
+                            top = 40.dp,
+                            start = 16.dp,
+                            end = 16.dp,
+                            bottom = 16.dp
+                        )
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .fillMaxWidth()
+                                .padding(end = 8.dp),
+                            imageVector = Icons.Outlined.AccountCircle,
+                            contentDescription = "Imagem de Usuário"
+                        )
+                        Column {
+                            Text(text = "Olivia")
+                            Text(text = "@oliviarodri")
                         }
                     }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(24.dp),
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
+                        Text(text = "19 livros")
+                        Text(text = "89 amigos")
+                    }
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(vertical = 24.dp)
+                    )
+                    navigationItems.forEach { item ->
+                        NavigationDrawerItem(
+                            label = { Text(text = item.title) },
+                            selected = false,
+                            onClick = {
+                                scope.launch { drawerState.close() }
+                                if (item.title == "configurações") {
+                                    currentScreen.value = "configuracoes" // Alterna para a tela de configurações
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    imageVector = item.icon,
+                                    contentDescription = item.title
+                                )
+                            },
+                            modifier = Modifier
+                                .padding(vertical = 8.dp)
+                                .height(24.dp)
+                        )
+                    }
+                }
+            },
+        ) {
+            Scaffold(
+                topBar = {
+                    TopBar(
+                        onOpenDrawer = {
+                            scope.launch {
+                                if (drawerState.isOpen) drawerState.close() else drawerState.open()
+                            }
+                        }
+                    )
+                }
+            ) { contentPadding ->
+                // Conteúdo principal do Drawer
+                Text(
+                    text = "Bem-vindo ao App",
+                    modifier = Modifier.padding(contentPadding).padding(16.dp)
                 )
             }
-        ) { contentPadding ->
-            // Screen content
-            Modifier.padding(contentPadding)
         }
+    } else if (currentScreen.value == "configuracoes") {
+        // Tela de Configurações
+        ConfiguracoesScreen()
     }
 }
