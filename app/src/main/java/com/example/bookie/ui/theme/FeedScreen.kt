@@ -87,7 +87,7 @@ fun PostCard(post: Post) {
                         .size(48.dp)
                         .clip(CircleShape)
                         .background(Color.Gray)
-                ) // Mock avatar
+                )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = post.username,
@@ -156,7 +156,7 @@ fun BottomNavBar() {
 
 @Composable
 fun FloatingNewPost() {
-    FloatingActionButton(onClick = { /* Ação de novo post */ }) {
+    FloatingActionButton(onClick = { /* Novo post */ }) {
         Icon(
             painter = painterResource(id = R.drawable.ic_add),
             contentDescription = "Novo Post"
