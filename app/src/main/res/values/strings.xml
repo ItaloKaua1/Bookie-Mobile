@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Bookie</string>
+    <string name="capa_livro">Capa do Livro</string>
 </resources>

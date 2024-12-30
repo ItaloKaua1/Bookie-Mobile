@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
 @Preview
 @Composable
 fun NavigationDrawer() {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     val navigationItems = listOf(
