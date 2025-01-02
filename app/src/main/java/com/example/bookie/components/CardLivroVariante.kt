@@ -95,7 +95,7 @@ fun CardLivroVariante(livro: Livro, mostrarAvaliacao: Boolean = false, mostrarPo
 @Preview(showBackground = true)
 @Composable
 private fun GreetingPreview() {
-    val livro = Livro("", "Teste", "Autor Teste", "Livro de Teste")
+    val livro = Livro("", "Teste", arrayOf("Autor Teste"), "Livro de Teste")
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)

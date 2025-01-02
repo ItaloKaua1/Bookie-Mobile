@@ -36,7 +36,7 @@ fun TelaPerfil(modifier: Modifier = Modifier) {
     var tabIndex by rememberSaveable { mutableStateOf(0) }
     val tabs = listOf("minhas postagens", "minhas listas")
     val post = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date())
-    val livro = Livro("", "Livro Teste", "Autor Teste", "Sinopse Teste")
+    val livro = Livro("", "Livro Teste", arrayOf("Autor Teste"), "Sinopse Teste")
     val post2 = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date(), livro)
 
 

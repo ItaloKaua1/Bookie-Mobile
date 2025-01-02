@@ -46,7 +46,7 @@ fun CardLivro(livro: Livro, modifier: Modifier = Modifier) {
             )
             Column {
                 Text(text = livro.nome, modifier = Modifier.padding(bottom = 2.dp))
-                Text(text = livro.autor, modifier = Modifier.padding(bottom = 8.dp))
+                Text(text = livro.autor[0], modifier = Modifier.padding(bottom = 8.dp))
                 Text(text = livro.sinopse)
             }
         }
@@ -57,7 +57,7 @@ fun CardLivro(livro: Livro, modifier: Modifier = Modifier) {
 @Preview(showBackground = false)
 @Composable
 private fun GreetingPreview() {
-    val livro = Livro("", "Teste", "Autor Teste", "Livro de Teste")
+    val livro = Livro("", "Teste", arrayOf("Autor Teste"), "Livro de Teste")
     BookieTheme {
         CardLivro(livro)
     }

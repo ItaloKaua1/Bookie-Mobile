@@ -38,7 +38,7 @@ private data class TabItem(
     val icon: ImageVector,
 )
 
-private val livro = Livro("", "Teste", "Autor Teste", "Livro de Teste")
+private val livro = Livro("", "Teste", arrayOf("Autor Teste"), "Livro de Teste")
 
 @Composable
 private fun Lidos() {

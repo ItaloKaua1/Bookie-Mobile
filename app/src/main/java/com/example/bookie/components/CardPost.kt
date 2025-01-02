@@ -119,7 +119,7 @@ fun CardPost(post: Post, modifier: Modifier = Modifier) {
                                 Text(text = "adicionou um histórico de leitura", style = MaterialTheme.typography.labelSmall)
                             }
                             Text(text = post.livro!!.nome, style = MaterialTheme.typography.titleSmall)
-                            Text(text = post.livro!!.autor, style = MaterialTheme.typography.labelSmall)
+                            Text(text = post.livro!!.autor[0], style = MaterialTheme.typography.labelSmall)
                             Text(text = post.livro!!.sinopse, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp))
                         }
                     }
@@ -173,7 +173,7 @@ fun CardPost(post: Post, modifier: Modifier = Modifier) {
 @Composable
 private fun GreetingPreview() {
     val post = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date())
-    val livro = Livro("", "Livro Teste", "Autor Teste", "Sinopse Teste")
+    val livro = Livro("", "Livro Teste", arrayOf("Autor Teste"), "Sinopse Teste")
     val post2 = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date(), livro)
 
     BookieTheme {
