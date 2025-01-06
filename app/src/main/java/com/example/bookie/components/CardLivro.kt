@@ -1,6 +1,8 @@
 package com.example.bookie.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,45 +22,56 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.example.bookie.R
+import com.example.bookie.models.ImageLinks
 import com.example.bookie.models.Livro
 import com.example.bookie.ui.theme.BookieTheme
 
 @Composable
-fun CardLivro(livro: Livro, modifier: Modifier = Modifier) {
+fun CardLivro(livro: Livro, onClick: (Livro) -> Unit = {}) {
     Card (
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
         ),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onSecondary,
+            containerColor = MaterialTheme.colorScheme.onSurface,
         ),
-        modifier = modifier,
+        modifier = Modifier.clickable { onClick(livro) },
     ) {
         Row (
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_local_library),
-                contentDescription = stringResource(id = R.string.capa_livro),
-                modifier = Modifier.height(64.dp).width(55.dp),
-            )
+            if (livro.getCapa().isEmpty()) {
+                Image(
+                    painter = painterResource(id = R.drawable.capa_bunny),
+                    contentDescription = stringResource(id = R.string.capa_livro),
+                    modifier = Modifier.height(64.dp).width(55.dp),
+                )
+            } else {
+                AsyncImage(
+                    model = livro.getCapa(),
+                    contentDescription = null,
+                    modifier = Modifier.height(64.dp).width(55.dp),
+                )
+            }
             Column {
-                Text(text = livro.nome, modifier = Modifier.padding(bottom = 2.dp))
-                Text(text = livro.autor[0], modifier = Modifier.padding(bottom = 8.dp))
-                Text(text = livro.sinopse)
+                Text(text = livro.volumeInfo?.nome!!, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(bottom = 2.dp))
+                Text(text = livro.getAutor(), style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(bottom = 8.dp))
+                Text(text = livro.volumeInfo?.sinopse!!, maxLines = 2, style = MaterialTheme.typography.bodySmall)
             }
         }
 
     }
 }
 
-@Preview(showBackground = false)
-@Composable
-private fun GreetingPreview() {
-    val livro = Livro("", "Teste", arrayOf("Autor Teste"), "Livro de Teste")
-    BookieTheme {
-        CardLivro(livro)
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun GreetingPreview() {
+//    val livro = Livro(ImageLinks(), "Teste", arrayOf("Autor Teste"), "Livro de Teste")
+//    BookieTheme {
+//        CardLivro(livro)
+//    }
+//}

@@ -1,10 +1,6 @@
 package com.example.bookie.ui.screens
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,20 +11,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.magnifier
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.ExitToApp
 import androidx.compose.material.icons.outlined.List
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,51 +28,55 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import coil3.compose.AsyncImage
+import com.example.bookie.AppData
 import com.example.bookie.R
-import com.example.bookie.Screen
 import com.example.bookie.components.BottomBar
 import com.example.bookie.components.CardLivro
-import com.example.bookie.components.NavigationDrawer
 import com.example.bookie.models.Livro
+import com.example.bookie.models.VolumeInfo
 import com.example.bookie.services.BooksRepositorio
-import com.example.bookie.ui.theme.BookieTheme
-import kotlinx.coroutines.launch
 
-var livros: List<Livro> = listOf()
-
-private suspend fun getLivros(text: String) {
+private suspend fun getLivros(text: String, livros: List<Livro>): List<Livro> {
     if (text.length >= 3) {
         val apiService = BooksRepositorio()
 
         val parsedText = text.split(" ").joinToString("+")
         val response = apiService.buscarLivros(parsedText)
 
-        livros = response.items.map { item -> item.volumeInfo }.toList()
+        return response.items.map { item -> item }
+    } else if (text.length in 1..2) {
+        return livros
     }
 
-    if (text.isEmpty()) {
-        livros = listOf()
-    }
+    return listOf();
 }
 
 @Composable
-fun ListarLivros(modifier: Modifier = Modifier) {
+fun ListarLivros(navController: NavController, modifier: Modifier = Modifier) {
     var text by remember { mutableStateOf("") }
+//    var livros: SnapshotStateList<Livro> = mutableStateListOf()
+    var livros by remember { mutableStateOf(listOf<Livro>()) }
+    val appData = AppData.getInstance()
+
+    val itemClick = { livro: Livro -> navController.navigate("telaLivro/${livro.id}")}
 
     LaunchedEffect(text) {
-        getLivros(text)
+        livros = getLivros(text, livros)
+        appData.setLivros(livros)
     }
 
-    Column {
+    Column(
+        verticalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxSize()
+    ) {
         Column (
             horizontalAlignment = Alignment.End,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(top = 22.dp, start = 16.dp, end = 16.dp),
         ) {
             Row (
                 verticalAlignment = Alignment.CenterVertically,
@@ -112,34 +107,38 @@ fun ListarLivros(modifier: Modifier = Modifier) {
             }
         }
 
-        if (livros.isNotEmpty()) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(top = 22.dp, start = 16.dp, end = 16.dp, bottom = 4.dp).weight(1f)
+        ) {
+            if (livros.isNotEmpty()) {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
 
-                livros.forEach { livro ->
-                    item {
-                        CardLivro(livro, modifier = Modifier.fillMaxWidth())
+                    livros.forEach { livro ->
+                        item{
+                            CardLivro(livro, itemClick)
+                        }
                     }
+
                 }
-
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.empty_state),
+                    contentDescription = stringResource(id = R.string.capa_livro),
+                    modifier = Modifier.fillMaxSize(),
+                )
             }
-        } else {
-            Image(
-                painter = painterResource(id = R.drawable.empty_state),
-                contentDescription = stringResource(id = R.string.capa_livro),
-                modifier = Modifier.fillMaxSize(),
-            )
         }
-
+        BottomBar()
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun GreetingPreview() {
-    BookieTheme {
-        ListarLivros()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun GreetingPreview() {
+//    BookieTheme {
+//        ListarLivros()
+//    }
+//}

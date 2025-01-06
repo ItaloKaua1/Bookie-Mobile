@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "128047446609",
+    "project_id": "bookie-8cb30",
+    "storage_bucket": "bookie-8cb30.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:128047446609:android:469fa6d109abe7cc0c9670",
+        "android_client_info": {
+          "package_name": "com.example.bookie"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzISI8uApo-0_gwB48Ol4R-CiJaqwH2Fs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

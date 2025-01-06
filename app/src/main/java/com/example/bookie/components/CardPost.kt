@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.bookie.R
+import com.example.bookie.models.ImageLinks
 import com.example.bookie.models.Livro
 import com.example.bookie.models.Post
 import com.example.bookie.ui.theme.BookieTheme
@@ -118,9 +119,9 @@ fun CardPost(post: Post, modifier: Modifier = Modifier) {
                                 )
                                 Text(text = "adicionou um histórico de leitura", style = MaterialTheme.typography.labelSmall)
                             }
-                            Text(text = post.livro!!.nome, style = MaterialTheme.typography.titleSmall)
-                            Text(text = post.livro!!.autor[0], style = MaterialTheme.typography.labelSmall)
-                            Text(text = post.livro!!.sinopse, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp))
+                            Text(text = post.livro!!.volumeInfo?.nome!!, style = MaterialTheme.typography.titleSmall)
+                            Text(text = post.livro!!.getAutor(), style = MaterialTheme.typography.labelSmall)
+                            Text(text = post.livro!!.volumeInfo?.sinopse!!, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp))
                         }
                     }
                 }
@@ -169,19 +170,19 @@ fun CardPost(post: Post, modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = false)
-@Composable
-private fun GreetingPreview() {
-    val post = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date())
-    val livro = Livro("", "Livro Teste", arrayOf("Autor Teste"), "Sinopse Teste")
-    val post2 = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date(), livro)
-
-    BookieTheme {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            CardPost(post = post)
-            CardPost(post = post2)
-        }
-    }
-}
+//@Preview(showBackground = false)
+//@Composable
+//private fun GreetingPreview() {
+//    val post = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date())
+//    val livro = Livro(ImageLinks("", ""), "Livro Teste", arrayOf("Autor Teste"), "Sinopse Teste")
+//    val post2 = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date(), livro)
+//
+//    BookieTheme {
+//        Column(
+//            verticalArrangement = Arrangement.spacedBy(16.dp)
+//        ) {
+//            CardPost(post = post)
+//            CardPost(post = post2)
+//        }
+//    }
+//}

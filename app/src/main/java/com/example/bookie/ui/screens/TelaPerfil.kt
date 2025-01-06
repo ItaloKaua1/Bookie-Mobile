@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -23,20 +22,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.bookie.R
 import com.example.bookie.components.MinhasListas
 import com.example.bookie.components.MinhasPostagens
+import com.example.bookie.models.ImageLinks
 import com.example.bookie.models.Livro
 import com.example.bookie.models.Post
+import com.example.bookie.models.VolumeInfo
 import com.example.bookie.ui.theme.BookieTheme
 import java.util.Date
 
 @Composable
-fun TelaPerfil(modifier: Modifier = Modifier) {
+fun TelaPerfil(navController: NavHostController) {
     var tabIndex by rememberSaveable { mutableStateOf(0) }
     val tabs = listOf("minhas postagens", "minhas listas")
     val post = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date())
-    val livro = Livro("", "Livro Teste", arrayOf("Autor Teste"), "Sinopse Teste")
+    val livro = Livro("", VolumeInfo(ImageLinks("", ""), "Livro Teste", listOf("Autor Teste"), "Sinopse Teste", 34))
     val post2 = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date(), livro)
 
 
@@ -105,10 +107,10 @@ fun TelaPerfil(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun GreetingPreview() {
-    BookieTheme {
-        TelaPerfil()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun GreetingPreview() {
+//    BookieTheme {
+//        TelaPerfil()
+//    }
+//}

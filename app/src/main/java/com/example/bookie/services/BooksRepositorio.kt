@@ -1,5 +1,6 @@
 package com.example.bookie.services
 
+import android.util.Log
 import com.example.bookie.models.GoogleBooksResponse
 import com.example.bookie.models.Livro
 import io.ktor.client.HttpClient
@@ -25,6 +26,6 @@ class BooksRepositorio {
             }
         }
 
-        return httpClient.get("https://www.googleapis.com/books/v1/volumes?q=${texto}").body()
+        return httpClient.get("https://www.googleapis.com/books/v1/volumes?q=${texto}&maxResults=3").body()
     }
 }

@@ -1,5 +1,6 @@
 package com.example.bookie.components
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,11 +26,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import coil3.imageLoader
+import coil3.util.DebugLogger
 import com.example.bookie.R
+import com.example.bookie.models.ImageLinks
 import com.example.bookie.models.Livro
 import com.example.bookie.ui.theme.BookieTheme
 import kotlin.math.abs
@@ -37,14 +45,20 @@ import kotlin.math.abs
 @Composable
 fun CardLivroVariante(livro: Livro, mostrarAvaliacao: Boolean = false, mostrarPorcentagem: Boolean = false) {
     val width = 86;
+    Log.e("link-capa", livro.getCapa())
+
+    val imageLoader = LocalContext.current.imageLoader.newBuilder().logger(DebugLogger()).build()
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.capa_bunny),
-            contentDescription = stringResource(id = R.string.capa_livro),
+        AsyncImage(
+            model = livro.getCapa(),
+            contentDescription = "Capa do livro",
             modifier = Modifier.height(120.dp).width((width).dp),
+            placeholder = ColorPainter(Color.Gray),
+            contentScale = ContentScale.Crop,
+            imageLoader = imageLoader
         )
         if (mostrarAvaliacao) {
             Row(
@@ -92,19 +106,19 @@ fun CardLivroVariante(livro: Livro, mostrarAvaliacao: Boolean = false, mostrarPo
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun GreetingPreview() {
-    val livro = Livro("", "Teste", arrayOf("Autor Teste"), "Livro de Teste")
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        BookieTheme {
-            CardLivroVariante(livro, true)
-        }
-        BookieTheme {
-            CardLivroVariante(livro, mostrarPorcentagem = true)
-        }
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun GreetingPreview() {
+//    val livro = Livro(ImageLinks(), "Teste", arrayOf("Autor Teste"), "Livro de Teste")
+//
+//    Column(
+//        verticalArrangement = Arrangement.spacedBy(8.dp)
+//    ) {
+//        BookieTheme {
+//            CardLivroVariante(livro, true)
+//        }
+//        BookieTheme {
+//            CardLivroVariante(livro, mostrarPorcentagem = true)
+//        }
+//    }
+//}
