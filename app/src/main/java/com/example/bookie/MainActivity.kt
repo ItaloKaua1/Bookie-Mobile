@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.bookie.ui.screens.FeedScreen
 import com.example.bookie.ui.screens.ListarLivros
 import com.example.bookie.ui.screens.MinhaEstante
 import com.example.bookie.ui.screens.TelaLivro
@@ -31,7 +32,12 @@ class MainActivity : ComponentActivity() {
 //                }
                 val navController = rememberNavController()
 
-                NavHost(navController = navController, startDestination = "listarLivros") {
+                NavHost(navController = navController, startDestination = "feedScreen") {
+                    composable(
+                        route = "feedScreen"
+                    ) {
+                        FeedScreen(navController)
+                    }
                     composable(
                         route = "listarLivros"
                     ) {

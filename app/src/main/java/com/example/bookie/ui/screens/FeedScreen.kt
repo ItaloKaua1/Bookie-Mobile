@@ -19,7 +19,7 @@ import com.example.bookie.models.ImageLinks
 import com.example.bookie.models.Post
 import java.util.Date
 
-val mockFeedPosts = listOf(
+private val mockFeedPosts = listOf(
     Post(
         usuario = "User 1",
         titulo = "Dica de leitura",
@@ -66,7 +66,7 @@ val mockFeedPosts = listOf(
     )
 )
 
-val mockUserPosts = listOf(
+private val mockUserPosts = listOf(
     Post(
         usuario = "Você",
         titulo = "Minha primeira postagem!",
@@ -88,7 +88,7 @@ val mockUserPosts = listOf(
 )
 
 @Composable
-fun FeedScreen(navController: NavController) {
+fun FeedScreen2(navController: NavController) {
     var isViewingMyPosts by remember { mutableStateOf(false) }
 
     Scaffold(
