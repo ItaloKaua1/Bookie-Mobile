@@ -1,6 +1,7 @@
 package com.example.bookie.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -68,6 +69,7 @@ fun TelaPerfil(navController: NavHostController) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.clickable { navController.navigate("minhaEstante") }
                     ) {
                         Text(text = "19", style = MaterialTheme.typography.titleMedium)
                         Text(text = "livros", style = MaterialTheme.typography.bodySmall)

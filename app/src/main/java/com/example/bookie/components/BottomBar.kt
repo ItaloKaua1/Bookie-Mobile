@@ -2,6 +2,7 @@ package com.example.bookie.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Home
@@ -19,32 +20,38 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.bookie.models.NavigationItem
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
-fun BottomBar() {
+fun BottomBar(navController: NavController) {
     val navigationItems = listOf(
         NavigationItem(
             title = "home",
-            icon = Icons.Outlined.Home
+            icon = Icons.Outlined.Home,
+            action = {  -> navController.navigate("feedScreen")}
         ),
         NavigationItem(
             title = "busca",
-            icon = Icons.Outlined.Search
+            icon = Icons.Outlined.Search,
+            action = {  -> navController.navigate("listarLivros")}
         ),
         NavigationItem(
             title = "criar",
-            icon = Icons.Outlined.Add
+            icon = Icons.Outlined.Add,
+            action = {  -> navController.navigate("telaPerfil")}
         ),
         NavigationItem(
             title = "chat",
-            icon = Icons.Outlined.Send
+            icon = Icons.Outlined.Send,
+            action = {  -> navController.navigate("telaPerfil")}
         ),
         NavigationItem(
             title = "notificações",
-            icon = Icons.Outlined.Notifications
+            icon = Icons.Outlined.Notifications,
+            action = {  -> navController.navigate("telaPerfil")}
         ),
     )
 
@@ -52,8 +59,8 @@ fun BottomBar() {
         actions = {
             navigationItems.forEachIndexed { index, item ->
                 TextButton(
-                    onClick = { /* do something */ },
-                    colors = ButtonDefaults.buttonColors(contentColor = Color.Gray, containerColor = Color.Transparent)
+                    onClick = { item.action() },
+                    colors = ButtonDefaults.buttonColors(contentColor = Color.Gray, containerColor = Color.Transparent),
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
