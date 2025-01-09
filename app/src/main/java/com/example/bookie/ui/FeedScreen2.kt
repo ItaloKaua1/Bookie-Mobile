@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 import com.example.bookie.R
 import com.example.bookie.components.CardPost
 import com.example.bookie.components.MinhasPostagens
+import com.example.bookie.components.NavigationDrawer
 import com.example.bookie.components.TopBar
 import com.example.bookie.models.Livro
 import com.example.bookie.models.VolumeInfo
@@ -88,14 +89,13 @@ private val mockUserPosts = listOf(
 )
 
 @Composable
-fun FeedScreen(navController: NavController) {
+fun FeedScreen2(navController: NavController) {
     var isViewingMyPosts by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
-            TopBar(
-                onOpenDrawer = { /* Abrir drawer ou realizar ação personalizada */ }
-            )
+//            NavigationDrawer
+            TopBar {  }
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { /* Navegar para tela de newpost */ }) {
