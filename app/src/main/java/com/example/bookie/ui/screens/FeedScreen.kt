@@ -10,9 +10,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.bookie.R
+import com.example.bookie.components.BottomBar
 import com.example.bookie.components.CardPost
 import com.example.bookie.components.MinhasPostagens
-import com.example.bookie.components.TopBar
+import com.example.bookie.components.NavigationDrawer
 import com.example.bookie.models.Livro
 import com.example.bookie.models.VolumeInfo
 import com.example.bookie.models.ImageLinks
@@ -88,61 +89,51 @@ private val mockUserPosts = listOf(
 )
 
 @Composable
-fun FeedScreen2(navController: NavController) {
+fun FeedScreen(navController: NavController) {
     var isViewingMyPosts by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            TopBar(
-                onOpenDrawer = { /* Abrir drawer ou realizar ação personalizada */ }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { /* Navegar para tela de newpost */ }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_add),
-                    contentDescription = "Adicionar novo post"
-                )
-            }
-        }
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            Column {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier.fillMaxWidth().padding(16.dp)
-                ) {
-                    Button(
-                        onClick = { isViewingMyPosts = false },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (!isViewingMyPosts) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                        )
-                    ) {
-                        Text("Feed Geral")
-                    }
-                    Button(
-                        onClick = { isViewingMyPosts = true },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isViewingMyPosts) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                        )
-                    ) {
-                        Text("Minhas Postagens")
-                    }
-                }
+//    Scaffold(
+//        topBar = {
+            NavigationDrawer(navController) {
+                Box(modifier = Modifier.padding()) {
+                    Column {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            modifier = Modifier.fillMaxWidth().padding(16.dp)
+                        ) {
+                            Button(
+                                onClick = { isViewingMyPosts = false },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (!isViewingMyPosts) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                                )
+                            ) {
+                                Text("Feed Geral")
+                            }
+                            Button(
+                                onClick = { isViewingMyPosts = true },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isViewingMyPosts) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                                )
+                            ) {
+                                Text("Minhas Postagens")
+                            }
+                        }
 
-                if (isViewingMyPosts) {
-                    MinhasPostagens(posts = mockUserPosts)
-                } else {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxSize().padding(16.dp)
-                    ) {
-                        items(mockFeedPosts) { post ->
-                            CardPost(post = post)
+                        if (isViewingMyPosts) {
+                            MinhasPostagens(posts = mockUserPosts)
+                        } else {
+                            LazyColumn(
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.fillMaxSize().padding(16.dp)
+                            ) {
+                                items(mockFeedPosts) { post ->
+                                    CardPost(post = post)
+                                }
+                            }
                         }
                     }
                 }
             }
-        }
-    }
+//        }
+//    )
 }
