@@ -131,7 +131,7 @@ fun ListarLivros(navController: NavController, modifier: Modifier = Modifier) {
                 )
             }
         }
-        BottomBar()
+        BottomBar(navController)
     }
 }
 
