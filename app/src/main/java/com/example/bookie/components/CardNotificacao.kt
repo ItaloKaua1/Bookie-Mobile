@@ -29,7 +29,8 @@ import java.util.Date
 fun CardNotificacao(notificacao: Notificacao) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_local_library),
@@ -37,10 +38,11 @@ fun CardNotificacao(notificacao: Notificacao) {
             modifier = Modifier.height(48.dp).width(48.dp),
         )
         Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.weight(1f)
         ) {
-            Text(text = notificacao.usuario!!, style = MaterialTheme.typography.titleMedium)
-            Text(text = notificacao.texto!!, style = MaterialTheme.typography.bodySmall)
+            Text(text = notificacao.usuarioOrigem!!, style = MaterialTheme.typography.titleMedium)
+            Text(text = notificacao.corpo!!, style = MaterialTheme.typography.bodySmall)
             Text(text = notificacao.dataHora.toString(), style = MaterialTheme.typography.labelSmall, color = Color.Gray)
         }
         Icon(
@@ -57,7 +59,7 @@ fun CardNotificacao(notificacao: Notificacao) {
 @Preview(showBackground = true)
 @Composable
 private fun GreetingPreview() {
-    val notificacao = Notificacao("teste", "notificacao de teste", Date())
+    val notificacao = Notificacao(usuarioOrigem = "teste", corpo =  "notificacao de teste", dataHora =  Date())
     BookieTheme {
         CardNotificacao(notificacao)
     }

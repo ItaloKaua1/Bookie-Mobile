@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.bookie.R
+import com.example.bookie.components.LayoutVariant
 import com.example.bookie.components.MinhasListas
 import com.example.bookie.components.MinhasPostagens
 import com.example.bookie.models.ImageLinks
@@ -42,68 +43,69 @@ fun TelaPerfil(navController: NavHostController) {
     val livro = Livro("", VolumeInfo(ImageLinks("", ""), "Livro Teste", listOf("Autor Teste"), "Sinopse Teste", 34))
     val post2 = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date(), livro)
 
-
-    Column {
+    LayoutVariant(navController, "Buscar Livros", true) {
         Column {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(72.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.avatar),
-                    contentDescription = stringResource(id = R.string.capa_livro),
-                    modifier = Modifier
-                        .height(64.dp)
-                        .width(64.dp),
-                )
+            Column {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(40.dp),
+                    horizontalArrangement = Arrangement.spacedBy(72.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        Text(text = "13", style = MaterialTheme.typography.titleMedium)
-                        Text(text = "postagens", style = MaterialTheme.typography.bodySmall)
-                    }
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.clickable { navController.navigate("minhaEstante") }
-                    ) {
-                        Text(text = "19", style = MaterialTheme.typography.titleMedium)
-                        Text(text = "livros", style = MaterialTheme.typography.bodySmall)
-                    }
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        Text(text = "89", style = MaterialTheme.typography.titleMedium)
-                        Text(text = "amigos", style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-            }
-        }
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.padding(top = 16.dp),
-        ) {
-            Text(text = "name", style = MaterialTheme.typography.titleMedium)
-            Text(text = "sobre", style = MaterialTheme.typography.bodyMedium)
-        }
-
-        Column {
-            TabRow(selectedTabIndex = tabIndex) {
-                tabs.forEachIndexed { index, title ->
-                    Tab(text = { Text(title) },
-                        selected = tabIndex == index,
-                        onClick = { tabIndex = index }
+                    Image(
+                        painter = painterResource(id = R.drawable.avatar),
+                        contentDescription = stringResource(id = R.string.capa_livro),
+                        modifier = Modifier
+                            .height(64.dp)
+                            .width(64.dp),
                     )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(40.dp),
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            Text(text = "13", style = MaterialTheme.typography.titleMedium)
+                            Text(text = "postagens", style = MaterialTheme.typography.bodySmall)
+                        }
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                            modifier = Modifier.clickable { navController.navigate("minhaEstante") }
+                        ) {
+                            Text(text = "19", style = MaterialTheme.typography.titleMedium)
+                            Text(text = "livros", style = MaterialTheme.typography.bodySmall)
+                        }
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            Text(text = "89", style = MaterialTheme.typography.titleMedium)
+                            Text(text = "amigos", style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
                 }
             }
-            when (tabIndex) {
-                0 -> MinhasPostagens(listOf(post, post2))
-                1 -> MinhasListas()
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.padding(top = 16.dp),
+            ) {
+                Text(text = "name", style = MaterialTheme.typography.titleMedium)
+                Text(text = "sobre", style = MaterialTheme.typography.bodyMedium)
+            }
+
+            Column {
+                TabRow(selectedTabIndex = tabIndex) {
+                    tabs.forEachIndexed { index, title ->
+                        Tab(text = { Text(title) },
+                            selected = tabIndex == index,
+                            onClick = { tabIndex = index }
+                        )
+                    }
+                }
+                when (tabIndex) {
+                    0 -> MinhasPostagens(listOf(post, post2))
+                    1 -> MinhasListas()
+                }
             }
         }
     }

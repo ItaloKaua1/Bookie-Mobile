@@ -3,6 +3,8 @@ package com.example.bookie
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,9 +19,12 @@ import com.example.bookie.ui.screens.FeedScreen
 import com.example.bookie.ui.screens.ListarLivros
 import com.example.bookie.ui.screens.MinhaEstante
 import com.example.bookie.ui.screens.TelaLivro
+import com.example.bookie.ui.screens.TelaNotificacoes
 import com.example.bookie.ui.screens.TelaPerfil
 import com.example.bookie.ui.theme.BookieTheme
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.messaging
 
 class MainActivity : ComponentActivity() {
@@ -60,6 +65,21 @@ class MainActivity : ComponentActivity() {
         askNotificationPermission()
 
         Firebase.messaging.isAutoInitEnabled = true
+
+        val TAG = "token-teste"
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            Log.d(TAG, "token de teste: $token")
+//            Toast.makeText(baseContext, "token de teste: $token", Toast.LENGTH_SHORT).show()
+        })
 
         enableEdgeToEdge()
         setContent {
@@ -105,6 +125,11 @@ class MainActivity : ComponentActivity() {
                         route = "telaPerfil"
                     ) {
                         TelaPerfil(navController)
+                    }
+                    composable(
+                        route = "telaNotificacoes"
+                    ) {
+                        TelaNotificacoes(navController)
                     }
                 }
             }

@@ -35,7 +35,7 @@ fun CardLivro(livro: Livro, onClick: (Livro) -> Unit = {}) {
             defaultElevation = 6.dp
         ),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onSurface,
+            containerColor = MaterialTheme.colorScheme.outline,
         ),
         modifier = Modifier.clickable { onClick(livro) },
     ) {

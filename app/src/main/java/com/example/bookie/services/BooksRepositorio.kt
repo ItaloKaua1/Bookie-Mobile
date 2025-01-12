@@ -26,6 +26,6 @@ class BooksRepositorio {
             }
         }
 
-        return httpClient.get("https://www.googleapis.com/books/v1/volumes?q=${texto}&maxResults=3").body()
+        return httpClient.get("https://www.googleapis.com/books/v1/volumes?q=${texto}&maxResults=10").body()
     }
 }
