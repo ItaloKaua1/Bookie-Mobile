@@ -51,7 +51,7 @@ fun BottomBar(navController: NavController) {
         NavigationItem(
             title = "notificações",
             icon = Icons.Outlined.Notifications,
-            action = {  -> navController.navigate("telaPerfil")}
+            action = {  -> navController.navigate("telaNotificacoes")}
         ),
     )
 

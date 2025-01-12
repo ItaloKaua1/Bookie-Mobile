@@ -2,6 +2,7 @@ package com.example.bookie.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.outlined.List
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -37,6 +39,9 @@ import com.example.bookie.AppData
 import com.example.bookie.R
 import com.example.bookie.components.BottomBar
 import com.example.bookie.components.CardLivro
+import com.example.bookie.components.LayoutVariant
+import com.example.bookie.components.NavigationDrawer
+import com.example.bookie.components.TopBarVariante
 import com.example.bookie.models.Livro
 import com.example.bookie.models.VolumeInfo
 import com.example.bookie.services.BooksRepositorio
@@ -70,25 +75,15 @@ fun ListarLivros(navController: NavController, modifier: Modifier = Modifier) {
         appData.setLivros(livros)
     }
 
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column (
-            horizontalAlignment = Alignment.End,
-            modifier = Modifier.fillMaxWidth().padding(top = 22.dp, start = 16.dp, end = 16.dp),
+    LayoutVariant(navController, "Buscar Livros") {
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxSize().padding(16.dp)
         ) {
-            Row (
-                verticalAlignment = Alignment.CenterVertically,
+            Column (
+                horizontalAlignment = Alignment.End,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                IconButton(onClick = {}) {
-                    Icon(
-                        modifier = Modifier.size(24.dp).fillMaxWidth(),
-                        imageVector = Icons.Outlined.ArrowBack,
-                        contentDescription = "Voltar",
-                    )
-                }
                 OutlinedTextField(
                     value = text,
                     onValueChange = { text = it },
@@ -96,42 +91,41 @@ fun ListarLivros(navController: NavController, modifier: Modifier = Modifier) {
                     leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Search Icon") },
                     modifier = Modifier.fillMaxWidth(),
                 )
-            }
-            TextButton (onClick = {}) {
-                Icon(
-                    modifier = Modifier.size(24.dp).fillMaxWidth(),
-                    imageVector = Icons.Outlined.List,
-                    contentDescription = "Minha Biblioteca",
-                )
-                Text(text = "Filtrar")
-            }
-        }
-
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(top = 22.dp, start = 16.dp, end = 16.dp, bottom = 4.dp).weight(1f)
-        ) {
-            if (livros.isNotEmpty()) {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-
-                    livros.forEach { livro ->
-                        item{
-                            CardLivro(livro, itemClick)
-                        }
-                    }
-
+                TextButton (onClick = {}) {
+                    Icon(
+                        modifier = Modifier.size(24.dp).fillMaxWidth(),
+                        imageVector = Icons.Outlined.List,
+                        contentDescription = "Minha Biblioteca",
+                    )
+                    Text(text = "Filtrar")
                 }
-            } else {
-                Image(
-                    painter = painterResource(id = R.drawable.empty_state),
-                    contentDescription = stringResource(id = R.string.capa_livro),
-                    modifier = Modifier.fillMaxSize(),
-                )
+            }
+
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(top = 22.dp, start = 16.dp, end = 16.dp, bottom = 4.dp).weight(1f)
+            ) {
+                if (livros.isNotEmpty()) {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+
+                        livros.forEach { livro ->
+                            item{
+                                CardLivro(livro, itemClick)
+                            }
+                        }
+
+                    }
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.empty_state),
+                        contentDescription = stringResource(id = R.string.capa_livro),
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
             }
         }
-        BottomBar(navController)
     }
 }
 

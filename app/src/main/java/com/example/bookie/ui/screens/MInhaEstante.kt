@@ -3,9 +3,14 @@ package com.example.bookie.ui.screens
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Menu
@@ -34,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.bookie.components.CardLivroVariante
+import com.example.bookie.components.LayoutVariant
 import com.example.bookie.models.ImageLinks
 import com.example.bookie.models.Livro
 import com.example.bookie.models.VolumeInfo
@@ -50,8 +56,13 @@ private val livro = Livro("", VolumeInfo(ImageLinks("", ""), "Teste", listOf("Au
 
 @Composable
 private fun Todos(livros: List<Livro>) {
-    Row {
-        livros.forEach { livro -> CardLivroVariante(livro, mostrarAvaliacao = true) }
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(livros) { item ->
+            CardLivroVariante(item, mostrarAvaliacao = true)
+        }
     }
 }
 
@@ -118,56 +129,60 @@ fun MinhaEstante(navController: NavHostController) {
         }
     }
 
-    Column {
-        OutlinedTextField(
-            value = text,
-            onValueChange = { text = it },
-            placeholder = { Text("Busque por livros na estante...") },
-            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Search Icon") },
-            modifier = Modifier.fillMaxWidth(),
-        )
-
+    LayoutVariant(navController, "Minha estante") {
         Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.padding(top = 24.dp)
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
         ) {
-            Text(text = "19.200", style = MaterialTheme.typography.titleLarge)
-            Text(text = "páginas lidas", style = MaterialTheme.typography.bodyLarge)
-        }
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                placeholder = { Text("Busque por livros na estante...") },
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Search Icon") },
+                modifier = Modifier.fillMaxWidth(),
+            )
 
-        Column(
-            modifier = Modifier.padding(top = 24.dp)
-        ) {
-            Card(
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 2.dp
-                ),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                ),
-                modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp),
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.padding(top = 24.dp)
             ) {
-                TabRow(selectedTabIndex = tabIndex) {
-                    tabs.forEachIndexed { index, item ->
-                        Tab(text = { Text(item.text) },
-                            selected = tabIndex == index,
-                            icon = {
-                                Icon(
-                                    imageVector = item.icon,
-                                    contentDescription = item.text
-                                )
-                            },
-                            onClick = { tabIndex = index }
-                        )
+                Text(text = "19.200", style = MaterialTheme.typography.titleLarge)
+                Text(text = "páginas lidas", style = MaterialTheme.typography.bodyLarge)
+            }
+
+            Column(
+                modifier = Modifier.padding(top = 24.dp)
+            ) {
+                Card(
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 2.dp
+                    ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp),
+                ) {
+                    TabRow(selectedTabIndex = tabIndex) {
+                        tabs.forEachIndexed { index, item ->
+                            Tab(text = { Text(item.text) },
+                                selected = tabIndex == index,
+                                icon = {
+                                    Icon(
+                                        imageVector = item.icon,
+                                        contentDescription = item.text
+                                    )
+                                },
+                                onClick = { tabIndex = index }
+                            )
+                        }
                     }
                 }
-            }
-            when (tabIndex) {
-                0 -> Todos(livros)
-                1 -> Lidos()
-                2 -> Lendo()
-                3 -> QueroLer()
-                4 -> Favoritos()
+                when (tabIndex) {
+                    0 -> Todos(livros)
+                    1 -> Lidos()
+                    2 -> Lendo()
+                    3 -> QueroLer()
+                    4 -> Favoritos()
+                }
             }
         }
     }
