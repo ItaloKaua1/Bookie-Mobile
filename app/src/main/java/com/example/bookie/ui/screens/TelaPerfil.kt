@@ -1,5 +1,6 @@
 package com.example.bookie.ui.screens
 
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.bookie.R
@@ -32,8 +32,8 @@ import com.example.bookie.models.ImageLinks
 import com.example.bookie.models.Livro
 import com.example.bookie.models.Post
 import com.example.bookie.models.VolumeInfo
-import com.example.bookie.ui.theme.BookieTheme
 import java.util.Date
+
 
 @Composable
 fun TelaPerfil(navController: NavHostController) {
@@ -43,7 +43,8 @@ fun TelaPerfil(navController: NavHostController) {
     val livro = Livro("", VolumeInfo(ImageLinks("", ""), "Livro Teste", listOf("Autor Teste"), "Sinopse Teste", 34))
     val post2 = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date(), livro)
 
-    LayoutVariant(navController, "Buscar Livros", true) {
+
+    LayoutVariant(navController, "Meu perfil", true) {
         Column {
             Column {
                 Row(
@@ -93,6 +94,7 @@ fun TelaPerfil(navController: NavHostController) {
                 Text(text = "sobre", style = MaterialTheme.typography.bodyMedium)
             }
 
+
             Column {
                 TabRow(selectedTabIndex = tabIndex) {
                     tabs.forEachIndexed { index, title ->
@@ -110,6 +112,7 @@ fun TelaPerfil(navController: NavHostController) {
         }
     }
 }
+
 
 //@Preview(showBackground = true)
 //@Composable

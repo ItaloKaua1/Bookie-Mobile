@@ -103,19 +103,26 @@ class MainActivity : ComponentActivity() {
                         ListarLivros(navController)
                     }
                     composable(
-                        route = "telaLivro/{id}",
+                        route = "telaLivro/{id}/{estante}",
                         arguments = listOf(
                             navArgument(name = "id") {
                                 type = NavType.StringType
+                            },
+                            navArgument(name = "estante") {
+                                type = NavType.BoolType
                             }
                         )
                     ) {
-                        backstackEntry ->
+                            backstackEntry ->
                         val idLivro = backstackEntry.arguments?.getString("id")
+                        val estante = backstackEntry.arguments?.getBoolean("estante")
+
+
                         if (idLivro != null) {
-                            TelaLivro(navController, id = idLivro)
+                            TelaLivro(navController, id = idLivro, estante = estante)
                         }
                     }
+
                     composable(
                         route = "minhaEstante"
                     ) {

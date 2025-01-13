@@ -1,22 +1,21 @@
 package com.example.bookie.components
 
-import android.util.Log
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,28 +28,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.imageLoader
 import coil3.util.DebugLogger
-import com.example.bookie.R
-import com.example.bookie.models.ImageLinks
 import com.example.bookie.models.Livro
-import com.example.bookie.ui.theme.BookieTheme
 import kotlin.math.abs
 
-@Composable
-fun CardLivroVariante(livro: Livro, mostrarAvaliacao: Boolean = false, mostrarPorcentagem: Boolean = false) {
-    val width = 86;
-    Log.e("link-capa", livro.getCapa())
 
+@Composable
+fun CardLivroVariante(livro: Livro, mostrarAvaliacao: Boolean = false, mostrarPorcentagem: Boolean = false, onClick: (Livro) -> Unit = {}) {
+    val width = 86;
     val imageLoader = LocalContext.current.imageLoader.newBuilder().logger(DebugLogger()).build()
 
+
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.clickable { onClick(livro) },
     ) {
         AsyncImage(
             model = livro.getCapa(),
@@ -63,6 +57,7 @@ fun CardLivroVariante(livro: Livro, mostrarAvaliacao: Boolean = false, mostrarPo
         if (mostrarAvaliacao) {
             Row(
                 horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.width((width).dp)
             ) {
                 Icon(
@@ -79,32 +74,61 @@ fun CardLivroVariante(livro: Livro, mostrarAvaliacao: Boolean = false, mostrarPo
                     imageVector = Icons.Outlined.Star,
                     contentDescription = "Voto",
                 )
+                if (livro.favorito == true) {
+                    Icon(
+                        modifier = Modifier
+                            .size(16.dp)
+                            .fillMaxWidth()
+                            .padding(start = 4.dp),
+                        imageVector = Icons.Outlined.Favorite,
+                        contentDescription = "Voto",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
 
+
         if (mostrarPorcentagem) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(2.dp)
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .width((width).dp)
-                        .border(width = 1.dp, color = Color.Red, shape = RoundedCornerShape(8.dp))
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    Box(
+                    Row(
                         modifier = Modifier
-                            .height(12.dp)
-                            .width(abs(width*0.5).dp)
-                            .background(Color.Red)
+                            .clip(RoundedCornerShape(8.dp))
+                            .width((width).dp)
+                            .border(width = 1.dp, color = Color.Red, shape = RoundedCornerShape(8.dp))
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .height(12.dp)
+                                .width(abs(width*0.5).dp)
+                                .background(Color.Red)
+                        )
+                    }
+                    Text(text = "43%", style = MaterialTheme.typography.labelSmall)
+                }
+                if (livro.favorito == true) {
+                    Icon(
+                        modifier = Modifier
+                            .size(16.dp)
+                            .fillMaxWidth()
+                            .padding(start = 4.dp),
+                        imageVector = Icons.Outlined.Favorite,
+                        contentDescription = "Voto",
+                        tint = MaterialTheme.colorScheme.error
                     )
                 }
-                Text(text = "43%", style = MaterialTheme.typography.labelSmall)
             }
         }
     }
 }
+
 
 //@Preview(showBackground = true)
 //@Composable
