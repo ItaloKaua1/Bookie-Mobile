@@ -12,13 +12,6 @@ import coil.compose.AsyncImage
 import com.example.bookie.components.NavigationDrawer
 import com.example.bookie.models.Usuario
 
-private val mockUsers = listOf(
-    Usuario("1", "Alice", "alice@example.com", "https://example.com/alice_profile.jpg"),
-    Usuario("2", "Bob", "bob@example.com", "https://example.com/bob_profile.jpg"),
-    Usuario("3", "Charlie", "charlie@example.com", "https://example.com/charlie_profile.jpg"),
-    Usuario("4", "Diana", "diana@example.com", "https://example.com/diana_profile.jpg")
-)
-
 private val mockFriends = mutableStateListOf<Usuario>()
 
 @Composable
@@ -58,7 +51,7 @@ fun FriendsScreen(navController: NavController) {
             if (isViewingFriends) {
                 FriendsList(friends = mockFriends)
             } else {
-                AddFriends(usuarios = mockUsers, friends = mockFriends)
+                FriendsSolicitationScreen(mockFriends)
             }
         }
     }
@@ -81,40 +74,6 @@ fun FriendsList(friends: List<Usuario>) {
 }
 
 @Composable
-fun AddFriends(usuarios: List<Usuario>, friends: MutableList<Usuario>) {
-    var confirmationMessage by remember { mutableStateOf<String?>(null) }
-
-    Column {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(usuarios) { user ->
-                if (!friends.contains(user)) {
-                    UserCard(
-                        user = user,
-                        onAddFriend = {
-                            friends.add(it)
-                            confirmationMessage = "${it.nome} foi adicionado como amigo!"
-                        },
-                        onRejectFriend = {
-                            confirmationMessage = "Você rejeitou a solicitação de amizade de ${it.nome}."
-                        }
-                    )
-                }
-            }
-        }
-
-        confirmationMessage?.let { message ->
-            showConfirmationDialog(
-                message = message,
-                onDismiss = { confirmationMessage = null }
-            )
-        }
-    }
-}
-
-@Composable
 fun FriendCard(user: Usuario) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -130,44 +89,4 @@ fun FriendCard(user: Usuario) {
             Text(user.nome ?: "Nome desconhecido", style = MaterialTheme.typography.bodyLarge)
         }
     }
-}
-
-@Composable
-fun UserCard(user: Usuario, onAddFriend: (Usuario) -> Unit, onRejectFriend: (Usuario) -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(user.nome ?: "Nome desconhecido", style = MaterialTheme.typography.bodyLarge)
-            Row {
-                Button(onClick = { onAddFriend(user) }) {
-                    Text("Adicionar")
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(onClick = { onRejectFriend(user) }) {
-                    Text("Rejeitar")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun showConfirmationDialog(message: String, onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Confirmação") },
-        text = { Text(message) },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("OK")
-            }
-        }
-    )
 }

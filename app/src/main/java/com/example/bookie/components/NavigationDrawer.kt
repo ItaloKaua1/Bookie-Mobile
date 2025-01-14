@@ -61,7 +61,7 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
         NavigationItem(
             title = "solicitações de amizade",
             icon = Icons.Outlined.AccountBox,
-            action = {  -> navController.navigate("telaPerfil")}
+            action = {  -> navController.navigate("FriendsSolicitationScreen")}
         ),
         NavigationItem(
             title = "relatórios de leitura",
