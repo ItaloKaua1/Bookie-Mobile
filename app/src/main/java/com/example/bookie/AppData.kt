@@ -1,27 +1,45 @@
 package com.example.bookie
 
+
 import com.example.bookie.models.Livro
 
+
 class AppData {
-    private var livros: List<Livro> = listOf()
+    private var livrosBusca: List<Livro> = listOf()
+    private var minhaEstante: List<Livro> = listOf()
+
 
     companion object {
         @Volatile private var instance: AppData? = null
+
 
         fun getInstance() = instance ?: synchronized(this) {
             instance ?: AppData().also { instance = it }
         }
     }
 
-    fun setLivros(livros: List<Livro>) {
-        this.livros = livros
+
+    fun setLivrosBusca(livros: List<Livro>) {
+        this.livrosBusca = livros
     }
 
-    fun getLivros(): List<Livro> {
-        return livros
+
+    fun getLivrosBusca(): List<Livro> {
+        return livrosBusca
     }
 
-    fun getLivro(id: String): Livro? {
-        return livros.find { livro -> livro.id == id }
+
+    fun getLivroBusca(id: String): Livro? {
+        return livrosBusca.find { livro -> livro.id == id }
+    }
+
+
+    fun setLivrosEstante(livros: List<Livro>) {
+        this.minhaEstante = livros
+    }
+
+
+    fun getLivroEstante(id: String): Livro? {
+        return minhaEstante.find { livro -> livro.id == id }
     }
 }
