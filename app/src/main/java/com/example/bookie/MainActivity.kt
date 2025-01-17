@@ -8,12 +8,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.internal.composableLambda
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen1
+import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen2
+import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen3
 import com.example.bookie.ui.screens.FeedScreen
 import com.example.bookie.ui.screens.ListarLivros
 import com.example.bookie.ui.screens.LoginScreen
@@ -96,6 +100,21 @@ class MainActivity : ComponentActivity() {
                         route = "loginScreen"
                     ){
                         LoginScreen(navController)
+                    }
+                    composable(
+                        route = "cadastroScreen1"
+                    ){
+                        CadastroScreen1(navController)
+                    }
+                    composable(
+                        route = "cadastroScreen2"
+                    ){
+                        CadastroScreen2(navController)
+                    }
+                    composable(
+                        route = "cadastroScreen3"
+                    ){
+                        CadastroScreen3(navController)
                     }
                     composable(
                         route = "feedScreen"
