@@ -4,7 +4,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.bookie.ui.screens.FeedScreen
 import com.example.bookie.ui.screens.ListarLivros
+import com.example.bookie.ui.screens.LoginScreen
 import com.example.bookie.ui.screens.MinhaEstante
 import com.example.bookie.ui.screens.TelaLivro
 import com.example.bookie.ui.screens.TelaNotificacoes
@@ -91,7 +91,12 @@ class MainActivity : ComponentActivity() {
 //                }
                 val navController = rememberNavController()
 
-                NavHost(navController = navController, startDestination = "feedScreen") {
+                NavHost(navController = navController, startDestination = "loginScreen") {
+                    composable(
+                        route = "loginScreen"
+                    ){
+                        LoginScreen(navController)
+                    }
                     composable(
                         route = "feedScreen"
                     ) {
