@@ -1,5 +1,7 @@
 package com.example.bookie.ui.screens
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,7 +25,11 @@ import androidx.navigation.NavHostController
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.withStyle
+import com.example.bookie.R
 import com.example.bookie.ui.theme.Purple40
 import com.example.bookie.ui.theme.PurpleBookie
 
@@ -37,142 +43,173 @@ fun LoginScreen(navController: NavHostController) {
         modifier = Modifier.fillMaxSize(),
         color = Color.White
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Text(
-                text = "Faça seu login!",
-                style = MaterialTheme.typography.titleLarge.copy(
-                    color = Purple40,
-                    fontWeight = FontWeight.Bold
-                )
+            // Adiciona a imagem de fundo
+            Image(
+                painter = painterResource(id = R.drawable.login2_back), // Certifique-se de que "login2_back" está no drawable
+                contentDescription = "Background Image",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(text = "E-mail")
-            // Campo de E-mail
-            BasicTextField(
-                value = email,
-                onValueChange = { email = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .border(1.dp, Color.Gray, RoundedCornerShape(6.dp))
-                    .padding(8.dp),
-                textStyle = TextStyle.Default.copy(color = Color.Black),
-                decorationBox = { innerTextField ->
-                    Box(modifier = Modifier.padding(4.dp)) {
-                        if (email.isEmpty()) {
-                            Text(text = "Email", color = Color.Gray)
-                        }
-                        innerTextField()
-                    }
-                }
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(text = "Senha")
-            // Campo de Senha com ícone de show/hide dentro do campo
-            BasicTextField(
-                value = password,
-                onValueChange = { password = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .border(1.dp, Color.Gray, RoundedCornerShape(6.dp))
-                    .padding(horizontal = 8.dp),
-                textStyle = TextStyle.Default.copy(color = Color.Black),
-                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                decorationBox = { innerTextField ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(modifier = Modifier.weight(1f)) {
-                            if (password.isEmpty()) {
-                                Text(text = "Senha", color = Color.Gray)
-                            }
-                            innerTextField()
-                        }
-
-                        IconButton(
-                            onClick = { showPassword = !showPassword }
-                        ) {
-                            Icon(
-                                imageVector = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                                contentDescription = "Mostrar/Ocultar Senha"
-                            )
-                        }
-                    }
-                }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Botão de Login (Maior e Centralizado)
-            Button(
-                onClick = { navController.navigate("feedScreen") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = PurpleBookie
-                ),
-                shape = RoundedCornerShape(6.dp)
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Entrar",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                    color = Color.White
+                // Adiciona o logotipo centralizado
+                Image(
+                    painter = painterResource(id = R.drawable.bookie_logotipo), // Certifique-se de que "bookie_logotipo" está no drawable
+                    contentDescription = "Bookie Logo",
+                    modifier = Modifier
+                        .size(160.dp) // Ajuste o tamanho conforme necessário
+                        .padding(top = 48.dp) // Ajuste a distância do topo conforme necessário
                 )
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            // Texto Clicável de Cadastro
-            ClickableText(
-                text = buildAnnotatedString {
-                    append("Não tem conta? ")
-                    pushStringAnnotation(tag = "cadastre-se", annotation = "cadastroScreen1")
-                    withStyle(
-                        style = SpanStyle(
-                            color = Purple40,
-                            textDecoration = TextDecoration.Underline,
-                            fontSize = 16.sp
-                        )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp)
+                        .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)) // Bordas superiores arredondadas
+                        .background(Color.White)
+                        .padding(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        append("Cadastre-se")
-                    }
-                    pop()
-                },
-                onClick = { offset ->
-                    val annotation = buildAnnotatedString {
-                        append("Não tem conta? ")
-                        pushStringAnnotation(tag = "cadastre-se", annotation = "cadastroScreen1")
-                        withStyle(
-                            style = SpanStyle(
+                        Text(
+                            text = "Faça seu login!",
+                            style = MaterialTheme.typography.titleLarge.copy(
                                 color = Purple40,
-                                textDecoration = TextDecoration.Underline
+                                fontWeight = FontWeight.Bold
                             )
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(text = "E-mail")
+                        BasicTextField(
+                            value = email,
+                            onValueChange = { email = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                                .border(1.dp, Color.Gray, RoundedCornerShape(6.dp))
+                                .padding(8.dp),
+                            textStyle = TextStyle.Default.copy(color = Color.Black),
+                            decorationBox = { innerTextField ->
+                                Box(modifier = Modifier.padding(4.dp)) {
+                                    if (email.isEmpty()) {
+                                        Text(text = "Email", color = Color.Gray)
+                                    }
+                                    innerTextField()
+                                }
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(text = "Senha")
+                        BasicTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                                .border(1.dp, Color.Gray, RoundedCornerShape(6.dp))
+                                .padding(horizontal = 8.dp),
+                            textStyle = TextStyle.Default.copy(color = Color.Black),
+                            visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                            decorationBox = { innerTextField ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(modifier = Modifier.weight(1f)) {
+                                        if (password.isEmpty()) {
+                                            Text(text = "Senha", color = Color.Gray)
+                                        }
+                                        innerTextField()
+                                    }
+
+                                    IconButton(
+                                        onClick = { showPassword = !showPassword }
+                                    ) {
+                                        Icon(
+                                            imageVector = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                            contentDescription = "Mostrar/Ocultar Senha"
+                                        )
+                                    }
+                                }
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Button(
+                            onClick = { navController.navigate("feedScreen") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 32.dp)
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = PurpleBookie
+                            ),
+                            shape = RoundedCornerShape(6.dp)
                         ) {
-                            append("Cadastre-se")
+                            Text(
+                                text = "Entrar",
+                                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                                color = Color.White
+                            )
                         }
-                        pop()
-                    }.getStringAnnotations(tag = "cadastre-se", start = offset, end = offset)
-                    if (annotation.isNotEmpty()) {
-                        navController.navigate("cadastroScreen1")
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        ClickableText(
+                            text = buildAnnotatedString {
+                                append("Não tem conta? ")
+                                pushStringAnnotation(tag = "cadastre-se", annotation = "cadastroScreen1")
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = Purple40,
+                                        textDecoration = TextDecoration.Underline,
+                                        fontSize = 16.sp
+                                    )
+                                ) {
+                                    append("Cadastre-se")
+                                }
+                                pop()
+                            },
+                            onClick = { offset ->
+                                val annotation = buildAnnotatedString {
+                                    append("Não tem conta? ")
+                                    pushStringAnnotation(tag = "cadastre-se", annotation = "cadastroScreen1")
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = Purple40,
+                                            textDecoration = TextDecoration.Underline
+                                        )
+                                    ) {
+                                        append("Cadastre-se")
+                                    }
+                                    pop()
+                                }.getStringAnnotations(tag = "cadastre-se", start = offset, end = offset)
+                                if (annotation.isNotEmpty()) {
+                                    navController.navigate("cadastroScreen1")
+                                }
+                            },
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
                     }
-                },
-                modifier = Modifier.padding(top = 8.dp)
-            )
+                }
+            }
         }
     }
 }
