@@ -85,7 +85,6 @@ class MainActivity : ComponentActivity() {
 //            Toast.makeText(baseContext, "token de teste: $token", Toast.LENGTH_SHORT).show()
         })
 
-        enableEdgeToEdge()
         setContent {
             BookieTheme {
 //                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
