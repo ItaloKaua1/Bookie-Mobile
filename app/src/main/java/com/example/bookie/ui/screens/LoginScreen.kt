@@ -1,5 +1,7 @@
 package com.example.bookie.ui.screens
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,14 +29,32 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.withStyle
 import com.example.bookie.R
 import com.example.bookie.ui.theme.Purple40
 import com.example.bookie.ui.theme.PurpleBookie
+import com.google.firebase.auth.FirebaseAuth
+
+private fun login(email: String, password: String, context: Context, navController: NavHostController) {
+    val auth = FirebaseAuth.getInstance()
+
+    auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { response ->
+        if (response.isSuccessful) {
+            Toast.makeText(context, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show()
+            navController.navigate("feedScreen")
+        }
+    }.addOnFailureListener { response ->
+        Toast.makeText(context, "Erro ao fazer login!", Toast.LENGTH_SHORT).show()
+    }
+}
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
+
+    val context = LocalContext.current
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
@@ -151,7 +171,7 @@ fun LoginScreen(navController: NavHostController) {
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Button(
-                            onClick = { navController.navigate("feedScreen") },
+                            onClick = { login(email, password, context, navController) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 32.dp)

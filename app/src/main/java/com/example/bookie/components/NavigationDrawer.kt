@@ -1,5 +1,7 @@
 package com.example.bookie.components
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,10 +43,20 @@ import com.example.bookie.R
 import com.example.bookie.models.Livro
 import com.example.bookie.models.NavigationItem
 import kotlinx.coroutines.launch
+import com.google.firebase.auth.FirebaseAuth
+
+private fun logout(navController: NavController, context: Context) {
+    FirebaseAuth.getInstance().signOut()
+    Toast.makeText(context, "Logout realizado com sucesso!", Toast.LENGTH_SHORT).show()
+    navController.navigate("loginScreen")
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationDrawer(navController: NavController, content: @Composable () -> Unit) {
+
+    val context = LocalContext.current
+
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -81,7 +94,7 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
         NavigationItem(
             title = "sair",
             icon = Icons.Outlined.ExitToApp,
-            action = {  -> navController.navigate("telaPerfil")}
+            action = {  -> logout(navController, context) },
         ),
     )
 
