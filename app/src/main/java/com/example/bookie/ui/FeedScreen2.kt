@@ -94,7 +94,6 @@ fun FeedScreen2(navController: NavController) {
 
     Scaffold(
         topBar = {
-//            NavigationDrawer
             TopBar {  }
         },
         floatingActionButton = {
