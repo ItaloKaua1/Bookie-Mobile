@@ -1,5 +1,7 @@
 package com.example.bookie.ui.screens.CadastroScreens
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -46,9 +49,28 @@ import androidx.navigation.NavHostController
 import com.example.bookie.components.BackComponent
 import com.example.bookie.ui.theme.Purple40
 import com.example.bookie.ui.theme.PurpleBookie
+import com.google.firebase.auth.FirebaseAuth
+import android.util.Log
+
+
+private fun registrarUser(email: String, password: String, context: Context) {
+    val auth = FirebaseAuth.getInstance()
+
+    auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { response ->
+        if (response.isSuccessful) {
+            Toast.makeText(context, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
+        }
+    }.addOnFailureListener { response ->
+        Log.e("tag-register-response-error", response.message!!)
+        Toast.makeText(context, "Desculpe, ocorreu um erro ao realizar cadastro.", Toast.LENGTH_SHORT).show()
+    }
+}
 
 @Composable
 fun CadastroScreen1(navController: NavHostController) {
+
+    val context = LocalContext.current
+
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -196,7 +218,8 @@ fun CadastroScreen1(navController: NavHostController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { navController.navigate("cadastroScreen2") },
+//            onClick = { navController.navigate("cadastroScreen2") },
+            onClick = { registrarUser(email, password, context)},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp)
