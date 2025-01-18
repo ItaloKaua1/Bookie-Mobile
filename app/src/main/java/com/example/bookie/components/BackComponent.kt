@@ -18,33 +18,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.bookie.ui.theme.Purple40
 
 @Composable
 fun BackComponent(navController: NavHostController, title: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically // Alinha os itens verticalmente ao centro
+            .padding(top = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
             onClick = { navController.popBackStack() },
-            modifier = Modifier.height(24.dp) // Garante que o botão mantenha proporção consistente
+            modifier = Modifier.height(32.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "Voltar",
-                tint = Color.Black
+                tint = Purple40
             )
         }
         Text(
             text = title,
-            fontSize = 20.sp,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black,
+            color = Purple40,
             modifier = Modifier
                 .wrapContentWidth()
-                .padding(start = 8.dp)
+                .padding(start = 4.dp)
         )
     }
 }

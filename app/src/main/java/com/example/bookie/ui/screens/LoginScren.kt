@@ -46,9 +46,8 @@ fun LoginScreen(navController: NavHostController) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Adiciona a imagem de fundo
             Image(
-                painter = painterResource(id = R.drawable.login2_back), // Certifique-se de que "login2_back" está no drawable
+                painter = painterResource(id = R.drawable.login2_back),
                 contentDescription = "Background Image",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
@@ -58,13 +57,12 @@ fun LoginScreen(navController: NavHostController) {
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Adiciona o logotipo centralizado
                 Image(
-                    painter = painterResource(id = R.drawable.bookie_logotipo), // Certifique-se de que "bookie_logotipo" está no drawable
+                    painter = painterResource(id = R.drawable.bookie_logotipo),
                     contentDescription = "Bookie Logo",
                     modifier = Modifier
-                        .size(160.dp) // Ajuste o tamanho conforme necessário
-                        .padding(top = 48.dp) // Ajuste a distância do topo conforme necessário
+                        .size(160.dp)
+                        .padding(top = 48.dp)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -73,7 +71,7 @@ fun LoginScreen(navController: NavHostController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp)
-                        .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)) // Bordas superiores arredondadas
+                        .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
                         .background(Color.White)
                         .padding(16.dp)
                 ) {

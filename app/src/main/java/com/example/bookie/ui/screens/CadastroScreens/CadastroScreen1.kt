@@ -53,8 +53,8 @@ fun CadastroScreen1(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var showPassword by remember { mutableStateOf(false) } // Controle de visibilidade do campo "Senha"
-    var showConfirmPassword by remember { mutableStateOf(false) } // Controle de visibilidade do campo "Confirme a Senha"
+    var showPassword by remember { mutableStateOf(false) }
+    var showConfirmPassword by remember { mutableStateOf(false) }
 
     Column {
         BackComponent(navController = navController, title = "Cadastre-se")
@@ -77,7 +77,6 @@ fun CadastroScreen1(navController: NavHostController) {
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Campo Nome
         Text(text = "Nome")
         BasicTextField(
             value = name,
@@ -100,7 +99,6 @@ fun CadastroScreen1(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Campo Email
         Text(text = "Email")
         BasicTextField(
             value = email,
@@ -123,7 +121,6 @@ fun CadastroScreen1(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Campo Senha
         Text(text = "Senha")
         BasicTextField(
             value = password,
@@ -161,7 +158,6 @@ fun CadastroScreen1(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Campo Confirmar Senha
         Text(text = "Confirme a Senha")
         BasicTextField(
             value = confirmPassword,
@@ -199,7 +195,6 @@ fun CadastroScreen1(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botão Continuar
         Button(
             onClick = { navController.navigate("cadastroScreen2") },
             modifier = Modifier
@@ -220,7 +215,6 @@ fun CadastroScreen1(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Texto para navegação para tela de login
         ClickableText(
             text = buildAnnotatedString {
                 append("Você já possui cadastro? ")
