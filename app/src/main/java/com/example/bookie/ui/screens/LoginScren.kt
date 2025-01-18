@@ -155,7 +155,8 @@ fun LoginScreen(navController: NavHostController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 32.dp)
-                                .height(56.dp),
+                                .height(56.dp)
+                                .padding(bottom = 8.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = PurpleBookie
                             ),
@@ -168,43 +169,31 @@ fun LoginScreen(navController: NavHostController) {
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        ClickableText(
-                            text = buildAnnotatedString {
-                                append("Não tem conta? ")
-                                pushStringAnnotation(tag = "cadastre-se", annotation = "cadastroScreen1")
-                                withStyle(
-                                    style = SpanStyle(
-                                        color = Purple40,
-                                        textDecoration = TextDecoration.Underline,
-                                        fontSize = 16.sp
-                                    )
-                                ) {
-                                    append("Cadastre-se")
-                                }
-                                pop()
-                            },
-                            onClick = { offset ->
-                                val annotation = buildAnnotatedString {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            ClickableText(
+                                text = buildAnnotatedString {
                                     append("Não tem conta? ")
-                                    pushStringAnnotation(tag = "cadastre-se", annotation = "cadastroScreen1")
+                                    pushStringAnnotation(tag = "Faça login", annotation = "loginScreen")
                                     withStyle(
                                         style = SpanStyle(
                                             color = Purple40,
-                                            textDecoration = TextDecoration.Underline
+                                            textDecoration = TextDecoration.Underline,
+                                            fontSize = 16.sp
                                         )
                                     ) {
                                         append("Cadastre-se")
                                     }
                                     pop()
-                                }.getStringAnnotations(tag = "cadastre-se", start = offset, end = offset)
-                                if (annotation.isNotEmpty()) {
+                                },
+                                onClick = { offset ->
                                     navController.navigate("cadastroScreen1")
                                 }
-                            },
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
+                            )
+                        }
                     }
                 }
             }

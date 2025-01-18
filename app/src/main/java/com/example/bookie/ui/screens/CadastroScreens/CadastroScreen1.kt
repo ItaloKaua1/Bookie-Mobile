@@ -200,7 +200,8 @@ fun CadastroScreen1(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp)
-                .height(56.dp),
+                .height(56.dp)
+                .padding(bottom = 8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = PurpleBookie
             ),
@@ -213,27 +214,30 @@ fun CadastroScreen1(navController: NavHostController) {
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        ClickableText(
-            text = buildAnnotatedString {
-                append("Você já possui cadastro? ")
-                pushStringAnnotation(tag = "Faça login", annotation = "loginScreen")
-                withStyle(
-                    style = SpanStyle(
-                        color = Purple40,
-                        textDecoration = TextDecoration.Underline,
-                        fontSize = 16.sp
-                    )
-                ) {
-                    append("Faça login")
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            ClickableText(
+                text = buildAnnotatedString {
+                    append("Você já possui cadastro? ")
+                    pushStringAnnotation(tag = "Faça login", annotation = "loginScreen")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Purple40,
+                            textDecoration = TextDecoration.Underline,
+                            fontSize = 16.sp
+                        )
+                    ) {
+                        append("Faça login")
+                    }
+                    pop()
+                },
+                onClick = { offset ->
+                    navController.navigate("loginScreen")
                 }
-                pop()
-            },
-            onClick = { offset ->
-                navController.navigate("loginScreen")
-            },
-            modifier = Modifier.padding(top = 8.dp)
-        )
+            )
+        }
     }
 }
