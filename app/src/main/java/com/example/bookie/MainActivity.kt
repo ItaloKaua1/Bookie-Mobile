@@ -8,6 +8,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.internal.composableLambda
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavType
@@ -15,9 +20,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.bookie.components.ConfiguracoesViewModel
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen1
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen2
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen3
+import com.example.bookie.ui.screens.ConfiguracoesTela
 import com.example.bookie.ui.screens.FeedScreen
 import com.example.bookie.ui.screens.ListarLivros
 import com.example.bookie.ui.screens.LoginScreen
@@ -46,7 +53,10 @@ class MainActivity : ComponentActivity() {
     private fun askNotificationPermission() {
         // This is only necessary for API level >= 33 (TIRAMISU)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) ==
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) ==
                 PackageManager.PERMISSION_GRANTED
             ) {
                 // FCM SDK (and your app) can post notifications.
@@ -61,6 +71,8 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    private val configuracoesViewModel: ConfiguracoesViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Bookie)
@@ -86,74 +98,32 @@ class MainActivity : ComponentActivity() {
         })
 
         setContent {
-            BookieTheme {
-//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    Screen(
-//                        modifier = Modifier.padding(innerPadding)
-//                    )
-//                }
-                val navController = rememberNavController()
+            val navController = rememberNavController()
 
+            val temaEscuro = configuracoesViewModel.temaEscuro.collectAsState().value
+            val cores = if (temaEscuro) darkColorScheme() else lightColorScheme()
+
+            MaterialTheme(colorScheme = cores) {
                 NavHost(navController = navController, startDestination = "loginScreen") {
+                    composable("loginScreen") { LoginScreen(navController) }
+                    composable("cadastroScreen1") { CadastroScreen1(navController) }
+                    composable("cadastroScreen2") { CadastroScreen2(navController) }
+                    composable("cadastroScreen3") { CadastroScreen3(navController) }
+                    composable("feedScreen") { FeedScreen(navController) }
+                    composable("listarLivros") { ListarLivros(navController) }
                     composable(
-                        route = "loginScreen"
-                    ){
-                        LoginScreen(navController)
-                    }
-                    composable(
-                        route = "cadastroScreen1"
-                    ){
-                        CadastroScreen1(navController)
-                    }
-                    composable(
-                        route = "cadastroScreen2"
-                    ){
-                        CadastroScreen2(navController)
-                    }
-                    composable(
-                        route = "cadastroScreen3"
-                    ){
-                        CadastroScreen3(navController)
-                    }
-                    composable(
-                        route = "feedScreen"
-                    ) {
-                        FeedScreen(navController)
-                    }
-                    composable(
-                        route = "listarLivros"
-                    ) {
-                        ListarLivros(navController)
-                    }
-                    composable(
-                        route = "telaLivro/{id}",
-                        arguments = listOf(
-                            navArgument(name = "id") {
-                                type = NavType.StringType
-                            }
-                        )
-                    ) {
-                        backstackEntry ->
-                        val idLivro = backstackEntry.arguments?.getString("id")
+                        "telaLivro/{id}",
+                        arguments = listOf(navArgument("id") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val idLivro = backStackEntry.arguments?.getString("id")
                         if (idLivro != null) {
-                            TelaLivro(navController, id = idLivro)
+                            TelaLivro(navController, idLivro)
                         }
                     }
-                    composable(
-                        route = "minhaEstante"
-                    ) {
-                        MinhaEstante(navController)
-                    }
-                    composable(
-                        route = "telaPerfil"
-                    ) {
-                        TelaPerfil(navController)
-                    }
-                    composable(
-                        route = "telaNotificacoes"
-                    ) {
-                        TelaNotificacoes(navController)
-                    }
+                    composable("minhaEstante") { MinhaEstante(navController) }
+                    composable("telaPerfil") { TelaPerfil(navController) }
+                    composable("telaNotificacoes") { TelaNotificacoes(navController) }
+                    composable("configuracoesTela") { backStackEntry -> ConfiguracoesTela(navController = navController, viewModel = configuracoesViewModel) }
                 }
             }
         }

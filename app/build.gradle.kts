@@ -67,6 +67,11 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core:<versao>")
     implementation("androidx.compose.material:material-icons-extended:<versao>")
 
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.5.1")
+
+
     // ktor
     implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.logging)

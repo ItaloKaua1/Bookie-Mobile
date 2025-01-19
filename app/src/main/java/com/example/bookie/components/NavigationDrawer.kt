@@ -69,7 +69,7 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
         NavigationItem(
             title = "configurações",
             icon = Icons.Outlined.Settings,
-            action = {  -> navController.navigate("telaPerfil")}
+            action = {  -> navController.navigate("configuracoesTela")}
         ),
         NavigationItem(
             title = "solicitações de amizade",
