@@ -53,12 +53,13 @@ import com.google.firebase.auth.FirebaseAuth
 import android.util.Log
 
 
-private fun registrarUser(email: String, password: String, context: Context) {
+private fun registrarUser(email: String, password: String, context: Context, navController: NavHostController) {
     val auth = FirebaseAuth.getInstance()
 
     auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { response ->
         if (response.isSuccessful) {
             Toast.makeText(context, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
+            navController.navigate("cadastroScreen2")
         }
     }.addOnFailureListener { response ->
         Log.e("tag-register-response-error", response.message!!)
@@ -218,8 +219,7 @@ fun CadastroScreen1(navController: NavHostController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-//            onClick = { navController.navigate("cadastroScreen2") },
-            onClick = { registrarUser(email, password, context)},
+            onClick = { registrarUser(email, password, context, navController)},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp)
