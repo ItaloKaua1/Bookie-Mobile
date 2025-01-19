@@ -112,12 +112,23 @@ class MainActivity : ComponentActivity() {
                     composable("feedScreen") { FeedScreen(navController) }
                     composable("listarLivros") { ListarLivros(navController) }
                     composable(
-                        "telaLivro/{id}",
-                        arguments = listOf(navArgument("id") { type = NavType.StringType })
-                    ) { backStackEntry ->
-                        val idLivro = backStackEntry.arguments?.getString("id")
+                        route = "telaLivro/{id}/{estante}",
+                        arguments = listOf(
+                            navArgument(name = "id") {
+                                type = NavType.StringType
+                            },
+                            navArgument(name = "estante") {
+                                type = NavType.BoolType
+                            }
+                        )
+                    ) {
+                            backstackEntry ->
+                        val idLivro = backstackEntry.arguments?.getString("id")
+                        val estante = backstackEntry.arguments?.getBoolean("estante")
+
+
                         if (idLivro != null) {
-                            TelaLivro(navController, idLivro)
+                            TelaLivro(navController, id = idLivro, estante = estante)
                         }
                     }
                     composable("minhaEstante") { MinhaEstante(navController) }

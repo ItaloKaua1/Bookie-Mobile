@@ -1,14 +1,13 @@
 package com.example.bookie.ui.screens
 
+
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absoluteOffset
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,20 +16,23 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material.icons.sharp.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -38,29 +40,24 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import com.example.bookie.AppData
 import com.example.bookie.R
 import com.example.bookie.components.CardPost
 import com.example.bookie.components.LayoutVariant
-import com.example.bookie.models.ImageLinks
 import com.example.bookie.models.Livro
 import com.example.bookie.models.Post
-import com.example.bookie.models.VolumeInfo
-import com.example.bookie.ui.theme.BookieTheme
 import com.google.firebase.firestore.FirebaseFirestore
-import java.util.Date
+
 
 val posts: List<Post> = listOf()
 
+
 private fun adicionarLivro(context: Context, livro: Livro) {
     val db = FirebaseFirestore.getInstance()
+
 
     db.collection("livros").add(livro).addOnCompleteListener { it ->
         if (it.isSuccessful) {
@@ -71,14 +68,82 @@ private fun adicionarLivro(context: Context, livro: Livro) {
     }
 }
 
+
+private fun favoritarLivro(context: Context, livro: Livro) {
+    val db = FirebaseFirestore.getInstance()
+    val documentId = livro.document
+    if (documentId != null) {
+        livro.favorito = true
+        db.collection("livros").document(documentId).set(livro).addOnCompleteListener { it ->
+            if (it.isSuccessful) {
+                Toast.makeText(context, "Livro favoritado com sucesso!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Desculpe, ocorreu um erro ao favoritar o livro", Toast.LENGTH_SHORT).show()
+                livro.favorito = false
+            }
+        }
+    }
+}
+
+
+private fun desfavoritarLivro(context: Context, livro: Livro) {
+    val db = FirebaseFirestore.getInstance()
+    val documentId = livro.document
+    if (documentId != null) {
+        livro.favorito = false
+        db.collection("livros").document(documentId).set(livro).addOnCompleteListener { it ->
+            if (it.isSuccessful) {
+                Toast.makeText(context, "Livro removido dos favoritos!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Desculpe, ocorreu um erro ao remover o livro dos favoritos", Toast.LENGTH_SHORT).show()
+                livro.favorito = true
+            }
+        }
+    }
+}
+
+
+private fun favoritarDesfavoritarLivro(context: Context, livro: Livro) {
+    if (livro.favorito == true) {
+        desfavoritarLivro(context, livro)
+    } else {
+        favoritarLivro(context, livro)
+    }
+}
+
+
+private fun getLivro(id: String, estante: Boolean? = false): Livro? {
+    val appData = AppData.getInstance()
+
+
+    if (estante == true) {
+        return appData.getLivroEstante(id)
+    } else {
+        return appData.getLivroBusca(id)
+    }
+}
+
+
 @Composable
-fun TelaLivro(navController: NavController, id: String) {
+fun TelaLivro(navController: NavController, id: String, estante: Boolean? = false) {
     val appData = AppData.getInstance()
     val context = LocalContext.current
 
-    val livro = appData.getLivro(id)
+
+    var livro by remember(key1 = "favorito") { mutableStateOf(getLivro(id, estante)) }
 //    val livro = Livro("sdsdf", VolumeInfo(ImageLinks(), "teste", listOf("joao"), "adsd", 123))
-    val titulo = if (livro !== null) livro.volumeInfo!!.nome else "Não encontrado"
+    var titulo = if (livro !== null) livro!!.volumeInfo!!.nome else "Não encontrado"
+    var icon by remember { mutableStateOf(Icons.Filled.Favorite) }
+
+
+    LaunchedEffect(livro) {
+        if (livro!!.favorito == true) {
+            icon =  Icons.Filled.FavoriteBorder
+        } else {
+            icon =  Icons.Filled.Favorite
+        }
+    }
+
 
     LayoutVariant(navController, titulo = if (titulo !== null) titulo else "Não encontrado") {
         if (livro != null) {
@@ -100,7 +165,7 @@ fun TelaLivro(navController: NavController, id: String) {
                                     contentScale = ContentScale.FillBounds
                                 )
                         ) {
-                            if (livro.getCapa().isEmpty()) {
+                            if (livro!!.getCapa().isEmpty()) {
                                 Image(
                                     painter = painterResource(id = R.drawable.capa_bunny),
                                     contentDescription = stringResource(id = R.string.capa_livro),
@@ -108,7 +173,7 @@ fun TelaLivro(navController: NavController, id: String) {
                                 )
                             } else {
                                 AsyncImage(
-                                    model = livro.getCapa(),
+                                    model = livro!!.getCapa(),
                                     contentDescription = null,
                                     modifier = Modifier.height(157.dp).width(104.dp).absoluteOffset(y = 28.dp),
                                 )
@@ -122,8 +187,8 @@ fun TelaLivro(navController: NavController, id: String) {
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Column {
-                                    Text(text = livro.volumeInfo?.nome!!, style = MaterialTheme.typography.labelLarge)
-                                    Text(text = livro.getAutor(), style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(bottom = 4.dp))
+                                    Text(text = livro!!.volumeInfo?.nome!!, style = MaterialTheme.typography.labelLarge)
+                                    Text(text = livro!!.getAutor(), style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(bottom = 4.dp))
                                     Row {
                                         SuggestionChip(
                                             onClick = {},
@@ -132,16 +197,30 @@ fun TelaLivro(navController: NavController, id: String) {
                                         )
                                     }
                                 }
-                                Button(
-                                    onClick = {
-
-                                        adicionarLivro(context, livro)
+                                if (estante == true) {
+                                    TextButton(
+                                        onClick = {
+                                            favoritarDesfavoritarLivro(context, livro!!)
+                                        }
+                                    ) {
+                                        Icon(
+                                            modifier = Modifier.size(28.dp),
+                                            imageVector = icon,
+                                            contentDescription = "favoritar",
+                                        )
+                                        Text(text = if (livro!!.favorito == true) "Remover Favorito" else "Adiconar Favorito", style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(start = 4.dp))
                                     }
-                                ) {
-                                    Text(text = "Adicionar Livro")
+                                } else {
+                                    Button(
+                                        onClick = {
+                                            adicionarLivro(context, livro!!)
+                                        }
+                                    ) {
+                                        Text(text = "Adicionar Livro")
+                                    }
                                 }
                             }
-                            Text(text = livro.volumeInfo?.sinopse!!, maxLines = 4, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 8.dp))
+                            Text(text = livro!!.volumeInfo?.sinopse!!, maxLines = 4, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 8.dp))
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.padding(top = 4.dp)
@@ -182,6 +261,7 @@ fun TelaLivro(navController: NavController, id: String) {
         }
     }
 }
+
 
 //@Preview(showBackground = true)
 //@Composable
