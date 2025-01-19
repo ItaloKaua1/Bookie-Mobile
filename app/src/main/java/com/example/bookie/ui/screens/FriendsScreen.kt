@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -15,7 +16,10 @@ import com.example.bookie.models.Usuario
 private val mockFriends = mutableStateListOf<Usuario>()
 
 @Composable
-fun FriendsScreen(navController: NavController) {
+fun FriendsScreen(
+    navController: NavController,
+    mockFriends: SnapshotStateList<Usuario>
+) {
     var isViewingFriends by remember { mutableStateOf(true) }
 
     NavigationDrawer(navController) {
@@ -51,7 +55,9 @@ fun FriendsScreen(navController: NavController) {
             if (isViewingFriends) {
                 FriendsList(friends = mockFriends)
             } else {
-                FriendsSolicitationScreen(mockFriends)
+                FriendsSolicitationScreen(
+                    navController = TODO()
+                )
             }
         }
     }

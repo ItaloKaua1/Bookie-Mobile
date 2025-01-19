@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.bookie.ui.screens.FeedScreen
+import com.example.bookie.ui.screens.FriendsSolicitationScreen
 import com.example.bookie.ui.screens.ListarLivros
 import com.example.bookie.ui.screens.MinhaEstante
 import com.example.bookie.ui.screens.TelaLivro
@@ -67,8 +68,14 @@ class MainActivity : ComponentActivity() {
                     ) {
                         TelaPerfil(navController)
                     }
+                    composable(
+                        route = "friendsSolicitationScreen"
+                    ) {
+                        FriendsSolicitationScreen(navController)
+                    }
                 }
             }
+
         }
     }
 }
