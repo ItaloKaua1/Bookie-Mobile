@@ -55,15 +55,19 @@ fun TopBar(
         actions = {
             IconButton(onClick = {}) {
                 Icon(
-                    modifier = Modifier.size(48.dp).fillMaxWidth().padding(end = 8.dp),
-                    painter = painterResource(R.drawable.ic_decobrir_livros),
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(2.dp),
+                    painter = painterResource(R.drawable.ic_descobrir_livros_ref),
                     contentDescription = "Descobrir Livros",
                 )
             }
             IconButton(onClick = {}) {
                 Icon(
-                    modifier = Modifier.size(48.dp).fillMaxWidth().padding(end = 8.dp),
-                    painter = painterResource(R.drawable.ic_local_library),
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(2.dp),
+                    painter = painterResource(R.drawable.ic_local_library_ref),
                     contentDescription = "Minha Biblioteca",
                 )
             }
