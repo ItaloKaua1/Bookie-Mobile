@@ -30,6 +30,7 @@ import com.example.bookie.ui.screens.FeedScreen
 import com.example.bookie.ui.screens.ListarLivros
 import com.example.bookie.ui.screens.LoginScreen
 import com.example.bookie.ui.screens.MinhaEstante
+import com.example.bookie.ui.screens.ResultadosDescScreen
 import com.example.bookie.ui.screens.TelaLivro
 import com.example.bookie.ui.screens.TelaNotificacoes
 import com.example.bookie.ui.screens.TelaPerfil
@@ -137,6 +138,7 @@ class MainActivity : ComponentActivity() {
                     composable("telaNotificacoes") { TelaNotificacoes(navController) }
                     composable("configuracoesTela") { backStackEntry -> ConfiguracoesTela(navController = navController, viewModel = configuracoesViewModel) }
                     composable("descobrirLivro") { DescobrirScreen(navController) }
+                    composable("resultadosDescobrir") { ResultadosDescScreen(navController) }
                 }
             }
         }

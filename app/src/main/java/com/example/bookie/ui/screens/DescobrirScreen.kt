@@ -3,6 +3,7 @@ package com.example.bookie.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -11,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -18,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.bookie.R
 import com.example.bookie.components.LayoutVariant
+import com.example.bookie.ui.theme.PurpleBookie
 import com.example.bookie.ui.theme.quaternary
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -245,6 +248,27 @@ fun DescobrirScreen(navController: NavController) {
                                     style = MaterialTheme.typography.bodyLarge,
                                 )
                             }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Button(
+                            onClick = { navController.navigate("resultadosDescobrir") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 32.dp)
+                                .height(56.dp)
+                                .padding(bottom = 8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = PurpleBookie
+                            ),
+                            shape = RoundedCornerShape(6.dp)
+                        ) {
+                            Text(
+                                text = "Mostrar resultados",
+                                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                                color = Color.White
+                            )
                         }
                     }
                 }
