@@ -12,9 +12,12 @@ import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.internal.composableLambda
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -36,9 +39,7 @@ import com.example.bookie.ui.screens.TelaNotificacoes
 import com.example.bookie.ui.screens.TelaPerfil
 import com.example.bookie.ui.theme.BookieTheme
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.messaging.messaging
 
 class MainActivity : ComponentActivity() {
     // Declare the launcher at the top of your Activity/Fragment:
@@ -58,8 +59,7 @@ class MainActivity : ComponentActivity() {
             if (ContextCompat.checkSelfPermission(
                     this,
                     android.Manifest.permission.POST_NOTIFICATIONS
-                ) ==
-                PackageManager.PERMISSION_GRANTED
+                ) == PackageManager.PERMISSION_GRANTED
             ) {
                 // FCM SDK (and your app) can post notifications.
             } else if (shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS)) {
@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
 
         askNotificationPermission()
 
-        Firebase.messaging.isAutoInitEnabled = true
+        FirebaseMessaging.getInstance().isAutoInitEnabled = true
 
         val TAG = "token-teste"
 
@@ -101,11 +101,17 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-
             val temaEscuro = configuracoesViewModel.temaEscuro.collectAsState().value
             val cores = if (temaEscuro) darkColorScheme() else lightColorScheme()
 
             MaterialTheme(colorScheme = cores) {
+                // Configura a barra de status com a cor do tema
+                val primaryColor = MaterialTheme.colorScheme.primaryContainer
+                SideEffect {
+                    window.statusBarColor = primaryColor.toArgb()
+                    WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = !temaEscuro
+                }
+
                 NavHost(navController = navController, startDestination = "loginScreen") {
                     composable("loginScreen") { LoginScreen(navController) }
                     composable("cadastroScreen1") { CadastroScreen1(navController) }
@@ -123,11 +129,9 @@ class MainActivity : ComponentActivity() {
                                 type = NavType.BoolType
                             }
                         )
-                    ) {
-                            backstackEntry ->
+                    ) { backstackEntry ->
                         val idLivro = backstackEntry.arguments?.getString("id")
                         val estante = backstackEntry.arguments?.getBoolean("estante")
-
 
                         if (idLivro != null) {
                             TelaLivro(navController, id = idLivro, estante = estante)
@@ -136,7 +140,7 @@ class MainActivity : ComponentActivity() {
                     composable("minhaEstante") { MinhaEstante(navController) }
                     composable("telaPerfil") { TelaPerfil(navController) }
                     composable("telaNotificacoes") { TelaNotificacoes(navController) }
-                    composable("configuracoesTela") { backStackEntry -> ConfiguracoesTela(navController = navController, viewModel = configuracoesViewModel) }
+                    composable("configuracoesTela") { ConfiguracoesTela(navController = navController, viewModel = configuracoesViewModel) }
                     composable("descobrirLivro") { DescobrirScreen(navController) }
                     composable("resultadosDescobrir") { ResultadosDescScreen(navController) }
                 }
@@ -144,53 +148,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-//
-//@Composable
-//fun Screen(modifier: Modifier = Modifier) {
-//    Column (
-//        modifier = Modifier
-//            .fillMaxSize()
-//    ) {
-//        Row (
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(50.dp)
-//                .background(Color.Yellow),
-//            horizontalArrangement = Arrangement.Center,
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            NavigationDrawer()
-//        }
-//
-//        // content row
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .background(Color.Green),
-//            horizontalArrangement = Arrangement.Center,
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            Text(text = "Some Other Contents")
-//        }
-//
-//        // bottom row
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(50.dp)
-//                .background(Color.Yellow),
-//            horizontalArrangement = Arrangement.Center,
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            BottomBar()
-//        }
-//    }
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun GreetingPreview() {
-//    BookieTheme {
-//        Screen()
-//    }
-//}
