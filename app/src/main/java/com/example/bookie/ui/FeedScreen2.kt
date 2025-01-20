@@ -18,6 +18,7 @@ import com.example.bookie.models.Livro
 import com.example.bookie.models.VolumeInfo
 import com.example.bookie.models.ImageLinks
 import com.example.bookie.models.Post
+import kotlinx.coroutines.launch
 import java.util.Date
 
 private val mockFeedPosts = listOf(
@@ -91,11 +92,19 @@ private val mockUserPosts = listOf(
 @Composable
 fun FeedScreen2(navController: NavController) {
     var isViewingMyPosts by remember { mutableStateOf(false) }
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    // Função para abrir e fechar o drawer
+    val openDrawer: () -> Unit = {
+        scope.launch {
+            if (drawerState.isClosed) drawerState.open() else drawerState.close()
+        }
+    }
 
     Scaffold(
         topBar = {
-//            NavigationDrawer
-            TopBar {  }
+            TopBar(onOpenDrawer = openDrawer, navController = navController)
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { /* Navegar para tela de newpost */ }) {

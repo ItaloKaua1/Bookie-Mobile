@@ -39,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.bookie.R
 import com.example.bookie.models.Livro
 import com.example.bookie.models.NavigationItem
@@ -54,9 +55,7 @@ private fun logout(navController: NavController, context: Context) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationDrawer(navController: NavController, content: @Composable () -> Unit) {
-
     val context = LocalContext.current
-
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -64,37 +63,37 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
         NavigationItem(
             title = "meu perfil",
             icon = Icons.Outlined.Person,
-            action = {  -> navController.navigate("telaPerfil")}
+            action = { navController.navigate("telaPerfil") }
         ),
         NavigationItem(
             title = "configurações",
             icon = Icons.Outlined.Settings,
-            action = {  -> navController.navigate("configuracoesTela")}
+            action = { navController.navigate("configuracoesTela") }
         ),
         NavigationItem(
             title = "solicitações de amizade",
             icon = Icons.Outlined.AccountBox,
-            action = {  -> navController.navigate("telaPerfil")}
+            action = { navController.navigate("telaPerfil") }
         ),
         NavigationItem(
             title = "relatórios de leitura",
             icon = Icons.Outlined.List,
-            action = {  -> navController.navigate("telaPerfil")}
+            action = { navController.navigate("telaPerfil") }
         ),
         NavigationItem(
             title = "salvos",
             icon = Icons.Outlined.Done,
-            action = {  -> navController.navigate("telaPerfil")}
+            action = { navController.navigate("telaPerfil") }
         ),
         NavigationItem(
             title = "trocar livros",
             icon = Icons.Outlined.Refresh,
-            action = {  -> navController.navigate("telaPerfil")}
+            action = { navController.navigate("telaPerfil") }
         ),
         NavigationItem(
             title = "sair",
             icon = Icons.Outlined.ExitToApp,
-            action = {  -> logout(navController, context) },
+            action = { logout(navController, context) },
         ),
     )
 
@@ -102,9 +101,9 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                Row (
+                Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
+                    modifier = Modifier.padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
                     Icon(
                         modifier = Modifier.size(48.dp).fillMaxWidth().padding(end = 8.dp),
@@ -116,7 +115,7 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
                         Text(text = "@oliviarodri")
                     }
                 }
-                Row (
+                Row(
                     horizontalArrangement = Arrangement.spacedBy(24.dp),
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
@@ -128,18 +127,14 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
                     modifier = Modifier.padding(vertical = 24.dp)
                 )
                 navigationItems.forEachIndexed { index, item ->
-                    NavigationDrawerItem (
+                    NavigationDrawerItem(
                         label = { Text(text = item.title) },
-//                            selected = index == selectedItemIndex,
                         selected = false,
                         onClick = {
-                            //  navController.navigate(item.route)
-
-//                                selectedItemIndex = index
-                                scope.launch {
-                                    drawerState.close()
-                                    item.action()
-                                }
+                            scope.launch {
+                                drawerState.close()
+                                item.action()
+                            }
                         },
                         icon = {
                             Icon(
@@ -159,13 +154,12 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
                     onOpenDrawer = {
                         scope.launch {
                             drawerState.apply {
-                                if (isOpen)
-                                    close()
-                                else
-                                    open()
+                                if (isOpen) close()
+                                else open()
                             }
                         }
-                    }
+                    },
+                    navController = navController // Passando o NavController aqui
                 )
             },
             bottomBar = {
@@ -178,9 +172,8 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
                         contentDescription = "Adicionar novo post"
                     )
                 }
-            },
+            }
         ) { innerPadding ->
-            // Screen content
             Box(modifier = Modifier.padding(innerPadding)) {
                 content()
             }
