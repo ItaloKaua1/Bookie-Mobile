@@ -11,3 +11,4 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val PurpleBookie = Color(0xFF6F257A)
+val BrancoB = Color(0xF3F3F3F3)

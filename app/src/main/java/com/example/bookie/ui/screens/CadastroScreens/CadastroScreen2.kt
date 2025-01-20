@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.bookie.components.BackComponent
-import com.example.bookie.ui.theme.Purple40
 import com.example.bookie.ui.theme.PurpleBookie
 
 @Composable
@@ -77,7 +76,7 @@ fun CadastroScreen2(navController: NavHostController) {
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge.copy(
-                        color = Purple40,
+                        color = PurpleBookie,
                         fontWeight = FontWeight.Bold
                     )
                 )
@@ -204,7 +203,7 @@ fun CadastroScreen2(navController: NavHostController) {
                             pushStringAnnotation(tag = "Faça login", annotation = "loginScreen")
                             withStyle(
                                 style = SpanStyle(
-                                    color = Purple40,
+                                    color = PurpleBookie,
                                     textDecoration = TextDecoration.Underline,
                                     fontSize = 16.sp
                                 )

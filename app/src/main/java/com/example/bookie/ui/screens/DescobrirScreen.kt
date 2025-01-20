@@ -1,12 +1,31 @@
 package com.example.bookie.ui.screens
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.bookie.components.LayoutVariant
+import com.example.bookie.ui.theme.quaternary
 
 @Composable
 fun DescobrirScreen(navController: NavController){
     LayoutVariant(navController, "Descobrir", false) {
-
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                "Pronto pra começar uma nova história?",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    color = MaterialTheme.colorScheme.quaternary,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        }
     }
 }

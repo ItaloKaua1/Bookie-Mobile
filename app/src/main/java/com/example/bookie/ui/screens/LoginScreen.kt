@@ -33,7 +33,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.withStyle
 import com.example.bookie.R
-import com.example.bookie.ui.theme.Purple40
 import com.example.bookie.ui.theme.PurpleBookie
 import com.google.firebase.auth.FirebaseAuth
 
@@ -102,7 +101,7 @@ fun LoginScreen(navController: NavHostController) {
                         Text(
                             text = "Faça seu login!",
                             style = MaterialTheme.typography.titleLarge.copy(
-                                color = Purple40,
+                                color = PurpleBookie,
                                 fontWeight = FontWeight.Bold
                             )
                         )
@@ -200,7 +199,7 @@ fun LoginScreen(navController: NavHostController) {
                                     pushStringAnnotation(tag = "Faça login", annotation = "loginScreen")
                                     withStyle(
                                         style = SpanStyle(
-                                            color = Purple40,
+                                            color = PurpleBookie,
                                             textDecoration = TextDecoration.Underline,
                                             fontSize = 16.sp
                                         )
