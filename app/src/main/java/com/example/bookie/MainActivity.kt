@@ -56,6 +56,8 @@ class MainActivity : ComponentActivity() {
                     composable("configuracoesTela") {
                         ConfiguracoesTela(navController = navController, viewModel = configuracoesViewModel)
                     }
+                    composable("descobrirLivro") { DescobrirScreen(navController) }
+                    composable("resultadosDescobrir") { ResultadosDescScreen(navController) }
                 }
             }
         }
