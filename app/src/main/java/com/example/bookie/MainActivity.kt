@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
@@ -16,7 +15,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -24,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.bookie.components.ConfiguracoesViewModel
+import com.example.bookie.ui.screens.*
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen1
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen2
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen3
@@ -42,7 +41,8 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 
 class MainActivity : ComponentActivity() {
-    // Declare the launcher at the top of your Activity/Fragment:
+    private val configuracoesViewModel: ConfiguracoesViewModel by viewModels()
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
     ) { isGranted: Boolean ->
@@ -74,7 +74,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private val configuracoesViewModel: ConfiguracoesViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Bookie)
@@ -112,35 +111,33 @@ class MainActivity : ComponentActivity() {
                     WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = !temaEscuro
                 }
 
-                NavHost(navController = navController, startDestination = "loginScreen") {
+                val startDestination = intent.getStringExtra("startDestination") ?: "loginScreen"
+                NavHost(navController = navController, startDestination = startDestination) {
                     composable("loginScreen") { LoginScreen(navController) }
                     composable("cadastroScreen1") { CadastroScreen1(navController) }
                     composable("cadastroScreen2") { CadastroScreen2(navController) }
                     composable("cadastroScreen3") { CadastroScreen3(navController) }
                     composable("feedScreen") { FeedScreen(navController) }
                     composable("listarLivros") { ListarLivros(navController) }
+                    composable("minhaEstante") { MinhaEstante(navController) }
+                    composable("telaPerfil") { TelaPerfil(navController) }
+                    composable("telaNotificacoes") { TelaNotificacoes(navController) }
+                    composable("configuracoesTela") {
+                        ConfiguracoesTela(navController = navController, viewModel = configuracoesViewModel)
+                    }
                     composable(
                         route = "telaLivro/{id}/{estante}",
                         arguments = listOf(
-                            navArgument(name = "id") {
-                                type = NavType.StringType
-                            },
-                            navArgument(name = "estante") {
-                                type = NavType.BoolType
-                            }
+                            navArgument(name = "id") { type = NavType.StringType },
+                            navArgument(name = "estante") { type = NavType.BoolType }
                         )
                     ) { backstackEntry ->
                         val idLivro = backstackEntry.arguments?.getString("id")
                         val estante = backstackEntry.arguments?.getBoolean("estante")
-
                         if (idLivro != null) {
                             TelaLivro(navController, id = idLivro, estante = estante)
                         }
                     }
-                    composable("minhaEstante") { MinhaEstante(navController) }
-                    composable("telaPerfil") { TelaPerfil(navController) }
-                    composable("telaNotificacoes") { TelaNotificacoes(navController) }
-                    composable("configuracoesTela") { ConfiguracoesTela(navController = navController, viewModel = configuracoesViewModel) }
                     composable("descobrirLivro") { DescobrirScreen(navController) }
                     composable("resultadosDescobrir") { ResultadosDescScreen(navController) }
                 }
