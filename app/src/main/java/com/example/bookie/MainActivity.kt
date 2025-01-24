@@ -29,6 +29,8 @@ import com.example.bookie.ui.screens.FeedScreen
 import com.example.bookie.ui.screens.ListarLivros
 import com.example.bookie.ui.screens.LoginScreen
 import com.example.bookie.ui.screens.MinhaEstante
+import com.example.bookie.ui.screens.TelaChat
+import com.example.bookie.ui.screens.TelaConversa
 import com.example.bookie.ui.screens.TelaLivro
 import com.example.bookie.ui.screens.TelaNotificacoes
 import com.example.bookie.ui.screens.TelaPerfil
@@ -135,6 +137,21 @@ class MainActivity : ComponentActivity() {
                     composable("telaPerfil") { TelaPerfil(navController) }
                     composable("telaNotificacoes") { TelaNotificacoes(navController) }
                     composable("configuracoesTela") { backStackEntry -> ConfiguracoesTela(navController = navController, viewModel = configuracoesViewModel) }
+                    composable("telaChat") { TelaChat(navController) }
+                    composable(
+                        route = "telaConversa/{id}",
+                        arguments = listOf(
+                            navArgument(name = "id") {
+                                type = NavType.StringType
+                            },
+                        )
+                    ) { backstackEntry ->
+                        val id = backstackEntry.arguments?.getString("id")
+                        if (id != null) {
+                            TelaConversa(navController, id)
+                        }
+                    }
+
                 }
             }
         }

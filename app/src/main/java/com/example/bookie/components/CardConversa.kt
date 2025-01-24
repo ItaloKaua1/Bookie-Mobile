@@ -2,6 +2,7 @@ package com.example.bookie.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,13 +21,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.bookie.R
+import com.example.bookie.models.Conversa
+import com.example.bookie.models.Usuario
 import com.example.bookie.ui.theme.BookieTheme
 
 @Composable
-fun CardConversa() {
+fun CardConversa(conversa: Conversa, onClick: (Conversa) -> Unit = {}) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp).clickable { onClick(conversa) }
     ) {
         AsyncImage(
             model = R.drawable.avatar,
@@ -36,7 +39,7 @@ fun CardConversa() {
         Column(
             modifier = Modifier.weight(1f).padding(start = 8.dp)
         ) {
-            Text(text = "Alice", style = MaterialTheme.typography.titleSmall)
+            Text(text = "${conversa.usuario2!!.nome}", style = MaterialTheme.typography.titleSmall)
             Text(text = "Teste", style = MaterialTheme.typography.bodySmall)
         }
         Box(
@@ -51,10 +54,10 @@ fun CardConversa() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun P() {
-    BookieTheme {
-        CardConversa()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun P() {
+//    BookieTheme {
+//        CardConversa()
+//    }
+//}

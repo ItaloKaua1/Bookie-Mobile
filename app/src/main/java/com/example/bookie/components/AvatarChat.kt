@@ -1,5 +1,6 @@
 package com.example.bookie.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.absoluteOffset
@@ -21,11 +22,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.bookie.R
+import com.example.bookie.models.Livro
+import com.example.bookie.models.Usuario
 import com.example.bookie.ui.theme.BookieTheme
 
 @Composable
-fun AvatarChat() {
-    Box {
+fun AvatarChat(usuario: Usuario, onClick: (Usuario) -> Unit = {}) {
+    Box(
+        modifier = Modifier.clickable { onClick(usuario) }
+    ) {
         AsyncImage(
             model = R.drawable.avatar,
             contentDescription = null,
@@ -43,10 +48,10 @@ fun AvatarChat() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun AvatarChatPreview() {
-    BookieTheme {
-        AvatarChat()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun AvatarChatPreview() {
+//    BookieTheme {
+//        AvatarChat()
+//    }
+//}
