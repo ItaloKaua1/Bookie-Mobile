@@ -36,8 +36,8 @@ import com.example.bookie.ui.theme.BookieTheme
 fun TopBarVariante(navController: NavController, titulo: String, mostrarAcoes: Boolean = false) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onSecondary,
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.primary,
         ),
         title = {
             Row(
@@ -49,7 +49,7 @@ fun TopBarVariante(navController: NavController, titulo: String, mostrarAcoes: B
                         modifier = Modifier.size(22.dp),
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = "voltar",
-                        tint = MaterialTheme.colorScheme.onSecondary
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
                 Text(text = titulo, style = MaterialTheme.typography.titleMedium)
@@ -62,7 +62,7 @@ fun TopBarVariante(navController: NavController, titulo: String, mostrarAcoes: B
                         modifier = Modifier.size(28.dp).fillMaxWidth().padding(end = 8.dp),
                         imageVector = Icons.Filled.Settings,
                         contentDescription = "Configurações",
-                        tint = MaterialTheme.colorScheme.onSecondary,
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                 }
                 IconButton(onClick = {}) {
@@ -70,7 +70,7 @@ fun TopBarVariante(navController: NavController, titulo: String, mostrarAcoes: B
                         modifier = Modifier.size(28.dp).fillMaxWidth().padding(end = 8.dp),
                         imageVector = Icons.Filled.Share,
                         contentDescription = "Compartilar",
-                        tint = MaterialTheme.colorScheme.onSecondary,
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                 }
             }

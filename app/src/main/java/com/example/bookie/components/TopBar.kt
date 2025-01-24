@@ -1,6 +1,5 @@
 package com.example.bookie.components
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,13 +21,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.bookie.R
 import com.example.bookie.ui.theme.BookieTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
-    onOpenDrawer: () -> Unit
+    onOpenDrawer: () -> Unit,
+    navController: NavController
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -41,11 +43,11 @@ fun TopBar(
             ) {
                 Icon(
                     modifier =
-                        Modifier.size(48.dp).fillMaxWidth()
-                            .padding(end = 8.dp)
-                            .clickable {
-                                onOpenDrawer()
-                            },
+                    Modifier.size(48.dp).fillMaxWidth()
+                        .padding(end = 8.dp)
+                        .clickable {
+                            onOpenDrawer()
+                        },
                     imageVector = Icons.Filled.AccountCircle,
                     contentDescription = "profile picture",
                 )
@@ -53,7 +55,7 @@ fun TopBar(
             }
         },
         actions = {
-            IconButton(onClick = {}) {
+            IconButton(onClick = { navController.navigate("descobrirLivro") }) {
                 Icon(
                     modifier = Modifier
                         .size(48.dp)
@@ -80,6 +82,8 @@ fun TopBar(
 @Composable
 private fun TopBarPreview() {
     BookieTheme {
-        TopBar(onOpenDrawer = { })
+
+        val navController = rememberNavController()
+        TopBar(onOpenDrawer = { }, navController = navController/* Provide a mock or suitable preview NavController */)
     }
 }

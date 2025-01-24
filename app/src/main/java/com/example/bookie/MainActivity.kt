@@ -6,42 +6,45 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.internal.composableLambda
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.bookie.components.ConfiguracoesViewModel
+import com.example.bookie.ui.screens.*
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen1
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen2
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen3
 import com.example.bookie.ui.screens.ConfiguracoesTela
+import com.example.bookie.ui.screens.DescobrirScreen
 import com.example.bookie.ui.screens.FeedScreen
 import com.example.bookie.ui.screens.ListarLivros
 import com.example.bookie.ui.screens.LoginScreen
 import com.example.bookie.ui.screens.MinhaEstante
 import com.example.bookie.ui.screens.TelaChat
 import com.example.bookie.ui.screens.TelaConversa
+import com.example.bookie.ui.screens.ResultadosDescScreen
 import com.example.bookie.ui.screens.TelaLivro
 import com.example.bookie.ui.screens.TelaNotificacoes
 import com.example.bookie.ui.screens.TelaPerfil
 import com.example.bookie.ui.theme.BookieTheme
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.messaging.messaging
 
 class MainActivity : ComponentActivity() {
-    // Declare the launcher at the top of your Activity/Fragment:
+    private val configuracoesViewModel: ConfiguracoesViewModel by viewModels()
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
     ) { isGranted: Boolean ->
@@ -58,8 +61,7 @@ class MainActivity : ComponentActivity() {
             if (ContextCompat.checkSelfPermission(
                     this,
                     android.Manifest.permission.POST_NOTIFICATIONS
-                ) ==
-                PackageManager.PERMISSION_GRANTED
+                ) == PackageManager.PERMISSION_GRANTED
             ) {
                 // FCM SDK (and your app) can post notifications.
             } else if (shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS)) {
@@ -74,7 +76,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private val configuracoesViewModel: ConfiguracoesViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Bookie)
@@ -82,7 +83,7 @@ class MainActivity : ComponentActivity() {
 
         askNotificationPermission()
 
-        Firebase.messaging.isAutoInitEnabled = true
+        FirebaseMessaging.getInstance().isAutoInitEnabled = true
 
         val TAG = "token-teste"
 
@@ -101,42 +102,44 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-
             val temaEscuro = configuracoesViewModel.temaEscuro.collectAsState().value
             val cores = if (temaEscuro) darkColorScheme() else lightColorScheme()
 
             MaterialTheme(colorScheme = cores) {
-                NavHost(navController = navController, startDestination = "loginScreen") {
+                // Configura a barra de status com a cor do tema
+                val primaryColor = MaterialTheme.colorScheme.primaryContainer
+                SideEffect {
+                    window.statusBarColor = primaryColor.toArgb()
+                    WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = !temaEscuro
+                }
+
+                val startDestination = intent.getStringExtra("startDestination") ?: "loginScreen"
+                NavHost(navController = navController, startDestination = startDestination) {
                     composable("loginScreen") { LoginScreen(navController) }
                     composable("cadastroScreen1") { CadastroScreen1(navController) }
                     composable("cadastroScreen2") { CadastroScreen2(navController) }
                     composable("cadastroScreen3") { CadastroScreen3(navController) }
                     composable("feedScreen") { FeedScreen(navController) }
                     composable("listarLivros") { ListarLivros(navController) }
+                    composable("minhaEstante") { MinhaEstante(navController) }
+                    composable("telaPerfil") { TelaPerfil(navController) }
+                    composable("telaNotificacoes") { TelaNotificacoes(navController) }
+                    composable("configuracoesTela") {
+                        ConfiguracoesTela(navController = navController, viewModel = configuracoesViewModel)
+                    }
                     composable(
                         route = "telaLivro/{id}/{estante}",
                         arguments = listOf(
-                            navArgument(name = "id") {
-                                type = NavType.StringType
-                            },
-                            navArgument(name = "estante") {
-                                type = NavType.BoolType
-                            }
+                            navArgument(name = "id") { type = NavType.StringType },
+                            navArgument(name = "estante") { type = NavType.BoolType }
                         )
-                    ) {
-                            backstackEntry ->
+                    ) { backstackEntry ->
                         val idLivro = backstackEntry.arguments?.getString("id")
                         val estante = backstackEntry.arguments?.getBoolean("estante")
-
-
                         if (idLivro != null) {
                             TelaLivro(navController, id = idLivro, estante = estante)
                         }
                     }
-                    composable("minhaEstante") { MinhaEstante(navController) }
-                    composable("telaPerfil") { TelaPerfil(navController) }
-                    composable("telaNotificacoes") { TelaNotificacoes(navController) }
-                    composable("configuracoesTela") { backStackEntry -> ConfiguracoesTela(navController = navController, viewModel = configuracoesViewModel) }
                     composable("telaChat") { TelaChat(navController) }
                     composable(
                         route = "telaConversa/{id}",
@@ -152,58 +155,10 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
+                    composable("descobrirLivro") { DescobrirScreen(navController) }
+                    composable("resultadosDescobrir") { ResultadosDescScreen(navController) }
                 }
             }
         }
     }
 }
-//
-//@Composable
-//fun Screen(modifier: Modifier = Modifier) {
-//    Column (
-//        modifier = Modifier
-//            .fillMaxSize()
-//    ) {
-//        Row (
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(50.dp)
-//                .background(Color.Yellow),
-//            horizontalArrangement = Arrangement.Center,
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            NavigationDrawer()
-//        }
-//
-//        // content row
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .background(Color.Green),
-//            horizontalArrangement = Arrangement.Center,
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            Text(text = "Some Other Contents")
-//        }
-//
-//        // bottom row
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(50.dp)
-//                .background(Color.Yellow),
-//            horizontalArrangement = Arrangement.Center,
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            BottomBar()
-//        }
-//    }
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun GreetingPreview() {
-//    BookieTheme {
-//        Screen()
-//    }
-//}
