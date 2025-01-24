@@ -219,6 +219,7 @@ fun CadastroScreen1(navController: NavHostController) {
 
         Button(
             onClick = { registrarUser(email, password, context, navController)},
+            //onClick = {navController},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp)
