@@ -11,17 +11,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.bookie.R
+import com.example.bookie.UserRepository
 import com.example.bookie.components.CardNotificacao
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.models.Livro
@@ -29,6 +32,7 @@ import com.example.bookie.models.Notificacao
 import com.example.bookie.services.BooksRepositorio
 import com.example.bookie.ui.theme.BookieTheme
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.first
 import java.util.Date
 
 
@@ -36,12 +40,15 @@ import java.util.Date
 fun TelaNotificacoes(navController: NavController) {
     var db = FirebaseFirestore.getInstance()
     var notificacoes by remember { mutableStateOf(listOf<Notificacao>()) }
+    val context = LocalContext.current
+    val userRepo = UserRepository(context)
 
     LaunchedEffect(Unit) {
-        db.collection("notificacoes").get().addOnSuccessListener { documents ->
+        val userId = userRepo.currentUserId.first()
+        
+        db.collection("notificacoes").whereArrayContains("usuarioDestino", userId).get().addOnSuccessListener { documents ->
             val localNotificacoes: ArrayList<Notificacao> = arrayListOf()
             for (document in documents) {
-                Log.e("dados", "${document.id} -> ${document.data}")
                 val localNotificacao = document.toObject(Notificacao::class.java)
                 localNotificacoes.add(localNotificacao)
             }

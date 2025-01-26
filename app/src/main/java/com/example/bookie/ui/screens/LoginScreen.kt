@@ -1,6 +1,7 @@
 package com.example.bookie.ui.screens
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,16 +34,59 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.withStyle
 import com.example.bookie.R
+import com.example.bookie.UserRepository
+import com.example.bookie.models.AuthManager
+import com.example.bookie.models.Usuario
 import com.example.bookie.ui.theme.PurpleBookie
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+
+@OptIn(DelicateCoroutinesApi::class)
+private fun getUsuarioData(id: String?, context: Context, navController: NavHostController) {
+    if (id == null) {
+        Toast.makeText(context, "Erro ao fazer login!", Toast.LENGTH_SHORT).show()
+        return
+    }
+
+    val db = FirebaseFirestore.getInstance()
+    val userRepo = UserRepository(context)
+
+    db.collection("usuarios").document(id).get().addOnCompleteListener { it ->
+        if (it.isSuccessful) {
+            val usuario = it.result.toObject(Usuario::class.java)
+
+            if (usuario != null) {
+                GlobalScope.launch {
+                    userRepo.saveUserEmail(usuario.email!!)
+                    userRepo.saveUserId(usuario.id!!)
+                    userRepo.saveUserName(usuario.nome!!)
+
+                }
+
+                Toast.makeText(context, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show()
+                navController.navigate("feedScreen")
+            } else {
+                Toast.makeText(context, "Erro ao fazer login!", Toast.LENGTH_SHORT).show()
+            }
+
+        } else {
+            Toast.makeText(context, "Erro ao fazer login!", Toast.LENGTH_SHORT).show()
+        }
+    }
+}
 
 private fun login(email: String, password: String, context: Context, navController: NavHostController) {
     val auth = FirebaseAuth.getInstance()
 
     auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { response ->
         if (response.isSuccessful) {
-            Toast.makeText(context, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show()
-            navController.navigate("feedScreen")
+
+            getUsuarioData(response.result.user!!.uid, context, navController)
         }
     }.addOnFailureListener { response ->
         Toast.makeText(context, "Erro ao fazer login!", Toast.LENGTH_SHORT).show()
