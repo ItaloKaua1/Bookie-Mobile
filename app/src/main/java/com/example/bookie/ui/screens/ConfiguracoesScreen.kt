@@ -16,6 +16,8 @@ import com.example.bookie.components.TopBarVariante
 @Composable
 fun ConfiguracoesTela(navController: NavController, viewModel: ConfiguracoesViewModel = viewModel()) {
     val temaEscuro = viewModel.temaEscuro.collectAsState().value
+    val notificacoesAtivadas = viewModel.notificacoesAtivadas.collectAsState().value
+    val animacoesAtivadas = viewModel.animacoesAtivadas.collectAsState().value
     val cores = if (temaEscuro) darkColorScheme() else lightColorScheme()
 
     MaterialTheme(colorScheme = cores) {
@@ -30,6 +32,32 @@ fun ConfiguracoesTela(navController: NavController, viewModel: ConfiguracoesView
                     Switch(
                         checked = temaEscuro,
                         onCheckedChange = { viewModel.alternarTema() }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text("Ativar Notificações", modifier = Modifier.padding(end = 16.dp))
+                    Switch(
+                        checked = notificacoesAtivadas,
+                        onCheckedChange = { viewModel.alternarNotificacoes(it) }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text("Habilitar Animações", modifier = Modifier.padding(end = 16.dp))
+                    Switch(
+                        checked = animacoesAtivadas,
+                        onCheckedChange = { viewModel.alternarAnimacoes(it) }
                     )
                 }
             }
