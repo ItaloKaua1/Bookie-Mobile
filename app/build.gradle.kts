@@ -92,4 +92,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.auth)
+
+    // data-store
+    implementation(libs.androidx.datastore.preferences)
 }

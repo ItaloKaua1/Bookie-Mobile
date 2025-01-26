@@ -22,8 +22,17 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.bookie.R
 import com.example.bookie.models.Conversa
+import com.example.bookie.models.Mensagem
 import com.example.bookie.models.Usuario
 import com.example.bookie.ui.theme.BookieTheme
+
+private fun getLastMessage(mensagens: List<Mensagem>?): String {
+    if (mensagens == null || mensagens.isEmpty()) {
+        return "nenhuma mensagem"
+    }
+
+    return mensagens[mensagens.size - 1].corpo!!.toString()
+}
 
 @Composable
 fun CardConversa(conversa: Conversa, onClick: (Conversa) -> Unit = {}) {
@@ -40,17 +49,17 @@ fun CardConversa(conversa: Conversa, onClick: (Conversa) -> Unit = {}) {
             modifier = Modifier.weight(1f).padding(start = 8.dp)
         ) {
             Text(text = "${conversa.usuario2!!.nome}", style = MaterialTheme.typography.titleSmall)
-            Text(text = "Teste", style = MaterialTheme.typography.bodySmall)
+            Text(text = getLastMessage(conversa.mensagens), style = MaterialTheme.typography.bodySmall)
         }
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(50))
-                .background(
-                    Color.Green
-                ),
-        ) {
-            Text(text = "1", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 4.dp))
-        }
+//        Box(
+//            modifier = Modifier
+//                .clip(RoundedCornerShape(50))
+//                .background(
+//                    Color.Green
+//                ),
+//        ) {
+//            Text(text = "1", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 4.dp))
+//        }
     }
 }
 

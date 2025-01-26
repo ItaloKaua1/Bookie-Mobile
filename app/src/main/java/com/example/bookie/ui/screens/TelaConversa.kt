@@ -21,6 +21,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.bookie.AppData
+import com.example.bookie.UserRepository
 import com.example.bookie.components.CardConversa
 import com.example.bookie.components.CardMensagem
 import com.example.bookie.components.LayoutVariant
@@ -43,23 +45,20 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.lang.ref.Reference
 import java.util.Date
 
-private fun enviarMensagem(context: Context, corpo: String, id: String?, callback: () -> Unit) {
-    var appData = AppData.getInstance()
-    val usuario = appData.getUsuarioLogado()
-
-    if (id == null || usuario == null) {
+private fun enviarMensagem(context: Context, corpo: String, id: String?, usuarioNotificacao: String?, usuarioEnvio: Usuario?, callback: () -> Unit) {
+    if (id == null || usuarioEnvio == null || usuarioNotificacao == null) {
         Toast.makeText(context, "ID e/ou Usuário nulos!", Toast.LENGTH_SHORT).show()
         return;
     }
 
     var db = FirebaseFirestore.getInstance()
 
-    val mensagem = Mensagem(corpo, usuario, Date())
+    val mensagem = Mensagem(corpo, usuarioEnvio, Date())
 
     db.collection("chatRooms").document(id).update("mensagens", FieldValue.arrayUnion(mensagem)).addOnCompleteListener { it ->
         if (it.isSuccessful) {
 //            Toast.makeText(context, "Mensagem enviada com sucesso!", Toast.LENGTH_SHORT).show()
-            val notificacao = Notificacao("", usuario.nome, corpo)
+            val notificacao = Notificacao("", usuarioEnvio.nome, corpo, listOf(usuarioNotificacao), usuarioEnvio.id)
             db.collection("notificacoes").add(notificacao)
             callback()
         } else {
@@ -69,12 +68,12 @@ private fun enviarMensagem(context: Context, corpo: String, id: String?, callbac
     }
 }
 
-private fun enviadoPorMim(mensagem: Mensagem, usuario: Usuario?): Boolean {
-    if (usuario!!.id == null || mensagem.usuario == null || mensagem.usuario!!.id == null) {
+private fun enviadoPorMim(mensagem: Mensagem, id: String?): Boolean {
+    if (id == null) {
         return false
     }
 
-    return usuario.id == mensagem.usuario!!.id
+    return id == mensagem.usuario!!.id
 }
 
 @Composable
@@ -85,8 +84,11 @@ fun TelaConversa(navController: NavController, id: String) {
     var conversa = appData.getCOnversaById(id)
     var nome: String = if (conversa!!.usuario2!!.nome != null) conversa.usuario2!!.nome.toString() else ""
     val context = LocalContext.current
-    val usuario = appData.getUsuarioLogado()
     var db = FirebaseFirestore.getInstance()
+    val userRepo = UserRepository(context)
+    val userId = userRepo.currentUserId.collectAsState(initial = "")
+    val userEmail = userRepo.currentUserEmail.collectAsState(initial = "")
+    val userName = userRepo.currentUserName.collectAsState(initial = "")
 
     LaunchedEffect(Unit) {
         if (conversa.mensagens != null) {
@@ -115,7 +117,12 @@ fun TelaConversa(navController: NavController, id: String) {
         }
     }
 
-    val onEnviarMensagem = { -> text = "" }
+    val onSuccessEnviarMensagem = { -> text = "" }
+    val callEnviarMensagem = { ->
+        val usuario = Usuario(userId.value, userEmail.value, userName.value)
+        val usuarioNotificacao = if (conversa.usuario1!!.id == userId.value) conversa.usuario2!!.id else conversa.usuario1!!.id
+        enviarMensagem(context, text, conversa.id, usuarioNotificacao, usuario, onSuccessEnviarMensagem)
+    }
 
     LayoutVariant(navController, nome) {
         Column(
@@ -133,10 +140,10 @@ fun TelaConversa(navController: NavController, id: String) {
                     mensagens.forEach { mensagem ->
                         item {
                             Column(
-                                horizontalAlignment = if (enviadoPorMim(mensagem, usuario)) Alignment.End else Alignment.Start,
+                                horizontalAlignment = if (enviadoPorMim(mensagem, userId.value)) Alignment.End else Alignment.Start,
                                 modifier = Modifier.fillMaxWidth(),
                             ) {
-                                CardMensagem(mensagem, enviadoPorMim(mensagem, usuario))
+                                CardMensagem(mensagem, enviadoPorMim(mensagem, userId.value))
                             }
                         }
                     }
@@ -152,7 +159,7 @@ fun TelaConversa(navController: NavController, id: String) {
                     modifier = Modifier.weight(1f),
                 )
                 IconButton(
-                    onClick = { enviarMensagem(context, text, conversa.id, onEnviarMensagem) }
+                    onClick = { callEnviarMensagem() }
                 ) {
                     Icon(Icons.Filled.Send, contentDescription = "Enviar")
                 }

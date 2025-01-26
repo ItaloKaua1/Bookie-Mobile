@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,8 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.bookie.AppData
+import com.example.bookie.UserRepository
 import com.example.bookie.components.AvatarChat
 import com.example.bookie.components.CardConversa
 import com.example.bookie.components.CardPost
@@ -37,6 +40,8 @@ import com.example.bookie.models.Livro
 import com.example.bookie.models.Usuario
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 private fun irParaConversa(navController: NavController, idConversa: String?) {
     if (idConversa == null) {
@@ -82,27 +87,31 @@ fun TelaChat(navController: NavController) {
     var db = FirebaseFirestore.getInstance()
     var appData = AppData.getInstance()
     val context = LocalContext.current
+    val userRepo = UserRepository(context)
+    val userId = userRepo.currentUserId.collectAsState(initial = "")
+    val userEmail = userRepo.currentUserEmail.collectAsState(initial = "")
+    val userName = userRepo.currentUserName.collectAsState(initial = "")
 
-    appData.setUsuarioLogado(Usuario("cgyspWh9UPaVllTgaMH92piVl8X2", "teste@email.com", "Teste"))
-    val usuarioLogado = appData.getUsuarioLogado()
 
     LaunchedEffect(Unit) {
-        if (usuarioLogado != null) {
-            db.collection("usuarios").whereNotEqualTo("id", usuarioLogado.id).get().addOnSuccessListener { documents ->
+        launch {
+            val userIdLocal = userRepo.currentUserId.first()
+
+            db.collection("usuarios").whereNotEqualTo("id", userIdLocal).get().addOnSuccessListener { documents ->
                 val usuarios: ArrayList<Usuario> = arrayListOf()
                 for (document in documents) {
                     Log.e("dados", "${document.id} -> ${document.data}")
                     val usuario = document.toObject(Usuario::class.java)
                     usuarios.add(usuario)
                 }
-                amigos = usuarios.toList()
-//            appData.setLivrosEstante(localLivros.toList())
+                amigos = usuarios.filter { usuario -> usuario.id != userIdLocal }.toList()
+
             }
 
             db.collection("chatRooms").where(
                 Filter.or(
-                    Filter.equalTo("usuario1.id", usuarioLogado.id),
-                    Filter.equalTo("usuario2.id", usuarioLogado.id)
+                    Filter.equalTo("usuario1.id", userIdLocal),
+                    Filter.equalTo("usuario2.id", userIdLocal)
                 )
             ).get().addOnSuccessListener { documents ->
                 val localConversas: ArrayList<Conversa> = arrayListOf()
@@ -116,11 +125,12 @@ fun TelaChat(navController: NavController) {
                 appData.setConversas(conversas.toList())
             }
         }
-
-
     }
 
-    val onClickAmigo = { usuario: Usuario -> entrarNaConversa(context, navController, usuarioLogado, usuario) }
+    val onClickAmigo = { usuario: Usuario ->
+        val usuarioLogado = Usuario(userId.value, userEmail.value, userName.value)
+        entrarNaConversa(context, navController, usuarioLogado, usuario)
+    }
     val onClickConversa = { conversa: Conversa -> irParaConversa(navController, conversa.id) }
 
     LayoutVariant(navController, "Chat") {
@@ -140,7 +150,7 @@ fun TelaChat(navController: NavController) {
             ) {
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     if (amigos.isEmpty()) {
                         item {

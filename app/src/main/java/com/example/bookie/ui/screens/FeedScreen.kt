@@ -1,5 +1,6 @@
 package com.example.bookie.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,6 +15,7 @@ import com.example.bookie.components.BottomBar
 import com.example.bookie.components.CardPost
 import com.example.bookie.components.MinhasPostagens
 import com.example.bookie.components.NavigationDrawer
+import com.example.bookie.models.AuthManager
 import com.example.bookie.models.Livro
 import com.example.bookie.models.VolumeInfo
 import com.example.bookie.models.ImageLinks
