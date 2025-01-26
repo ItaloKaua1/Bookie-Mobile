@@ -12,10 +12,10 @@ import androidx.navigation.NavController
 import com.example.bookie.models.Usuario
 
 private val mockUsers = listOf(
-    Usuario("1", "Alice", "alice@example.com", "https://example.com/alice_profile.jpg"),
-    Usuario("2", "Bob", "bob@example.com", "https://example.com/bob_profile.jpg"),
-    Usuario("3", "Charlie", "charlie@example.com", "https://example.com/charlie_profile.jpg"),
-    Usuario("4", "Diana", "diana@example.com", "https://example.com/diana_profile.jpg")
+    Usuario("1", "Alice", "alice@example.com", "https://cdn-icons-png.flaticon.com/512/1373/1373255.png"),
+    Usuario("2", "Bob", "bob@example.com", "https://cdn-icons-png.flaticon.com/512/3135/3135768.png"),
+    Usuario("3", "Charlie", "charlie@example.com", "https://cdn-icons-png.flaticon.com/512/2920/2920072.png"),
+    Usuario("4", "Diana", "diana@example.com", "https://cdn-icons-png.flaticon.com/512/3106/3106921.png")
 )
 
 @Composable

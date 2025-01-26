@@ -13,55 +13,58 @@ import coil.compose.AsyncImage
 import com.example.bookie.components.NavigationDrawer
 import com.example.bookie.models.Usuario
 
-private val mockFriends = mutableStateListOf<Usuario>()
-
 @Composable
 fun FriendsScreen(
     navController: NavController,
     mockFriends: SnapshotStateList<Usuario>
 ) {
-    var isViewingFriends by remember { mutableStateOf(true) }
+    if (mockFriends.isEmpty()) {
+        Text("Aqui está meio vazio... Que tal fazer alguns amigos ?", style = MaterialTheme.typography.bodyMedium)
+    } else {
+        var visualizandoAmigos by remember { mutableStateOf(true) }
+        val friends = remember { mockFriends }
 
-    NavigationDrawer(navController) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
+        NavigationDrawer(navController) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
-                Button(
-                    onClick = { isViewingFriends = true },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isViewingFriends) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                    )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
                 ) {
-                    Text("Meus Amigos")
+                    Button(
+                        onClick = { visualizandoAmigos = true },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (visualizandoAmigos) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                        )
+                    ) {
+                        Text("Meus Amigos")
+                    }
+                    Button(
+                        onClick = { visualizandoAmigos = false },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (!visualizandoAmigos) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                        )
+                    ) {
+                        Text("Adicionar Amigos")
+                    }
                 }
-                Button(
-                    onClick = { isViewingFriends = false },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (!isViewingFriends) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                    )
-                ) {
-                    Text("Adicionar Amigos")
-                }
-            }
 
-            if (isViewingFriends) {
-                FriendsList(friends = mockFriends)
-            } else {
-                FriendsSolicitationScreen(
-                    navController = TODO()
-                )
+                if (visualizandoAmigos) {
+                    FriendsList(friends = friends)
+                } else {
+                    FriendsSolicitationScreen(navController)
+                }
             }
         }
     }
 }
+
+
 
 @Composable
 fun FriendsList(friends: List<Usuario>) {

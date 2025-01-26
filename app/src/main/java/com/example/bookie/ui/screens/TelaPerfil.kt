@@ -42,7 +42,6 @@ fun TelaPerfil(navController: NavHostController) {
     val livro = Livro("", VolumeInfo(ImageLinks("", ""), "Livro Teste", listOf("Autor Teste"), "Sinopse Teste", 34))
     val post2 = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date(), livro)
 
-
     Column {
         Column {
             Row(
@@ -79,7 +78,10 @@ fun TelaPerfil(navController: NavHostController) {
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         Text(text = "89", style = MaterialTheme.typography.titleMedium)
-                        Text(text = "amigos", style = MaterialTheme.typography.bodySmall)
+                        Text(
+                            text = "amigos", style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier
+                                .clickable { navController.navigate("FriendsScreen") })
                     }
                 }
             }
@@ -95,7 +97,8 @@ fun TelaPerfil(navController: NavHostController) {
         Column {
             TabRow(selectedTabIndex = tabIndex) {
                 tabs.forEachIndexed { index, title ->
-                    Tab(text = { Text(title) },
+                    Tab(
+                        text = { Text(title) },
                         selected = tabIndex == index,
                         onClick = { tabIndex = index }
                     )
