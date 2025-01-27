@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.bookie.components.BackComponent
 import com.example.bookie.ui.theme.PurpleBookie
-import com.seuprojeto.ui.components.SelectPhotoBox
 import android.net.Uri
+import com.example.bookie.components.SelectPhotoBox
 
 @Composable
 fun CadastroScreen2(navController: NavHostController) {
@@ -90,7 +90,7 @@ fun CadastroScreen2(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(text = "Número de usuário")
+                Text(text = "Nome de usuário")
                 BasicTextField(
                     value = username,
                     onValueChange = { username = it },
