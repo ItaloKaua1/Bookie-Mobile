@@ -16,7 +16,9 @@ class UserRepository(private val context: Context) {
         val USER_EMAIL = stringPreferencesKey("user_email")
         val USER_ID = stringPreferencesKey("user_id")
         val USER_NAME = stringPreferencesKey("user_name")
-
+        val NOTIFICATIONS_ENABLED = stringPreferencesKey("notifications_enabled")
+        val CUSTOM_THEME = stringPreferencesKey("custom_theme")
+        val ANIMATIONS_ENABLED = stringPreferencesKey("animations_enabled")
     }
 
     val currentUserEmail: Flow<String> =
@@ -49,6 +51,37 @@ class UserRepository(private val context: Context) {
     suspend fun saveUserName(userName: String) {
         context.dataStore.edit { preferences ->
             preferences[USER_NAME] = userName
+        }
+    }
+
+    // Adicionar métodos para notificações, tema personalizado e animações visuais
+    val notificationsEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[NOTIFICATIONS_ENABLED]?.toBoolean() ?: true
+    }
+
+    suspend fun updateNotificationsEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[NOTIFICATIONS_ENABLED] = enabled.toString()
+        }
+    }
+
+    val customTheme: Flow<String?> = context.dataStore.data.map { preferences ->
+        preferences[CUSTOM_THEME]
+    }
+
+    suspend fun updateCustomTheme(theme: String) {
+        context.dataStore.edit { preferences ->
+            preferences[CUSTOM_THEME] = theme
+        }
+    }
+
+    val animationsEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[ANIMATIONS_ENABLED]?.toBoolean() ?: true
+    }
+
+    suspend fun updateAnimationsEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[ANIMATIONS_ENABLED] = enabled.toString()
         }
     }
 }
