@@ -9,6 +9,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Headphones
+import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -244,6 +246,15 @@ fun TelaLivro(navController: NavController, id: String, estante: Boolean? = fals
                                     }
                                 }
                             }
+                            Spacer(modifier = Modifier.height(16.dp))
+                            IconButton(onClick = { navController.navigate("telaAudioBook/${livro!!.id}") }) {
+                                Icon(
+                                    modifier = Modifier.size(40.dp),
+                                    imageVector = Icons.Filled.Headphones,
+                                    contentDescription = "AudioBook"
+                                )
+                            }
+
                             Text(
                                 text = livro!!.volumeInfo?.sinopse!!,
                                 maxLines = 4,
