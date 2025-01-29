@@ -43,6 +43,17 @@ android {
 
 dependencies {
 
+    implementation ("androidx.compose.animation:animation:1.0.0")
+
+    implementation ("com.squareup.retrofit2:converter-simplexml:2.9.0")
+
+    //dependência do retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -96,4 +107,8 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.auth)
+
+    // data-store
+    implementation(libs.androidx.datastore.preferences)
 }

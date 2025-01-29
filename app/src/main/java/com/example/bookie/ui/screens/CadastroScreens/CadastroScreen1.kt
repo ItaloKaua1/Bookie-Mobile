@@ -50,15 +50,40 @@ import com.example.bookie.components.BackComponent
 import com.example.bookie.ui.theme.PurpleBookie
 import com.google.firebase.auth.FirebaseAuth
 import android.util.Log
+import com.example.bookie.models.Usuario
+import com.google.firebase.firestore.FirebaseFirestore
+
+private fun registerUserInFirestore(id: String?, email: String, nome: String, context: Context, navController: NavHostController) {
+    val auth = FirebaseAuth.getInstance()
+
+    if (id == null) {
+        Toast.makeText(context, "Desculpe, ocorreu um erro ao realizar cadastro.", Toast.LENGTH_SHORT).show()
+        auth.currentUser!!.delete()
+        return
+    }
+
+    val db = FirebaseFirestore.getInstance()
 
 
-private fun registrarUser(email: String, password: String, context: Context, navController: NavHostController) {
+    val usuario = Usuario(id, email, nome)
+
+    db.collection("usuarios").document(id).set(usuario).addOnCompleteListener { it ->
+        if (it.isSuccessful) {
+            Toast.makeText(context, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
+            navController.navigate("loginScreen")
+        } else {
+            Toast.makeText(context, "Desculpe, ocorreu um erro ao adicionar o livro", Toast.LENGTH_SHORT).show()
+            auth.currentUser!!.delete()
+        }
+    }
+}
+
+private fun registrarUser(nome: String, email: String, password: String, context: Context, navController: NavHostController) {
     val auth = FirebaseAuth.getInstance()
 
     auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { response ->
         if (response.isSuccessful) {
-            Toast.makeText(context, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
-            navController.navigate("cadastroScreen2")
+            registerUserInFirestore(response.result.user!!.uid, email, nome, context, navController)
         }
     }.addOnFailureListener { response ->
         Log.e("tag-register-response-error", response.message!!)
@@ -218,8 +243,7 @@ fun CadastroScreen1(navController: NavHostController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { registrarUser(email, password, context, navController)},
-//            onClick = {navController},
+            onClick = { registrarUser(name, email, password, context, navController)},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp)

@@ -28,7 +28,7 @@ class VolumeInfo(
 
 
 @Serializable
-open class Livro (
+data class Livro (
     var id: String? = null,
     var volumeInfo: VolumeInfo? = null,
     var favorito: Boolean? = null,
