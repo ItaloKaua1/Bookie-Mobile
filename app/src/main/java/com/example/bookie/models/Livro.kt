@@ -40,12 +40,17 @@ data class Livro (
 
 
     public fun getAutor(): String {
-        if (volumeInfo?.autor!!.isNotEmpty()) {
-            return volumeInfo?.autor!![0];
+        if (volumeInfo == null) {
+            return ""
         }
 
+        val autores = volumeInfo!!.autor
 
-        return "";
+        if (autores == null || autores.isEmpty()) {
+            return ""
+        }
+
+        return autores[0]
     }
 
 
