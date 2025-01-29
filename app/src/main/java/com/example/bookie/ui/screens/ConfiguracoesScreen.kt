@@ -11,7 +11,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.bookie.components.ConfiguracoesViewModel
 import com.example.bookie.components.LayoutVariant
-import com.example.bookie.components.TopBarVariante
 
 @Composable
 fun ConfiguracoesTela(navController: NavController, viewModel: ConfiguracoesViewModel = viewModel()) {

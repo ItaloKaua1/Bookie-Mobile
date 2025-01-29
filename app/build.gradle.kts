@@ -83,6 +83,11 @@ dependencies {
     implementation ("androidx.compose.runtime:runtime-livedata:1.5.1")
 
 
+    implementation ("androidx.core:core-ktx:1.12.0")
+    implementation ("androidx.activity:activity-compose:1.7.2")
+    implementation ("io.coil-kt:coil-compose:2.4.0")
+
+
     // ktor
     implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.logging)
