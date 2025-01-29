@@ -107,6 +107,8 @@ fun TelaLivro(navController: NavController, id: String, estante: Boolean? = fals
     var titulo = if (livro !== null) livro!!.volumeInfo!!.nome else "Não encontrado"
     var icon by remember { mutableStateOf(Icons.Filled.Favorite) }
     var isLoading by remember { mutableStateOf(false) }
+    val getSinopse = { if (livro!!.volumeInfo!!.sinopse.isNullOrEmpty()) "" else livro!!.volumeInfo!!.sinopse!! }
+    val getNome = { if (livro!!.volumeInfo!!.nome.isNullOrEmpty()) "" else livro!!.volumeInfo!!.nome!! }
 
     LaunchedEffect(livro) {
         if (livro!!.favorito == true) {
@@ -171,7 +173,7 @@ fun TelaLivro(navController: NavController, id: String, estante: Boolean? = fals
                             ) {
                                 Column {
                                     Text(
-                                        text = livro!!.volumeInfo?.nome!!,
+                                        text = getNome(),
                                         style = MaterialTheme.typography.labelLarge
                                     )
                                     Text(
@@ -245,7 +247,7 @@ fun TelaLivro(navController: NavController, id: String, estante: Boolean? = fals
                                 }
                             }
                             Text(
-                                text = livro!!.volumeInfo?.sinopse!!,
+                                text = getSinopse(),
                                 maxLines = 4,
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(top = 8.dp)
