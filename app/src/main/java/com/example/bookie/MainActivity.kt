@@ -4,6 +4,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,6 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.bookie.components.ConfiguracoesViewModel
+import com.example.bookie.models.FcmToken
 import com.example.bookie.ui.screens.*
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen1
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen2
@@ -38,7 +40,12 @@ import com.example.bookie.ui.screens.TelaNotificacoes
 import com.example.bookie.ui.screens.TelaPerfil
 import com.example.bookie.ui.theme.BookieTheme
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val configuracoesViewModel: ConfiguracoesViewModel by viewModels()
@@ -75,6 +82,7 @@ class MainActivity : ComponentActivity() {
     }
 
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Bookie)
         super.onCreate(savedInstanceState)
@@ -85,6 +93,11 @@ class MainActivity : ComponentActivity() {
 
         val TAG = "token-teste"
 
+        val context = applicationContext
+
+        var db = FirebaseFirestore.getInstance()
+        val userRepo = UserRepository(context)
+
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.w(TAG, "Fetching FCM registration token failed", task.exception)
@@ -93,6 +106,19 @@ class MainActivity : ComponentActivity() {
 
             // Get new FCM registration token
             val token = task.result
+
+            GlobalScope.launch {
+                val userId = userRepo.currentUserId.first()
+                val fcmToken = FcmToken(token)
+
+                db.collection("fcmTokens").document(userId).set(fcmToken).addOnCompleteListener { it ->
+                    if (it.isSuccessful) {
+
+                    } else {
+                        Toast.makeText(context, "Desculpe, ocorreu um erro ao setar o token", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
 
             Log.d(TAG, "token de teste: $token")
 //            Toast.makeText(baseContext, "token de teste: $token", Toast.LENGTH_SHORT).show()
@@ -149,6 +175,20 @@ class MainActivity : ComponentActivity() {
                         val idLivro = backstackEntry.arguments?.getString("id")
                         if (idLivro != null) {
                             TelaAudioBook(navController, bookId = idLivro)
+                        }
+                    }
+                    composable("telaChat") { TelaChat(navController) }
+                    composable(
+                        route = "telaConversa/{id}",
+                        arguments = listOf(
+                            navArgument(name = "id") {
+                                type = NavType.StringType
+                            },
+                        )
+                    ) { backstackEntry ->
+                        val id = backstackEntry.arguments?.getString("id")
+                        if (id != null) {
+                            TelaConversa(navController, id)
                         }
                     }
                 }
