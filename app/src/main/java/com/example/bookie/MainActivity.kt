@@ -140,6 +140,17 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("descobrirLivro") { DescobrirScreen(navController) }
                     composable("resultadosDescobrir") { ResultadosDescScreen(navController) }
+                    composable(
+                        route = "telaAudioBook/{id}",
+                        arguments = listOf(
+                            navArgument(name = "id") { type = NavType.StringType }
+                        )
+                    ) { backstackEntry ->
+                        val idLivro = backstackEntry.arguments?.getString("id")
+                        if (idLivro != null) {
+                            TelaAudioBook(navController, bookId = idLivro)
+                        }
+                    }
                 }
             }
         }
