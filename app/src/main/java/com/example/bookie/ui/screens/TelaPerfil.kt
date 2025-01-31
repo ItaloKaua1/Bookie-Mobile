@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -16,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,6 +34,7 @@ import com.example.bookie.components.MinhasPostagens
 import com.example.bookie.models.ImageLinks
 import com.example.bookie.models.Livro
 import com.example.bookie.models.Post
+import com.example.bookie.models.ThematicList
 import com.example.bookie.models.VolumeInfo
 import java.util.Date
 
@@ -42,6 +46,13 @@ fun TelaPerfil(navController: NavHostController) {
     val post = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date())
     val livro = Livro("", VolumeInfo(ImageLinks("", ""), "Livro Teste", listOf("Autor Teste"), "Sinopse Teste", 34))
     val post2 = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date(), livro)
+    val thematicList = remember {
+        listOf(
+            ThematicList("1", "Favoritos", "Livros que eu amei ler!", listOf()),
+            ThematicList("2", "Para Ler", "Livros que quero ler em breve", listOf())
+        )
+    }
+
 
 
     LayoutVariant(navController, "Meu perfil", true) {
@@ -106,7 +117,23 @@ fun TelaPerfil(navController: NavHostController) {
                 }
                 when (tabIndex) {
                     0 -> MinhasPostagens(listOf(post, post2))
-                    1 -> MinhasListas()
+                    1 -> MinhasListas(ThematicListsScreen(thematicList))
+                }
+            }
+
+            if (tabIndex == 1) {
+                FloatingActionButton(
+                    onClick = { navController.navigate("criarLista") },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_add),
+                        contentDescription = "Criar Lista",
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
                 }
             }
         }

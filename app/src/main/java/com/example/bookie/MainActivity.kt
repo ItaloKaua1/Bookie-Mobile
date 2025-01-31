@@ -189,6 +189,7 @@ class MainActivity : ComponentActivity() {
 
                     composable("descobrirLivro") { DescobrirScreen(navController) }
                     composable("resultadosDescobrir") { ResultadosDescScreen(navController) }
+                    composable("criarLista") { CriarListaScreen(navController) }
                 }
             }
         }
