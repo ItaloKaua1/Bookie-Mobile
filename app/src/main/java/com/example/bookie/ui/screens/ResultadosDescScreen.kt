@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -49,7 +50,12 @@ fun ResultadosDescScreen(navController: NavController, query: String, context: C
             )
 
             if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             } else {
                 LazyColumn {
                     items(books) { book ->
@@ -91,14 +97,12 @@ suspend fun fetchBooks(context: Context, query: String): List<Book> {
     }
 }
 
-// Componente para exibir cada livro
 @Composable
 fun BookItem(book: Book) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(modifier = Modifier.padding(16.dp)) {

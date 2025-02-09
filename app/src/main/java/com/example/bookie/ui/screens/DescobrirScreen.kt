@@ -181,7 +181,7 @@ fun DescobrirScreen(navController: NavController) {
 
                         Text("Você gosta de séries de livros ou prefere histórias únicas?")
                         val gostoOptions =
-                            listOf("Prefiro histórias únicas)", "Prefiro séries", "Tanto faz")
+                            listOf("Prefiro histórias únicas", "Prefiro séries", "Tanto faz")
                         var selectedGosto by remember { mutableStateOf(gostoOptions[0]) }
 
                         gostoOptions.forEach { gosto ->
@@ -254,7 +254,7 @@ fun DescobrirScreen(navController: NavController) {
 
                         Button(
                             onClick = {
-                                val query = selectedGenre.replace(" ", "+") // Formatar para URL
+                                val query = selectedGenre.replace(" ", "+")
                                 navController.navigate("resultadosDescobrir/$query")
                             },
                             modifier = Modifier
