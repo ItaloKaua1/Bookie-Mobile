@@ -28,6 +28,12 @@ import com.example.bookie.ui.screens.*
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen1
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen2
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen3
+import com.example.bookie.ui.screens.ConfigsScreen.AnimacaoConfig
+import com.example.bookie.ui.screens.ConfigsScreen.EditEmail
+import com.example.bookie.ui.screens.ConfigsScreen.EditNome
+import com.example.bookie.ui.screens.ConfigsScreen.EditSenha
+import com.example.bookie.ui.screens.ConfigsScreen.NotificacoesConfig
+import com.example.bookie.ui.screens.ConfigsScreen.TemaConfig
 import com.example.bookie.ui.screens.ConfiguracoesTela
 import com.example.bookie.ui.screens.DescobrirScreen
 import com.example.bookie.ui.screens.FeedScreen
@@ -192,6 +198,12 @@ class MainActivity : ComponentActivity() {
                             TelaConversa(navController, id)
                         }
                     }
+                    composable("editNome") { EditNome(navController) }
+                    composable("editEmail") { EditEmail(navController) }
+                    composable("editSenha") { EditSenha(navController) }
+                    composable("temaConfig") { TemaConfig(navController) }
+                    composable("animacaoConfig") { AnimacaoConfig(navController) }
+                    composable("notiConfig") { NotificacoesConfig(navController) }
                 }
             }
         }
