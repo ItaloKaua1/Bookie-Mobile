@@ -13,12 +13,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.example.bookie.components.LayoutVariant
 import androidx.navigation.NavHostController
+import com.example.bookie.UserRepository
 import com.example.bookie.ui.theme.PurpleBookie
 
 @Composable
@@ -27,129 +30,145 @@ fun EditarPerfil(navController: NavHostController) {
     var senha by remember { mutableStateOf("") }
     var confirmarSenha by remember { mutableStateOf("") }
     var bio by remember { mutableStateOf("") }
-    var imagemUri by remember { mutableStateOf<Uri?>(null) } // Variável para armazenar a imagem
+    var imagemUri by remember { mutableStateOf<Uri?>(null) }
+
+    val context = LocalContext.current
+    val userRepo = UserRepository(context)
+    val userName by userRepo.currentUserName.collectAsState(initial = "")
+
+    LaunchedEffect(userName) {
+        nome = userName
+    }
+
+    val focusManager = LocalFocusManager.current
 
     val colorScheme = MaterialTheme.colorScheme
 
     LayoutVariant(navController, "Editar Perfil", false) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .clickable { focusManager.clearFocus() }
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Box(
+            Column(
                 modifier = Modifier
-                    .size(130.dp)
-                    .clip(CircleShape)
-                    .background(colorScheme.primary),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(16.dp))
+
                 Box(
                     modifier = Modifier
-                        .size(120.dp)
+                        .size(130.dp)
                         .clip(CircleShape)
-                        .background(colorScheme.secondary)
-                        .clickable { /* Abrir seletor de imagem */ },
+                        .background(colorScheme.primary),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (imagemUri == null) {
-                        Text(text = "Adicionar Foto", color = colorScheme.onSecondary)
-                    } else {
-                        Image(
-                            painter = rememberAsyncImagePainter(imagemUri),
-                            contentDescription = "Foto do perfil",
-                            modifier = Modifier.size(120.dp)
-                        )
+                    Box(
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape)
+                            .background(colorScheme.secondary)
+                            .clickable { /* Abrir seletor de imagem */ },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (imagemUri == null) {
+                            Text(text = "Adicionar Foto", color = colorScheme.onSecondary)
+                        } else {
+                            Image(
+                                painter = rememberAsyncImagePainter(imagemUri),
+                                contentDescription = "Foto do perfil",
+                                modifier = Modifier.size(120.dp)
+                            )
+                        }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            TextField(
-                value = nome,
-                onValueChange = { nome = it },
-                label = { Text("Nome do Usuário") },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = colorScheme.surfaceVariant,
-                    unfocusedContainerColor = colorScheme.surface,
-                    focusedIndicatorColor = colorScheme.primary,
-                    unfocusedIndicatorColor = colorScheme.onSurfaceVariant
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            TextField(
-                value = senha,
-                onValueChange = { senha = it },
-                label = { Text("Senha") },
-                visualTransformation = PasswordVisualTransformation(),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = colorScheme.surfaceVariant,
-                    unfocusedContainerColor = colorScheme.surface,
-                    focusedIndicatorColor = colorScheme.primary,
-                    unfocusedIndicatorColor = colorScheme.onSurfaceVariant
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            TextField(
-                value = confirmarSenha,
-                onValueChange = { confirmarSenha = it },
-                label = { Text("Confirmar Senha") },
-                visualTransformation = PasswordVisualTransformation(),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = colorScheme.surfaceVariant,
-                    unfocusedContainerColor = colorScheme.surface,
-                    focusedIndicatorColor = colorScheme.primary,
-                    unfocusedIndicatorColor = colorScheme.onSurfaceVariant
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            TextField(
-                value = bio,
-                onValueChange = { bio = it },
-                label = { Text("Bio") },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = colorScheme.surfaceVariant,
-                    unfocusedContainerColor = colorScheme.surface,
-                    focusedIndicatorColor = colorScheme.primary,
-                    unfocusedIndicatorColor = colorScheme.onSurfaceVariant
-                ),
-                modifier = Modifier.fillMaxWidth()
-                    .height(100.dp)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = { navController.navigate("telaPerfil") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
-                    .height(56.dp)
-                    .padding(bottom = 8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = PurpleBookie
-                ),
-                shape = RoundedCornerShape(6.dp)
-            ) {
-                Text(
-                    text = "Salvar Alterações",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                    color = Color.White
+                TextField(
+                    value = nome,
+                    onValueChange = { nome = it },
+                    label = { Text("Nome") },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = colorScheme.surfaceVariant,
+                        unfocusedContainerColor = colorScheme.surface,
+                        focusedIndicatorColor = colorScheme.primary,
+                        unfocusedIndicatorColor = colorScheme.onSurfaceVariant
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextField(
+                    value = senha,
+                    onValueChange = { senha = it },
+                    label = { Text("Senha") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = colorScheme.surfaceVariant,
+                        unfocusedContainerColor = colorScheme.surface,
+                        focusedIndicatorColor = colorScheme.primary,
+                        unfocusedIndicatorColor = colorScheme.onSurfaceVariant
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextField(
+                    value = confirmarSenha,
+                    onValueChange = { confirmarSenha = it },
+                    label = { Text("Confirmar Senha") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = colorScheme.surfaceVariant,
+                        unfocusedContainerColor = colorScheme.surface,
+                        focusedIndicatorColor = colorScheme.primary,
+                        unfocusedIndicatorColor = colorScheme.onSurfaceVariant
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextField(
+                    value = bio,
+                    onValueChange = { bio = it },
+                    label = { Text("Bio") },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = colorScheme.surfaceVariant,
+                        unfocusedContainerColor = colorScheme.surface,
+                        focusedIndicatorColor = colorScheme.primary,
+                        unfocusedIndicatorColor = colorScheme.onSurfaceVariant
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                        .height(100.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { navController.navigate("telaPerfil") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp)
+                        .height(56.dp)
+                        .padding(bottom = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = PurpleBookie
+                    ),
+                    shape = RoundedCornerShape(6.dp)
+                ) {
+                    Text(
+                        text = "Salvar Alterações",
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                        color = Color.White
+                    )
+                }
             }
         }
     }

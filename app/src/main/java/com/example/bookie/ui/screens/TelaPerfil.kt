@@ -14,17 +14,20 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.bookie.R
+import com.example.bookie.UserRepository
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.components.MinhasListas
 import com.example.bookie.components.MinhasPostagens
@@ -43,6 +46,10 @@ fun TelaPerfil(navController: NavHostController) {
     val livro = Livro("", VolumeInfo(ImageLinks("", ""), "Livro Teste", listOf("Autor Teste"), "Sinopse Teste", 34))
     val post2 = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date(), livro)
 
+
+    val context = LocalContext.current
+    val userRepo = UserRepository(context)
+    val userName = userRepo.currentUserName.collectAsState(initial = "")
 
     LayoutVariant(navController, "Meu perfil", true) {
         Column {
@@ -90,7 +97,7 @@ fun TelaPerfil(navController: NavHostController) {
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier.padding(top = 16.dp),
             ) {
-                Text(text = "name", style = MaterialTheme.typography.titleMedium)
+                Text(text = "${userName.value}", style = MaterialTheme.typography.titleMedium)
                 Text(text = "sobre", style = MaterialTheme.typography.bodyMedium)
             }
 

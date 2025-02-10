@@ -31,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.bookie.R
+import com.example.bookie.UserRepository
 import com.example.bookie.models.Livro
 import com.example.bookie.models.NavigationItem
 import kotlinx.coroutines.launch
@@ -101,6 +103,11 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
+
+                val context = LocalContext.current
+                val userRepo = UserRepository(context)
+                val userName = userRepo.currentUserName.collectAsState(initial = "")
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
@@ -111,7 +118,7 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
                         contentDescription = "Imagem de Usuário"
                     )
                     Column {
-                        Text(text = "Olivia")
+                        Text(text = "${userName.value}")
                         Text(text = "@oliviarodri")
                     }
                 }
