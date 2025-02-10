@@ -7,6 +7,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.example.bookie.components.LayoutVariant
@@ -31,6 +35,8 @@ fun EditarPerfil(navController: NavHostController) {
     var confirmarSenha by remember { mutableStateOf("") }
     var bio by remember { mutableStateOf("") }
     var imagemUri by remember { mutableStateOf<Uri?>(null) }
+    var showPassword by remember { mutableStateOf(false) }
+    var showConfirmPassword by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val userRepo = UserRepository(context)
@@ -106,8 +112,16 @@ fun EditarPerfil(navController: NavHostController) {
                 TextField(
                     value = senha,
                     onValueChange = { senha = it },
-                    label = { Text("Senha") },
-                    visualTransformation = PasswordVisualTransformation(),
+                    label = { Text("Nova Senha") },
+                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { showPassword = !showPassword }) {
+                            Icon(
+                                imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                contentDescription = if (showPassword) "Ocultar senha" else "Mostrar senha"
+                            )
+                        }
+                    },
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = colorScheme.surfaceVariant,
                         unfocusedContainerColor = colorScheme.surface,
@@ -119,11 +133,20 @@ fun EditarPerfil(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // Campo de confirmar senha
                 TextField(
                     value = confirmarSenha,
                     onValueChange = { confirmarSenha = it },
-                    label = { Text("Confirmar Senha") },
-                    visualTransformation = PasswordVisualTransformation(),
+                    label = { Text("Confirmar Nova Senha") },
+                    visualTransformation = if (showConfirmPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { showConfirmPassword = !showConfirmPassword }) {
+                            Icon(
+                                imageVector = if (showConfirmPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                contentDescription = if (showConfirmPassword) "Ocultar senha" else "Mostrar senha"
+                            )
+                        }
+                    },
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = colorScheme.surfaceVariant,
                         unfocusedContainerColor = colorScheme.surface,
