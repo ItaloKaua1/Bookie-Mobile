@@ -143,6 +143,7 @@ class MainActivity : ComponentActivity() {
                     composable("cadastroScreen1") { CadastroScreen1(navController) }
                     composable("cadastroScreen2") { CadastroScreen2(navController) }
                     composable("cadastroScreen3") { CadastroScreen3(navController) }
+                    composable("editarPerfil") { EditarPerfil(navController) }
                     composable("feedScreen") { FeedScreen(navController) }
                     composable("listarLivros") { ListarLivros(navController) }
                     composable("minhaEstante") { MinhaEstante(navController) }
