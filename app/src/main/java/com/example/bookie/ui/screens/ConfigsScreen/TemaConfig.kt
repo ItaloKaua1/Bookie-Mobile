@@ -83,24 +83,24 @@ fun TemaConfig(navController: NavController, viewModel: ConfiguracoesViewModel =
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable { viewModel.alternarTema() }
+                    .padding(8.dp)
+                    .clickable { viewModel.alternarTema() }
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        RadioButton(
-                            selected = temaEscuro,
-                            onClick = { viewModel.alternarTema() }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Tema Escuro",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    RadioButton(
+                        selected = temaEscuro,
+                        onClick = { viewModel.alternarTema() }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Tema Escuro",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
+            }
             }
         }
     }
