@@ -48,12 +48,6 @@ import com.example.bookie.models.NavigationItem
 import kotlinx.coroutines.launch
 import com.google.firebase.auth.FirebaseAuth
 
-private fun logout(navController: NavController, context: Context) {
-    FirebaseAuth.getInstance().signOut()
-    Toast.makeText(context, "Logout realizado com sucesso!", Toast.LENGTH_SHORT).show()
-    navController.navigate("loginScreen")
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationDrawer(navController: NavController, content: @Composable () -> Unit) {
@@ -92,11 +86,11 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
             icon = Icons.Outlined.Refresh,
             action = { navController.navigate("telaPerfil") }
         ),
-        NavigationItem(
-            title = "sair",
-            icon = Icons.Outlined.ExitToApp,
-            action = { logout(navController, context) },
-        ),
+//        NavigationItem(
+//            title = "sair",
+//            icon = Icons.Outlined.ExitToApp,
+//            action = { logout(navController, context) },
+//        ),
     )
 
     ModalNavigationDrawer(

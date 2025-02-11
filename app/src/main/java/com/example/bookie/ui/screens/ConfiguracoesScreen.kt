@@ -1,72 +1,135 @@
 package com.example.bookie.ui.screens
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.ExitToApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.bookie.UserRepository
 import com.example.bookie.components.ConfiguracoesViewModel
 import com.example.bookie.components.LayoutVariant
+import com.example.bookie.models.AuthManager.logout
+import com.example.bookie.models.NavigationItem
+import com.google.firebase.auth.FirebaseAuth
+
+private fun logout(navController: NavController, context: Context) {
+    FirebaseAuth.getInstance().signOut()
+    Toast.makeText(context, "Logout realizado com sucesso!", Toast.LENGTH_SHORT).show()
+    navController.navigate("loginScreen")
+}
 
 @Composable
 fun ConfiguracoesTela(navController: NavController, viewModel: ConfiguracoesViewModel = viewModel()) {
     val temaEscuro = viewModel.temaEscuro.collectAsState().value
-    val notificacoesAtivadas = viewModel.notificacoesAtivadas.collectAsState().value
-    val animacoesAtivadas = viewModel.animacoesAtivadas.collectAsState().value
     val cores = if (temaEscuro) darkColorScheme() else lightColorScheme()
+
+    val context = LocalContext.current
+    val userRepo = UserRepository(context)
+    val userName by userRepo.currentUserName.collectAsState(initial = "")
+    val email by userRepo.currentUserEmail.collectAsState(initial = "")
 
     MaterialTheme(colorScheme = cores) {
         LayoutVariant(navController, "Configurações", false) {
             Column(modifier = Modifier.padding(16.dp)) {
                 // Seção Geral
-                Text("Geral", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(8.dp))
+                Text(
+                    "Geral",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(8.dp),
+                    fontSize = 20.sp
+                )
                 ConfigItem(
                     icon = Icons.Default.Person,
                     text = "Nome",
-                    onClick = { navController.navigate("editNome")}
+                    description = userName,
+                    action = { navController.navigate("editNome") }, // Usando action
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
                 )
                 ConfigItem(
                     icon = Icons.Default.Email,
                     text = "Email",
-                    onClick = { navController.navigate("editEmail")}
+                    description = email,
+                    action = { navController.navigate("editEmail") }, // Usando action
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                 )
                 ConfigItem(
                     icon = Icons.Default.Lock,
                     text = "Senha",
-                    onClick = { navController.navigate("editSenha") }
+                    description = "●●●●●●",
+                    action = { navController.navigate("editSenha") }, // Usando action
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Seção Exibição
-                Text("Exibição", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(8.dp))
+                Text(
+                    "Exibição",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(8.dp),
+                    fontSize = 20.sp
+                )
                 ConfigItem(
                     icon = Icons.Default.Palette,
                     text = "Tema",
-                    onClick = { navController.navigate("temaConfig") }
+                    action = { navController.navigate("temaConfig") }, // Usando action
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                 )
                 ConfigItem(
                     icon = Icons.Default.Animation,
                     text = "Animações",
-                    onClick = { navController.navigate("animacaoConfig") }
+                    action = { navController.navigate("animacaoConfig") }, // Usando action
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Seção Notificações
-                Text("Notificações", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(8.dp))
+                Text(
+                    "Comunicações",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(8.dp),
+                    fontSize = 20.sp
+                )
                 ConfigItem(
                     icon = Icons.Default.Notifications,
                     text = "Notificações",
-                    onClick = { navController.navigate("notiConfig") }
+                    action = { navController.navigate("notiConfig") }, // Usando action
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Seção Conta
+                Text(
+                    "Conta",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(8.dp),
+                    fontSize = 20.sp
+                )
+                ConfigItem(
+                    icon = Icons.Outlined.ExitToApp, // Ícone de sair
+                    text = "Sair",
+                    description = "Encerrar sessão",
+                    action = {
+                        com.example.bookie.ui.screens.logout(navController, context)
+                    }, // Usando action
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                 )
             }
         }
@@ -74,16 +137,31 @@ fun ConfiguracoesTela(navController: NavController, viewModel: ConfiguracoesView
 }
 
 @Composable
-fun ConfigItem(icon: ImageVector, text: String, onClick: () -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+fun ConfigItem(
+    icon: ImageVector,
+    text: String,
+    description: String? = null,
+    action: () -> Unit, // Renomeado de onClick para action
+    textStyle: TextStyle = MaterialTheme.typography.bodyMedium
+) {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable { action() }
             .padding(8.dp)
     ) {
-        Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(24.dp))
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(text, style = MaterialTheme.typography.bodyMedium)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(24.dp))
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                Text(text, style = textStyle)
+                description?.let {
+                    Text(
+                        text = it,
+                        style = textStyle.copy(fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                    )
+                }
+            }
+        }
     }
 }
