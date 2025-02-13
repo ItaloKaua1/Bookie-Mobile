@@ -165,7 +165,10 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     composable("descobrirLivro") { DescobrirScreen(navController) }
-                    composable("resultadosDescobrir") { ResultadosDescScreen(navController) }
+                    composable("resultadosDescobrir/{query}") { backStackEntry ->
+                        val query = backStackEntry.arguments?.getString("query") ?: ""
+                        ResultadosDescScreen(navController, query, context)
+                    }
                     composable(
                         route = "telaAudioBook/{id}",
                         arguments = listOf(

@@ -181,7 +181,7 @@ fun DescobrirScreen(navController: NavController) {
 
                         Text("Você gosta de séries de livros ou prefere histórias únicas?")
                         val gostoOptions =
-                            listOf("Prefiro histórias únicas)", "Prefiro séries", "Tanto faz")
+                            listOf("Prefiro histórias únicas", "Prefiro séries", "Tanto faz")
                         var selectedGosto by remember { mutableStateOf(gostoOptions[0]) }
 
                         gostoOptions.forEach { gosto ->
@@ -253,15 +253,16 @@ fun DescobrirScreen(navController: NavController) {
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Button(
-                            onClick = { navController.navigate("resultadosDescobrir") },
+                            onClick = {
+                                val query = selectedGenre.replace(" ", "+")
+                                navController.navigate("resultadosDescobrir/$query")
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 32.dp)
                                 .height(56.dp)
                                 .padding(bottom = 8.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = PurpleBookie
-                            ),
+                            colors = ButtonDefaults.buttonColors(containerColor = PurpleBookie),
                             shape = RoundedCornerShape(6.dp)
                         ) {
                             Text(
@@ -270,6 +271,7 @@ fun DescobrirScreen(navController: NavController) {
                                 color = Color.White
                             )
                         }
+
                     }
                 }
             }
