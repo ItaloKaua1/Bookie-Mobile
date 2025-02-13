@@ -90,10 +90,12 @@ fun TelaPerfil(navController: NavHostController) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(4.dp),
+                            modifier = Modifier.clickable { navController.navigate("friendsScreen") } // Adiciona a navegação
                         ) {
                             Text(text = "89", style = MaterialTheme.typography.titleMedium)
                             Text(text = "amigos", style = MaterialTheme.typography.bodySmall)
                         }
+
                     }
                 }
             }

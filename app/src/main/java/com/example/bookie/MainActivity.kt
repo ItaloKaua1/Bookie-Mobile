@@ -19,9 +19,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -212,6 +209,8 @@ class MainActivity : ComponentActivity() {
 
                         AdicionarLivrosScreen(navController, nome, descricao)
                     }
+                    composable("friendsScreen") { FriendsScreen(navController) }
+                    composable("friendsSolicitationScreen") { FriendsSolicitationScreen(navController) }
 
                 }
             }
