@@ -115,9 +115,14 @@ fun TelaPerfil(navController: NavHostController) {
                         )
                     }
                 }
+                @Composable
+                fun MinhasListas(navController: NavHostController, thematicLists: List<ThematicList>) {
+                    ThematicListsScreen(navController, thematicLists) // Chama o Composable corretamente
+                }
+
                 when (tabIndex) {
                     0 -> MinhasPostagens(listOf(post, post2))
-                    1 -> MinhasListas(ThematicListsScreen(thematicList))
+                    1 -> MinhasListas(navController, thematicList)
                 }
             }
 

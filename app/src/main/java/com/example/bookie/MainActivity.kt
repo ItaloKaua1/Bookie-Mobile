@@ -190,6 +190,29 @@ class MainActivity : ComponentActivity() {
                     composable("descobrirLivro") { DescobrirScreen(navController) }
                     composable("resultadosDescobrir") { ResultadosDescScreen(navController) }
                     composable("criarLista") { CriarListaScreen(navController) }
+                    composable(
+                        route = "detalhesListas/{nome}/{descricao}/{quantidadeLivros}",
+                        arguments = listOf(
+                            navArgument("nome") { type = NavType.StringType },
+                            navArgument("descricao") { type = NavType.StringType },
+                            navArgument("quantidadeLivros") { type = NavType.IntType }
+                        )
+                    ) { backStackEntry ->
+                        val nome = backStackEntry.arguments?.getString("nome") ?: "Nome Indisponível"
+                        val descricao = backStackEntry.arguments?.getString("descricao") ?: "Sem descrição"
+                        val quantidadeLivros = backStackEntry.arguments?.getInt("quantidadeLivros") ?: 0
+
+                        ThematicListDetailsScreen(navController, nome, descricao, quantidadeLivros)
+                    }
+                    composable(
+                        route = "adicionarLivrosScreen/{nome}/{descricao}"
+                    ) { backStackEntry ->
+                        val nome = backStackEntry.arguments?.getString("nome") ?: ""
+                        val descricao = backStackEntry.arguments?.getString("descricao") ?: ""
+
+                        AdicionarLivrosScreen(navController, nome, descricao)
+                    }
+
                 }
             }
         }

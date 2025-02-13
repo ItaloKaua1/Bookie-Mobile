@@ -2,81 +2,64 @@ package com.example.bookie.ui.screens
 
 import android.util.Log
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.models.Livro
 import com.example.bookie.models.ThematicList
 import com.google.firebase.firestore.FirebaseFirestore
-
-private fun onCreateList(newList: ThematicList) {
-
-}
+import android.net.Uri
 
 @Composable
 fun CriarListaScreen(navController: NavHostController) {
     var nome by remember { mutableStateOf("") }
     var descricao by remember { mutableStateOf("") }
-    var livros by remember { mutableStateOf(listOf<Any>()) }
     var errorMessage by remember { mutableStateOf("") }
-    val db = FirebaseFirestore.getInstance()
 
-    LaunchedEffect(Unit) {
-        db.collection("livros").get().addOnSuccessListener { documents ->
-            val localLivros: ArrayList<Livro> = arrayListOf()
-            for (document in documents) {
-                Log.e("dados", "${document.id} -> ${document.data}")
-                val localLivro = document.toObject(Livro::class.java)
-                localLivro.document = document.id
-                localLivros.add(localLivro)
-            }
-            livros = localLivros.toList()
-        }
-    }
-
-    LayoutVariant(navController, "Criar Lista"){
+    LayoutVariant(navController, "Criar Lista") {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "Criar Nova Lista",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
             OutlinedTextField(
                 value = nome,
                 onValueChange = { nome = it },
-                label = { Text("Nome da Lista") },
-                modifier = Modifier.fillMaxWidth()
+                label = { Text("Nome da Lista*") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
             )
 
             OutlinedTextField(
                 value = descricao,
                 onValueChange = { descricao = it },
-                label = { Text("Descrição") },
-                modifier = Modifier.fillMaxWidth()
+                label = { Text("Descrição (opcional)") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
             )
 
             Button(
                 onClick = {
-                    livros = livros + "Livro Exemplo ${livros.size + 1}"
+                    if (nome.isNotBlank()) {
+                        val nome = Uri.encode(nome)
+                        val descricao = Uri.encode(descricao)
+
+                        navController.navigate("adicionarLivrosScreen/$nome/$descricao")
+                    } else {
+                        errorMessage = "Por favor, insira o nome da lista."
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Adicionar Livro")
-            }
-
-            Column {
-                livros.forEachIndexed { index, livro ->
-                    Text(text = "Livro $index: $livro", style = MaterialTheme.typography.bodyMedium)
-                }
+                Text("Adicionar Livros à Lista")
             }
 
             if (errorMessage.isNotEmpty()) {
@@ -86,30 +69,6 @@ fun CriarListaScreen(navController: NavHostController) {
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-
-            Button(
-                onClick = {
-                    if (nome.isNotBlank() && descricao.isNotBlank()) {
-                        // Criar nova lista
-                        val newList = ThematicList(
-                            id = System.currentTimeMillis().toString(),
-                            nome = nome,
-                            descricao = descricao,
-                            livros = livros
-                        )
-                        onCreateList(newList)
-                        navController.popBackStack()
-                    } else {
-                        errorMessage = "Por favor, preencha todos os campos."
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-            ) {
-                Text("Criar Lista")
-            }
         }
     }
 }
-
-
