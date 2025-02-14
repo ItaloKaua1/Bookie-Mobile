@@ -1,4 +1,4 @@
-package com.example.bookie.ui.screens
+package com.example.bookie.ui.screens.ConfigsScreen
 
 import android.net.Uri
 import androidx.compose.foundation.Image

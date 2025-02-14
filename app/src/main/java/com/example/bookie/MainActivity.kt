@@ -32,6 +32,7 @@ import com.example.bookie.ui.screens.ConfigsScreen.AnimacaoConfig
 import com.example.bookie.ui.screens.ConfigsScreen.EditEmail
 import com.example.bookie.ui.screens.ConfigsScreen.EditNome
 import com.example.bookie.ui.screens.ConfigsScreen.EditSenha
+import com.example.bookie.ui.screens.ConfigsScreen.EditarPerfil
 import com.example.bookie.ui.screens.ConfigsScreen.NotificacoesConfig
 import com.example.bookie.ui.screens.ConfigsScreen.TemaConfig
 import com.example.bookie.ui.screens.ConfiguracoesTela
@@ -44,7 +45,6 @@ import com.example.bookie.ui.screens.ResultadosDescScreen
 import com.example.bookie.ui.screens.TelaLivro
 import com.example.bookie.ui.screens.TelaNotificacoes
 import com.example.bookie.ui.screens.TelaPerfil
-import com.example.bookie.ui.theme.BookieTheme
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging

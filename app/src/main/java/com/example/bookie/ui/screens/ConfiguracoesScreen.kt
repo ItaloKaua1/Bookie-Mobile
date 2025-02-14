@@ -26,6 +26,8 @@ import com.example.bookie.components.LayoutVariant
 import com.example.bookie.models.AuthManager.logout
 import com.example.bookie.models.NavigationItem
 import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 private fun logout(navController: NavController, context: Context) {
     FirebaseAuth.getInstance().signOut()
@@ -45,7 +47,42 @@ fun ConfiguracoesTela(navController: NavController, viewModel: ConfiguracoesView
 
     MaterialTheme(colorScheme = cores) {
         LayoutVariant(navController, "Configurações", false) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                // Seção do Perfil do Usuário
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { navController.navigate("editarPerfil") },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Foto do usuário (pode ser um ícone ou uma imagem carregada)
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "Foto do usuário",
+                        modifier = Modifier.size(64.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            text = userName,
+                            style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp)
+                        )
+                        Text(
+                            text = "Editar foto e bio",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 // Seção Geral
                 Text(
                     "Geral",
@@ -57,21 +94,21 @@ fun ConfiguracoesTela(navController: NavController, viewModel: ConfiguracoesView
                     icon = Icons.Default.Person,
                     text = "Nome",
                     description = userName,
-                    action = { navController.navigate("editNome") }, // Usando action
+                    action = { navController.navigate("editNome") },
                     textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
                 )
                 ConfigItem(
                     icon = Icons.Default.Email,
                     text = "Email",
                     description = email,
-                    action = { navController.navigate("editEmail") }, // Usando action
+                    action = { navController.navigate("editEmail") },
                     textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                 )
                 ConfigItem(
                     icon = Icons.Default.Lock,
                     text = "Senha",
                     description = "●●●●●●",
-                    action = { navController.navigate("editSenha") }, // Usando action
+                    action = { navController.navigate("editSenha") },
                     textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                 )
 
@@ -87,13 +124,13 @@ fun ConfiguracoesTela(navController: NavController, viewModel: ConfiguracoesView
                 ConfigItem(
                     icon = Icons.Default.Palette,
                     text = "Tema",
-                    action = { navController.navigate("temaConfig") }, // Usando action
+                    action = { navController.navigate("temaConfig") },
                     textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                 )
                 ConfigItem(
                     icon = Icons.Default.Animation,
                     text = "Animações",
-                    action = { navController.navigate("animacaoConfig") }, // Usando action
+                    action = { navController.navigate("animacaoConfig") },
                     textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                 )
 
@@ -109,7 +146,7 @@ fun ConfiguracoesTela(navController: NavController, viewModel: ConfiguracoesView
                 ConfigItem(
                     icon = Icons.Default.Notifications,
                     text = "Notificações",
-                    action = { navController.navigate("notiConfig") }, // Usando action
+                    action = { navController.navigate("notiConfig") },
                     textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                 )
 
@@ -123,12 +160,12 @@ fun ConfiguracoesTela(navController: NavController, viewModel: ConfiguracoesView
                     fontSize = 20.sp
                 )
                 ConfigItem(
-                    icon = Icons.Outlined.ExitToApp, // Ícone de sair
+                    icon = Icons.Outlined.ExitToApp,
                     text = "Sair",
                     description = "Encerrar sessão",
                     action = {
                         com.example.bookie.ui.screens.logout(navController, context)
-                    }, // Usando action
+                    },
                     textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                 )
             }
