@@ -119,7 +119,7 @@ fun TelaPerfil(navController: NavHostController) {
                 }
                 @Composable
                 fun MinhasListas(navController: NavHostController, thematicLists: List<ThematicList>) {
-                    ThematicListsScreen(navController, thematicLists) // Chama o Composable corretamente
+                    ThematicListsScreen(navController, thematicLists)
                 }
 
                 when (tabIndex) {

@@ -211,6 +211,19 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("friendsScreen") { FriendsScreen(navController) }
                     composable("friendsSolicitationScreen") { FriendsSolicitationScreen(navController) }
+                    composable("clubesScreen"){ ClubesScreen(navController) }
+                    composable("createClubScreen"){ CreateClubScreen(navController) }
+                    composable("clube/{clubeId}") { backStackEntry ->
+                        val clubeId = backStackEntry.arguments?.getString("clubeId")
+                        if (clubeId != null) {
+                            TelaClubeDetalhes(clubeId, navController)
+                        }
+                    }
+                    composable("selecionarLivroScreen"){SelecionarLivroScreen(navController)}
+                    composable("criarTopico/{clubeId}") { backStackEntry ->
+                        val clubeId = backStackEntry.arguments?.getString("clubeId")
+                        clubeId?.let { CriarTopicoScreen(it, navController) }
+                    }
 
                 }
             }
