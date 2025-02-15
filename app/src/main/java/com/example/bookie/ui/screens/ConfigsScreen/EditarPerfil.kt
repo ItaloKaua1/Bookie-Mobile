@@ -30,22 +30,11 @@ import com.example.bookie.ui.theme.PurpleBookie
 
 @Composable
 fun EditarPerfil(navController: NavHostController) {
-    var nome by remember { mutableStateOf("") }
-    var senha by remember { mutableStateOf("") }
-    var confirmarSenha by remember { mutableStateOf("") }
     var bio by remember { mutableStateOf("") }
     var imagemUri by remember { mutableStateOf<Uri?>(null) }
-    var showPassword by remember { mutableStateOf(false) }
-    var showConfirmPassword by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val userRepo = UserRepository(context)
-    val userName by userRepo.currentUserName.collectAsState(initial = "")
-
-    LaunchedEffect(userName) {
-        nome = userName
-    }
-
     val focusManager = LocalFocusManager.current
 
     val colorScheme = MaterialTheme.colorScheme
@@ -60,7 +49,6 @@ fun EditarPerfil(navController: NavHostController) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -95,87 +83,30 @@ fun EditarPerfil(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 TextField(
-                    value = nome,
-                    onValueChange = { nome = it },
-                    label = { Text("Nome") },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = colorScheme.surfaceVariant,
-                        unfocusedContainerColor = colorScheme.surface,
-                        focusedIndicatorColor = colorScheme.primary,
-                        unfocusedIndicatorColor = colorScheme.onSurfaceVariant
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                TextField(
-                    value = senha,
-                    onValueChange = { senha = it },
-                    label = { Text("Nova Senha") },
-                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                    trailingIcon = {
-                        IconButton(onClick = { showPassword = !showPassword }) {
-                            Icon(
-                                imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                contentDescription = if (showPassword) "Ocultar senha" else "Mostrar senha"
-                            )
-                        }
-                    },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = colorScheme.surfaceVariant,
-                        unfocusedContainerColor = colorScheme.surface,
-                        focusedIndicatorColor = colorScheme.primary,
-                        unfocusedIndicatorColor = colorScheme.onSurfaceVariant
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Campo de confirmar senha
-                TextField(
-                    value = confirmarSenha,
-                    onValueChange = { confirmarSenha = it },
-                    label = { Text("Confirmar Nova Senha") },
-                    visualTransformation = if (showConfirmPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                    trailingIcon = {
-                        IconButton(onClick = { showConfirmPassword = !showConfirmPassword }) {
-                            Icon(
-                                imageVector = if (showConfirmPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                contentDescription = if (showConfirmPassword) "Ocultar senha" else "Mostrar senha"
-                            )
-                        }
-                    },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = colorScheme.surfaceVariant,
-                        unfocusedContainerColor = colorScheme.surface,
-                        focusedIndicatorColor = colorScheme.primary,
-                        unfocusedIndicatorColor = colorScheme.onSurfaceVariant
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                TextField(
                     value = bio,
                     onValueChange = { bio = it },
                     label = { Text("Bio") },
                     colors = TextFieldDefaults.colors(
-                        focusedContainerColor = colorScheme.surfaceVariant,
-                        unfocusedContainerColor = colorScheme.surface,
-                        focusedIndicatorColor = colorScheme.primary,
-                        unfocusedIndicatorColor = colorScheme.onSurfaceVariant
+                        focusedContainerColor = colorScheme.surfaceVariant, // Cor de fundo quando focado
+                        unfocusedContainerColor = colorScheme.surface, // Cor de fundo quando não está focado
+                        focusedIndicatorColor = Color.Transparent, // Remove a linha inferior quando focado
+                        unfocusedIndicatorColor = Color.Transparent // Remove a linha inferior quando não está focado
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .height(100.dp)
+                        .background(
+                            color = colorScheme.surfaceVariant, // Cor de fundo do container
+                            shape = RoundedCornerShape(8.dp) // Borda arredondada
+                        )
+                        .padding(8.dp), // Espaçamento interno
+                    shape = RoundedCornerShape(8.dp) // Borda arredondada para o TextField
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { navController.navigate("telaPerfil") },
+                    onClick = { navController.navigate("configuracoesTela") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp)

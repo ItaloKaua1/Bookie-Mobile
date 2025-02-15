@@ -58,8 +58,8 @@ fun TopBarVariante(navController: NavController, titulo: String, mostrarAcoes: B
         },
         actions = {
             if (mostrarAcoes) {
-                IconButton(onClick = {navController.navigate("editarPerfil")}) {
-                        Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar Perfil", tint = MaterialTheme.colorScheme.primary)
+                IconButton(onClick = {navController.navigate("configuracoesTela")}) {
+                        Icon(imageVector = Icons.Default.Settings, contentDescription = "Editar Perfil", tint = MaterialTheme.colorScheme.primary)
                 }
                 IconButton(onClick = {}) {
                     Icon(

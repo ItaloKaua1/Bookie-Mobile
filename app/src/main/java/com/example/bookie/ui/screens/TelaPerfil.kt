@@ -8,7 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -58,12 +62,11 @@ fun TelaPerfil(navController: NavHostController) {
                     horizontalArrangement = Arrangement.spacedBy(72.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.avatar),
-                        contentDescription = stringResource(id = R.string.capa_livro),
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "Foto do usuário",
                         modifier = Modifier
-                            .height(64.dp)
-                            .width(64.dp),
+                            .size(64.dp)
                     )
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(40.dp),
@@ -95,7 +98,7 @@ fun TelaPerfil(navController: NavHostController) {
             }
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.padding(top = 16.dp),
+                modifier = Modifier.padding(top = 16.dp).padding(horizontal = 8.dp),
             ) {
                 Text(text = "${userName.value}", style = MaterialTheme.typography.titleMedium)
                 Text(text = "sobre", style = MaterialTheme.typography.bodyMedium)
