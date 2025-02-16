@@ -4,7 +4,6 @@ package com.example.bookie.ui.screens
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -69,41 +68,91 @@ private fun Todos(livros: List<Livro>, onClick: (Livro) -> Unit = {}) {
 
 @Composable
 private fun Lidos() {
-    val livros = listOf(livro)
+    var livrosLidos by remember { mutableStateOf(listOf<Livro>()) }
+    val db = FirebaseFirestore.getInstance()
 
+    LaunchedEffect(Unit) {
+        db.collection("livros")
+            .whereEqualTo("status", "lido")
+            .get()
+            .addOnSuccessListener { result ->
+                livrosLidos = result.documents.mapNotNull { it.toObject(Livro::class.java) }
+            }
+    }
 
-    Row {
-        livros.forEach { valor -> CardLivroVariante(valor, mostrarAvaliacao = true) }
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(livrosLidos) { livro ->
+            CardLivroVariante(livro, mostrarAvaliacao = true)
+        }
     }
 }
-
 
 @Composable
 private fun Lendo() {
-    val livros = listOf(livro)
+    var livrosLendo by remember { mutableStateOf(listOf<Livro>()) }
+    val db = FirebaseFirestore.getInstance()
 
+    LaunchedEffect(Unit) {
+        db.collection("livros")
+            .whereEqualTo("status", "lendo")
+            .get()
+            .addOnSuccessListener { result ->
+                livrosLendo = result.documents.mapNotNull { it.toObject(Livro::class.java) }
+            }
+    }
 
-    Row {
-        livros.forEach { valor -> CardLivroVariante(valor, mostrarPorcentagem = true) }
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(livrosLendo) { livro ->
+            CardLivroVariante(livro, mostrarPorcentagem = true)
+        }
     }
 }
-
 
 @Composable
 private fun QueroLer() {
-    val livros = listOf(livro)
+    var livrosQueroLer by remember { mutableStateOf(listOf<Livro>()) }
+    val db = FirebaseFirestore.getInstance()
 
+    LaunchedEffect(Unit) {
+        db.collection("livros")
+            .whereEqualTo("status", "quero ler")
+            .get()
+            .addOnSuccessListener { result ->
+                livrosQueroLer = result.documents.mapNotNull { it.toObject(Livro::class.java) }
+            }
+    }
 
-    Row {
-        livros.forEach { valor -> CardLivroVariante(valor) }
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(livrosQueroLer) { livro ->
+            CardLivroVariante(livro)
+        }
     }
 }
+
 
 
 @Composable
 private fun Favoritos(livros: List<Livro>, onClick: (Livro) -> Unit = {}) {
-    val livrosFavoritos = livros.filter { livro -> livro.favorito == true }
+    var livrosFavoritos by remember { mutableStateOf(listOf<Livro>()) }
+    val db = FirebaseFirestore.getInstance()
 
+    LaunchedEffect(Unit) {
+        db.collection("livros")
+            .whereEqualTo("favorito", true)
+            .get()
+            .addOnSuccessListener { result ->
+                livrosFavoritos = result.documents.mapNotNull { it.toObject(Livro::class.java) }
+            }
+    }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
@@ -114,7 +163,6 @@ private fun Favoritos(livros: List<Livro>, onClick: (Livro) -> Unit = {}) {
         }
     }
 }
-
 
 @Composable
 fun MinhaEstante(navController: NavHostController) {
