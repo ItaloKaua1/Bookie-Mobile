@@ -3,6 +3,7 @@ package com.example.bookie
 
 import com.example.bookie.models.Conversa
 import com.example.bookie.models.Livro
+import com.example.bookie.models.TrocaDisponivel
 import com.example.bookie.models.Usuario
 
 
@@ -11,6 +12,7 @@ class AppData {
     private var minhaEstante: List<Livro> = listOf()
     private var conversas: MutableList<Conversa> = mutableListOf()
     private var usuarioLogado: Usuario? = null
+    private var trocasDisponiveis: MutableList<TrocaDisponivel> = mutableListOf()
 
 
     companion object {
@@ -73,5 +75,17 @@ class AppData {
 
     fun setUsuarioLogado(usuario: Usuario) {
         this.usuarioLogado = usuario
+    }
+
+    fun getTrocasDisponiveis(): MutableList<TrocaDisponivel> {
+        return trocasDisponiveis
+    }
+
+    fun setTrocasDisponiveis(trocas: List<TrocaDisponivel>) {
+        trocasDisponiveis = trocas.toMutableList()
+    }
+
+    fun getTrocaDisponivel(id: String): TrocaDisponivel? {
+        return trocasDisponiveis.find { troca -> troca.document == id }
     }
 }

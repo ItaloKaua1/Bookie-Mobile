@@ -34,15 +34,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.bookie.AppData
+import com.example.bookie.UserRepository
 import com.example.bookie.components.CardLivroVariante
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.models.ImageLinks
 import com.example.bookie.models.Livro
 import com.example.bookie.models.VolumeInfo
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.first
 
 
 private data class TabItem(
@@ -132,13 +135,17 @@ fun MinhaEstante(navController: NavHostController) {
 
     var livros by remember { mutableStateOf(listOf<Livro>()) }
     var db = FirebaseFirestore.getInstance()
+    val context = LocalContext.current
+    val userRepo = UserRepository(context)
 
 
     val itemClick = { livro: Livro -> navController.navigate("telaLivro/${livro.id}/${true}")}
 
 
     LaunchedEffect(Unit) {
-        db.collection("livros").get().addOnSuccessListener { documents ->
+        val userId = userRepo.currentUserId.first()
+
+        db.collection("livros").whereEqualTo("usuario.id", userId).get().addOnSuccessListener { documents ->
             val localLivros: ArrayList<Livro> = arrayListOf()
             for (document in documents) {
                 Log.e("dados", "${document.id} -> ${document.data}")

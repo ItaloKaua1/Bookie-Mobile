@@ -88,7 +88,7 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
         NavigationItem(
             title = "trocar livros",
             icon = Icons.Outlined.Refresh,
-            action = { navController.navigate("telaPerfil") }
+            action = { navController.navigate("listarLivrosTroca") }
         ),
         NavigationItem(
             title = "sair",

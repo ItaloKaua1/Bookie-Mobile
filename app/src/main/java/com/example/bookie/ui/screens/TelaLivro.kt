@@ -1,6 +1,7 @@
 package com.example.bookie.ui.screens
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -26,11 +27,17 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.bookie.AppData
 import com.example.bookie.R
+import com.example.bookie.UserRepository
 import com.example.bookie.components.CardPost
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.models.Livro
 import com.example.bookie.models.Post
+import com.example.bookie.models.Usuario
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 val posts: List<Post> = listOf()
 
@@ -100,6 +107,13 @@ private fun getLivro(id: String, estante: Boolean? = false): Livro? {
     }
 }
 
+private fun trocarLivro(navController: NavController, id: String?, estante: Boolean? = false) {
+    if (id != null) {
+        navController.navigate("disponibilizarParaTrocaScreen/${id}/${estante}")
+    }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun TelaLivro(navController: NavController, id: String, estante: Boolean? = false) {
     val appData = AppData.getInstance()
@@ -111,12 +125,42 @@ fun TelaLivro(navController: NavController, id: String, estante: Boolean? = fals
     var isLoading by remember { mutableStateOf(false) }
     val getSinopse = { if (livro!!.volumeInfo!!.sinopse.isNullOrEmpty()) "" else livro!!.volumeInfo!!.sinopse!! }
     val getNome = { if (livro!!.volumeInfo!!.nome.isNullOrEmpty()) "" else livro!!.volumeInfo!!.nome!! }
+    val db = FirebaseFirestore.getInstance()
+    var estaNaEstante by remember { mutableStateOf(false) }
+
+    val onAdicionarLivro = { ->
+        GlobalScope.launch {
+            val userRepo = UserRepository(context)
+            val userName = userRepo.currentUserName.first()
+            var userEmail = userRepo.currentUserEmail.first()
+            var userId = userRepo.currentUserId.first()
+            val usuario = Usuario(userId, userEmail, userName)
+
+            if (livro != null) {
+                livro!!.usuario = usuario
+                adicionarLivro(context, livro!!)
+            }
+        }
+    }
 
     LaunchedEffect(livro) {
         if (livro!!.favorito == true) {
             icon = Icons.Filled.Favorite
         } else {
             icon = Icons.Filled.FavoriteBorder
+        }
+    }
+    LaunchedEffect(livro) {
+        val idLivro = livro?.id
+
+        if (idLivro != null) {
+            db.collection("livros").whereEqualTo("id", idLivro).get().addOnSuccessListener { documents ->
+                if (documents.size() > 0) {
+                    estaNaEstante = true
+                } else {
+                    estaNaEstante = false
+                }
+            }
         }
     }
 
@@ -197,51 +241,77 @@ fun TelaLivro(navController: NavController, id: String, estante: Boolean? = fals
                                     }
                                 }
                                 if (estante == true) {
-                                    Box {
-                                        TextButton(
-                                            onClick = {
-                                                isLoading = true
-                                                favoritarDesfavoritarLivro(
-                                                    context,
-                                                    livro!!,
-                                                    onFavoritado = {
-                                                        livro = livro!!.copy(favorito = true)
-                                                        icon = Icons.Filled.Favorite
-                                                        isLoading = false
-                                                    },
-                                                    onDesfavoritado = {
-                                                        livro = livro!!.copy(favorito = false)
-                                                        icon = Icons.Filled.FavoriteBorder
-                                                        isLoading = false
-                                                    },
-                                                    onError = {
-                                                        isLoading = false
-                                                    }
-                                                )
-                                            }
-                                        ) {
-                                            if (isLoading) {
-                                                CircularProgressIndicator(
-                                                    modifier = Modifier.size(24.dp)
-                                                )
-                                            } else {
-                                                Icon(
-                                                    modifier = Modifier.size(28.dp),
-                                                    imageVector = icon,
-                                                    contentDescription = "favoritar",
-                                                )
-                                                Text(
-                                                    text = if (livro!!.favorito == true) "Remover Favorito" else "Adicionar Favorito",
-                                                    style = MaterialTheme.typography.labelLarge,
-                                                    modifier = Modifier.padding(start = 4.dp)
-                                                )
+                                    Column {
+                                        Box {
+                                            TextButton(
+                                                onClick = {
+                                                    isLoading = true
+                                                    favoritarDesfavoritarLivro(
+                                                        context,
+                                                        livro!!,
+                                                        onFavoritado = {
+                                                            livro = livro!!.copy(favorito = true)
+                                                            icon = Icons.Filled.Favorite
+                                                            isLoading = false
+                                                        },
+                                                        onDesfavoritado = {
+                                                            livro = livro!!.copy(favorito = false)
+                                                            icon = Icons.Filled.FavoriteBorder
+                                                            isLoading = false
+                                                        },
+                                                        onError = {
+                                                            isLoading = false
+                                                        }
+                                                    )
+                                                }
+                                            ) {
+                                                if (isLoading) {
+                                                    CircularProgressIndicator(
+                                                        modifier = Modifier.size(24.dp)
+                                                    )
+                                                } else {
+                                                    Icon(
+                                                        modifier = Modifier.size(28.dp),
+                                                        imageVector = icon,
+                                                        contentDescription = "favoritar",
+                                                    )
+                                                    Text(
+                                                        text = if (livro!!.favorito == true) "Remover Favorito" else "Adicionar Favorito",
+                                                        style = MaterialTheme.typography.labelLarge,
+                                                        modifier = Modifier.padding(start = 4.dp)
+                                                    )
+                                                }
                                             }
                                         }
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Box {
+                                            Button(
+                                                onClick = {
+                                                    if (livro!!.disponivelTroca == true) {
+                                                    } else {
+                                                        trocarLivro(navController, livro!!.id, estante)
+                                                    }
+                                                }
+                                            ) {
+                                                Text(text = if (livro!!.disponivelTroca == true) "Cancelar Troca" else "Trocar Livro")
+                                            }
+                                        }
+                                    }
+                                } else if (estaNaEstante) {
+                                    Button(
+                                        onClick = {
+                                            if (livro!!.disponivelTroca == true) {
+                                            } else {
+                                                trocarLivro(navController, livro!!.id, estante)
+                                            }
+                                        }
+                                    ) {
+                                        Text(text = if (livro!!.disponivelTroca == true) "Cancelar Troca" else "Trocar Livro")
                                     }
                                 } else {
                                     Button(
                                         onClick = {
-                                            adicionarLivro(context, livro!!)
+                                            onAdicionarLivro()
                                         }
                                     ) {
                                         Text(text = "Adicionar Livro")

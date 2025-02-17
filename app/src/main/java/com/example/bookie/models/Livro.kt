@@ -33,10 +33,12 @@ data class Livro (
     var volumeInfo: VolumeInfo? = null,
     var favorito: Boolean? = null,
     var document: String? = null,
+    var disponivelTroca: Boolean? = null,
+    var usuario: Usuario? = null,
 ): java.io.Serializable {
 
 
-    constructor(): this(null, null)
+    constructor(): this(null, null, null, null, null, null)
 
 
     public fun getAutor(): String {
