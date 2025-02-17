@@ -57,4 +57,8 @@ class ConfiguracoesViewModel(application: Application) : AndroidViewModel(applic
             userRepository.updateAnimationsEnabled(habilitado)
         }
     }
+
+    fun definirTema(escuro: Boolean) {
+        _temaEscuro.value = escuro
+    }
 }

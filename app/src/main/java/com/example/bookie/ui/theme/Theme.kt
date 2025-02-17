@@ -32,7 +32,7 @@ val ColorScheme.quaternary: Color
     get() = if (this.isLight) DarkQuaternary else LightQuaternary
 
 private val ColorScheme.isLight: Boolean
-    get() = this.primary == Purple80  // Defina a lógica para determinar se o tema é claro ou escuro.
+    get() = this.primary == Purple80
 
 @Composable
 fun BookieTheme(
