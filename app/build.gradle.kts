@@ -97,4 +97,8 @@ dependencies {
 
     // data-store
     implementation(libs.androidx.datastore.preferences)
+
+//    implementation("com.patrykandpatrick.vico:compose:1.11.0")
+//    implementation("com.patrykandpatrick.vico:core:1.11.0")
+
 }

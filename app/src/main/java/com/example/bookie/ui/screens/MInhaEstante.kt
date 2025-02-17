@@ -18,6 +18,8 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -51,6 +53,44 @@ private data class TabItem(
 
 
 private val livro = Livro("", VolumeInfo(ImageLinks("", ""), "Teste", listOf("Autor Teste"), "Livro de Teste", 23))
+
+
+object LivroClassificador {
+
+    private val db = FirebaseFirestore.getInstance()
+
+    fun atualizarStatusLivro(
+        livroId: String,
+        novoStatus: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        db.collection("livros").document(livroId)
+            .update("status", novoStatus)
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { e -> onFailure(e) }
+    }
+}
+
+@Composable
+private fun LivroItem(livro: Livro, onStatusChange: (String) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    val statusOptions = listOf("Lido", "Lendo", "Quero Ler", "Favorito")
+
+    CardLivroVariante(livro, onClick = { expanded = true })
+
+    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        statusOptions.forEach { status ->
+            DropdownMenuItem(
+                text = { Text(status) },
+                onClick = {
+                    onStatusChange(status.lowercase())
+                    expanded = false
+                }
+            )
+        }
+    }
+}
 
 
 @Composable
@@ -176,29 +216,22 @@ fun MinhaEstante(navController: NavHostController) {
         TabItem("favoritos", Icons.Outlined.FavoriteBorder)
     )
     val appData = AppData.getInstance()
-
-
     var livros by remember { mutableStateOf(listOf<Livro>()) }
-    var db = FirebaseFirestore.getInstance()
+    val db = FirebaseFirestore.getInstance()
 
+    val itemClick = { livro: Livro -> navController.navigate("telaLivro/${livro.id}/${true}") }
 
-    val itemClick = { livro: Livro -> navController.navigate("telaLivro/${livro.id}/${true}")}
-
-
-    LaunchedEffect(Unit) {
+    fun atualizarEstante() {
         db.collection("livros").get().addOnSuccessListener { documents ->
-            val localLivros: ArrayList<Livro> = arrayListOf()
-            for (document in documents) {
-                Log.e("dados", "${document.id} -> ${document.data}")
-                val localLivro = document.toObject(Livro::class.java)
-                localLivro.document = document.id
-                localLivros.add(localLivro)
+            val localLivros = documents.mapNotNull { doc ->
+                doc.toObject(Livro::class.java).apply { document = doc.id }
             }
-            livros = localLivros.toList()
-            appData.setLivrosEstante(localLivros.toList())
+            livros = localLivros
+            appData.setLivrosEstante(localLivros)
         }
     }
 
+    LaunchedEffect(Unit) { atualizarEstante() }
 
     LayoutVariant(navController, "Minha estante") {
         Column(
@@ -214,45 +247,29 @@ fun MinhaEstante(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
             )
 
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.padding(top = 24.dp)
-            ) {
+            Column(modifier = Modifier.padding(top = 24.dp)) {
                 Text(text = "19.200", style = MaterialTheme.typography.titleLarge)
                 Text(text = "páginas lidas", style = MaterialTheme.typography.bodyLarge)
             }
 
-
-            Column(
-                modifier = Modifier.padding(top = 24.dp)
-            ) {
+            Column(modifier = Modifier.padding(top = 24.dp)) {
                 Card(
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 2.dp
-                    ),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 32.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp),
                 ) {
                     TabRow(selectedTabIndex = tabIndex) {
                         tabs.forEachIndexed { index, item ->
-                            Tab(text = { Text(item.text) },
+                            Tab(
+                                text = { Text(item.text) },
                                 selected = tabIndex == index,
-                                icon = {
-                                    Icon(
-                                        imageVector = item.icon,
-                                        contentDescription = item.text
-                                    )
-                                },
+                                icon = { Icon(imageVector = item.icon, contentDescription = item.text) },
                                 onClick = { tabIndex = index }
                             )
                         }
                     }
                 }
+
                 when (tabIndex) {
                     0 -> Todos(livros, itemClick)
                     1 -> Lidos()
@@ -264,6 +281,7 @@ fun MinhaEstante(navController: NavHostController) {
         }
     }
 }
+
 
 
 //@Preview(showBackground = true)
