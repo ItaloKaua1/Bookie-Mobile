@@ -1,5 +1,6 @@
 package com.example.bookie
 
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +16,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavType
@@ -157,7 +159,7 @@ class MainActivity : ComponentActivity() {
                     composable("feedScreen") { FeedScreen(navController, feedViewModel = FeedViewModel(postRepository = PostRepository())) }
                     composable("listarLivros") { ListarLivros(navController) }
                     composable("minhaEstante") { MinhaEstante(navController) }
-                    composable("telaPerfil") { TelaPerfil(navController) }
+                    composable("telaPerfil") { TelaPerfil(navController)}
                     composable("telaNotificacoes") { TelaNotificacoes(navController) }
                     composable("configuracoesTela") {
                         ConfiguracoesTela(navController = navController, viewModel = configuracoesViewModel)
@@ -264,10 +266,12 @@ class MainActivity : ComponentActivity() {
                     composable("animacaoConfig") { AnimacaoConfig(navController) }
                     composable("notiConfig") { NotificacoesConfig(navController) }
                     composable("createPost") {
+                        val context = LocalContext.current // Obtém o contexto atual
                         CreatePostScreen(
                             navController = navController,
                             postRepository = PostRepository(),
-                            booksRepositorio = BooksRepositorio()
+                            booksRepositorio = BooksRepositorio(),
+                            userRepository = UserRepository(context) // Passa o contexto para o UserRepository
                         )
                     }
                 }

@@ -20,7 +20,7 @@ class PostRepository @Inject constructor() {
 
     fun getPosts(onSuccess: (List<Post>) -> Unit, onFailure: (Exception) -> Unit) {
         db.collection("posts")
-            .orderBy("data_criacao") // Ordena os posts pela data de criação
+            .orderBy("data_criacao", com.google.firebase.firestore.Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { result ->
                 val posts = result.documents.mapNotNull { it.toObject(Post::class.java) }

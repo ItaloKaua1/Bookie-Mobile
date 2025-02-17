@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.bookie.UserRepository
 import com.example.bookie.models.Livro
 import com.example.bookie.models.Post
 import com.example.bookie.services.BooksRepositorio
@@ -21,7 +22,8 @@ import java.util.Date
 fun CreatePostScreen(
     navController: NavController,
     postRepository: PostRepository,
-    booksRepositorio: BooksRepositorio
+    booksRepositorio: BooksRepositorio,
+    userRepository: UserRepository
 ) {
     var titulo by remember { mutableStateOf("") }
     var texto by remember { mutableStateOf("") }
@@ -29,6 +31,9 @@ fun CreatePostScreen(
     var livros by remember { mutableStateOf<List<Livro>>(emptyList()) }
     var selectedLivro by remember { mutableStateOf<Livro?>(null) }
     var avaliacao by remember { mutableStateOf(0f) }
+
+    // Coleta o nome do usuário logado
+    val userName by userRepository.currentUserName.collectAsState(initial = "Usuário Atual")
 
     // Busca livros na API do Google Books quando o texto da pesquisa muda
 //    LaunchedEffect(livroQuery) {
@@ -89,7 +94,7 @@ fun CreatePostScreen(
         Button(
             onClick = {
                 val post = Post(
-                    usuario = "Usuário Atual", // Substitua pelo usuário logado
+                    usuario = userName, // Usando o nome do usuário logado
                     titulo = titulo,
                     texto = texto,
                     curtidas = 0,

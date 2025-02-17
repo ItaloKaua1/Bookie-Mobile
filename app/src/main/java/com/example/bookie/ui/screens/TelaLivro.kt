@@ -371,9 +371,9 @@ fun TelaLivro(navController: NavController, id: String, estante: Boolean? = fals
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             posts.forEach { post ->
-                                item {
-                                    CardPost(post = post)
-                                }
+//                                item {
+//                                    CardPost(post = post, userName = String())
+//                                }
                             }
                         }
                     } else {

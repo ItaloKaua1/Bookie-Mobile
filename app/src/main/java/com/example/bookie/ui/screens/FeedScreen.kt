@@ -29,7 +29,9 @@ fun FeedScreen(navController: NavController, feedViewModel: FeedViewModel) {
                     Column {
                         Row(
                             horizontalArrangement = Arrangement.SpaceEvenly,
-                            modifier = Modifier.fillMaxWidth().padding(16.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
                         ) {
                             Button(
                                 onClick = { isViewingMyPosts = false },
@@ -49,23 +51,27 @@ fun FeedScreen(navController: NavController, feedViewModel: FeedViewModel) {
                             }
                         }
 
-                        // Conteúdo da tela
                         if (isViewingMyPosts) {
-                            // Tela de "Minhas Postagens"
-                            if (posts.isEmpty()) {
+                            val userPosts = posts.filter { it.usuario == "NomeDoUsuarioLogado" } // Trocar pelo usuário logado
+
+                            if (userPosts.isEmpty()) {
                                 Text(
                                     text = "Sem postagens ainda",
                                     modifier = Modifier.padding(16.dp)
                                 )
                             } else {
-                                // Aqui você pode adicionar a lógica para filtrar e exibir apenas os posts do usuário atual
-                                Text(
-                                    text = "Ainda não há filtro para minhas postagens",
-                                    modifier = Modifier.padding(16.dp)
-                                )
+                                LazyColumn(
+                                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp)
+                                ) {
+                                    items(userPosts) { post ->
+                                        CardPost(post = post)
+                                    }
+                                }
                             }
                         } else {
-                            // Tela de "Feed Geral"
                             if (posts.isEmpty()) {
                                 Text(
                                     text = "Nenhum post encontrado",
@@ -74,7 +80,9 @@ fun FeedScreen(navController: NavController, feedViewModel: FeedViewModel) {
                             } else {
                                 LazyColumn(
                                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    modifier = Modifier.fillMaxSize().padding(16.dp)
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp)
                                 ) {
                                     items(posts) { post ->
                                         CardPost(post = post)

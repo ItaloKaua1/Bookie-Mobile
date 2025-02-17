@@ -115,7 +115,7 @@ fun TelaPerfil(navController: NavHostController) {
                     }
                 }
                 when (tabIndex) {
-                    0 -> MinhasPostagens(listOf(post, post2))
+//                    0 -> MinhasPostagens(listOf(post, post2))
                     1 -> MinhasListas()
                 }
             }
