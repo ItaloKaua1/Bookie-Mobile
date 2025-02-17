@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.bookie.UserRepository
+import com.example.bookie.components.LayoutVariant
 import com.example.bookie.models.Livro
 import com.example.bookie.models.Post
 import com.example.bookie.services.BooksRepositorio
@@ -45,30 +46,31 @@ fun CreatePostScreen(
 //        }
 //    }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        TextField(
-            value = titulo,
-            onValueChange = { titulo = it },
-            label = { Text("Título") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+    LayoutVariant(navController, "Publicar", false) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            TextField(
+                value = titulo,
+                onValueChange = { titulo = it },
+                label = { Text("Título") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
 
-        TextField(
-            value = texto,
-            onValueChange = { texto = it },
-            label = { Text("Texto") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+            TextField(
+                value = texto,
+                onValueChange = { texto = it },
+                label = { Text("Texto") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
 
-        TextField(
-            value = livroQuery,
-            onValueChange = { livroQuery = it },
-            label = { Text("Pesquisar Livro") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+            TextField(
+                value = livroQuery,
+                onValueChange = { livroQuery = it },
+                label = { Text("Pesquisar Livro") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
 
 //        LazyColumn {
 //            items(livros) { livro ->
@@ -79,44 +81,45 @@ fun CreatePostScreen(
 //            }
 //        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        // Campo para avaliação
-        Text("Avaliação: ${avaliacao.toInt()}/5")
-        Slider(
-            value = avaliacao,
-            onValueChange = { avaliacao = it },
-            valueRange = 0f..5f,
-            steps = 4
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+            // Campo para avaliação
+            Text("Avaliação: ${avaliacao.toInt()}/5")
+            Slider(
+                value = avaliacao,
+                onValueChange = { avaliacao = it },
+                valueRange = 0f..5f,
+                steps = 4
+            )
+            Spacer(modifier = Modifier.height(8.dp))
 
-        Button(
-            onClick = {
-                val post = Post(
-                    usuario = userName, // Usando o nome do usuário logado
-                    titulo = titulo,
-                    texto = texto,
-                    curtidas = 0,
-                    comentarios = 0,
-                    avaliacao = avaliacao,
-                    data_criacao = Date(),
-                    livro = selectedLivro
-                )
-                postRepository.savePost(
-                    post = post,
-                    onSuccess = {
-                        Log.d("CreatePostScreen", "Post salvo com sucesso!")
-                        navController.popBackStack()
-                    },
-                    onFailure = { e ->
-                        Log.e("CreatePostScreen", "Erro ao salvar post: ${e.message}")
-                    }
-                )
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Publicar")
+            Button(
+                onClick = {
+                    val post = Post(
+                        usuario = userName, // Usando o nome do usuário logado
+                        titulo = titulo,
+                        texto = texto,
+                        curtidas = 0,
+                        comentarios = 0,
+                        avaliacao = avaliacao,
+                        data_criacao = Date(),
+                        livro = selectedLivro
+                    )
+                    postRepository.savePost(
+                        post = post,
+                        onSuccess = {
+                            Log.d("CreatePostScreen", "Post salvo com sucesso!")
+                            navController.popBackStack()
+                        },
+                        onFailure = { e ->
+                            Log.e("CreatePostScreen", "Erro ao salvar post: ${e.message}")
+                        }
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Publicar")
+            }
         }
     }
 }

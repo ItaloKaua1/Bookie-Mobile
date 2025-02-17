@@ -52,7 +52,7 @@ fun FeedScreen(navController: NavController, feedViewModel: FeedViewModel) {
                         }
 
                         if (isViewingMyPosts) {
-                            val userPosts = posts.filter { it.usuario == "NomeDoUsuarioLogado" } // Trocar pelo usuário logado
+                            val userPosts = posts.filter { it.usuario == "NomeDoUsuarioLogado" }
 
                             if (userPosts.isEmpty()) {
                                 Text(
