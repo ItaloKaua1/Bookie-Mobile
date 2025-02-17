@@ -1,5 +1,7 @@
 package com.example.bookie.models
 
+import android.content.Context
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
@@ -16,7 +18,7 @@ object AuthManager {
     fun getCurrentUserId(): String? = auth.currentUser?.uid
 
     // Faz logout do usuário
-    fun logout() {
+    fun logout(navController: NavController, context: Context) {
         auth.signOut()
     }
 }

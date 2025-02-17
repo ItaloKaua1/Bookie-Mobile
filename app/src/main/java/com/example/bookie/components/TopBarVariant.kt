@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -57,13 +58,8 @@ fun TopBarVariante(navController: NavController, titulo: String, mostrarAcoes: B
         },
         actions = {
             if (mostrarAcoes) {
-                IconButton(onClick = {}) {
-                    Icon(
-                        modifier = Modifier.size(28.dp).fillMaxWidth().padding(end = 8.dp),
-                        imageVector = Icons.Filled.Settings,
-                        contentDescription = "Configurações",
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
+                IconButton(onClick = {navController.navigate("configuracoesTela")}) {
+                        Icon(imageVector = Icons.Default.Settings, contentDescription = "Editar Perfil", tint = MaterialTheme.colorScheme.primary)
                 }
                 IconButton(onClick = {}) {
                     Icon(
