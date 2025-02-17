@@ -8,11 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.bookie.AppData
 import com.example.bookie.UserRepository
-import com.example.bookie.components.CardConversa
 import com.example.bookie.components.CardMensagem
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.models.Conversa
@@ -42,7 +39,6 @@ import com.example.bookie.models.Notificacao
 import com.example.bookie.models.Usuario
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import java.lang.ref.Reference
 import java.util.Date
 
 private fun enviarMensagem(context: Context, corpo: String, id: String?, usuarioNotificacao: String?, usuarioEnvio: Usuario?, callback: () -> Unit) {
@@ -74,6 +70,16 @@ private fun enviadoPorMim(mensagem: Mensagem, id: String?): Boolean {
     }
 
     return id == mensagem.usuario!!.id
+}
+
+private fun getNomeUsuario(conversa: Conversa?, id: String): String {
+    return if (conversa == null) {
+        ""
+    } else if (conversa.usuario1?.id == id) {
+        conversa.usuario2?.nome.toString()
+    } else {
+        conversa.usuario1?.nome.toString()
+    }
 }
 
 @Composable
@@ -124,7 +130,7 @@ fun TelaConversa(navController: NavController, id: String) {
         enviarMensagem(context, text, conversa.id, usuarioNotificacao, usuario, onSuccessEnviarMensagem)
     }
 
-    LayoutVariant(navController, nome) {
+    LayoutVariant(navController, getNomeUsuario(conversa, userId.value)) {
         Column(
             modifier = Modifier.fillMaxSize().padding(16.dp)
         ) {

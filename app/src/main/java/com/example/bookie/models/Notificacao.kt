@@ -12,4 +12,5 @@ class Notificacao(
     var usuarioOrigem: String? = null,
     @Serializable(DateSerializer::class)
     var dataHora: Date? = null,
+    var irPara: String? = null,
 ): java.io.Serializable

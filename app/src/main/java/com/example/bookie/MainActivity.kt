@@ -201,6 +201,58 @@ class MainActivity : ComponentActivity() {
                             TelaConversa(navController, id)
                         }
                     }
+                    composable(
+                        route = "disponibilizarParaTrocaScreen/{id}/{estante}",
+                        arguments = listOf(
+                            navArgument(name = "id") {
+                                type = NavType.StringType
+                            },
+                            navArgument(name = "estante") {
+                                type = NavType.BoolType
+                            },
+                        )
+                    ) { backstackEntry ->
+                        val id = backstackEntry.arguments?.getString("id")
+                        val estante = backstackEntry.arguments?.getBoolean("estante")
+                        if (id != null) {
+                            DisponibilizarParaTrocaScreen(navController, id, estante)
+                        }
+                    }
+                    composable("listarLivrosTroca") { ListarLivrosTroca(navController) }
+                    composable("finalizarPropostaSucesso") { FinalizarPropostaSucesso(navController) }
+                    composable(
+                        route = "telaLivroTroca/{id}",
+                        arguments = listOf(
+                            navArgument(name = "id") { type = NavType.StringType },
+                        )
+                    ) { backstackEntry ->
+                        val id = backstackEntry.arguments?.getString("id")
+                        if (id != null) {
+                            TelaLivroTroca(navController, id)
+                        }
+                    }
+                    composable(
+                        route = "finalizarProposta/{id}",
+                        arguments = listOf(
+                            navArgument(name = "id") { type = NavType.StringType },
+                        )
+                    ) { backstackEntry ->
+                        val id = backstackEntry.arguments?.getString("id")
+                        if (id != null) {
+                            FinalizarProposta(navController, id)
+                        }
+                    }
+                    composable(
+                        route = "visualizarProposta/{id}",
+                        arguments = listOf(
+                            navArgument(name = "id") { type = NavType.StringType },
+                        )
+                    ) { backstackEntry ->
+                        val id = backstackEntry.arguments?.getString("id")
+                        if (id != null) {
+                            VisualizarProposta(navController, id)
+                        }
+                    }
                     composable("editNome") { EditNome(navController) }
                     composable("editEmail") { EditEmail(navController) }
                     composable("editSenha") { EditSenha(navController) }
