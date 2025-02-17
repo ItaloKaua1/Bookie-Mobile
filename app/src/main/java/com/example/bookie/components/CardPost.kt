@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,137 +36,20 @@ import com.example.bookie.ui.theme.BookieTheme
 import java.util.Date
 
 @Composable
-fun CardPost(post: Post, modifier: Modifier = Modifier) {
+fun CardPost(post: Post) {
     Card(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onSecondary,
-        ),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Row {
-                    Image(
-                        painter = painterResource(id = R.drawable.avatar),
-                        contentDescription = stringResource(id = R.string.capa_livro),
-                        modifier = Modifier
-                            .height(40.dp)
-                            .width(40.dp),
-                    )
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.padding(start = 8.dp)
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Text(text = post.usuario, style = MaterialTheme.typography.labelSmall)
-                            Text(text = "@nome", style = MaterialTheme.typography.labelSmall)
-                        }
-                        Icon(
-                            modifier = Modifier
-                                .size(16.dp)
-                                .fillMaxWidth(),
-                            imageVector = Icons.Outlined.Star,
-                            contentDescription = "Voto",
-                        )
-                    }
-                }
-                Text(text = "há 14 minutos", style = MaterialTheme.typography.labelSmall)
-            }
-            Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = post.titulo)
-                Text(text = post.texto)
-            }
-            if (post.livro !== null) {
-                Column {
-                    HorizontalDivider(
-                        thickness = 1.dp,
-                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                    )
-                    Row (
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.capa_bunny),
-                            contentDescription = stringResource(id = R.string.capa_livro),
-                            modifier = Modifier.height(64.dp).width(55.dp),
-                        )
-                        Column {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            ) {
-                                Icon(
-                                    modifier = Modifier
-                                        .size(8.dp)
-                                        .fillMaxWidth(),
-                                    painter = painterResource(R.drawable.ic_clock),
-                                    contentDescription = "Voto",
-                                )
-                                Text(text = "adicionou um histórico de leitura", style = MaterialTheme.typography.labelSmall)
-                            }
-                            Text(text = post.livro!!.volumeInfo?.nome!!, style = MaterialTheme.typography.titleSmall)
-                            Text(text = post.livro!!.getAutor(), style = MaterialTheme.typography.labelSmall)
-                            Text(text = post.livro!!.volumeInfo?.sinopse!!, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp))
-                        }
-                    }
-                }
-            }
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .size(16.dp)
-                                .fillMaxWidth(),
-                            imageVector = Icons.Outlined.FavoriteBorder,
-                            contentDescription = "Voto",
-                        )
-                        Text(text = "${post.curtidas} curtidas", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(start = 4.dp))
-                    }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .size(16.dp)
-                                .fillMaxWidth(),
-                            imageVector = Icons.Outlined.Email,
-                            contentDescription = "Voto",
-                        )
-                        Text(text = "${post.comentarios} comentários", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(start = 4.dp))
-                    }
-                }
-                Icon(
-                    modifier = Modifier
-                        .size(16.dp)
-                        .fillMaxWidth(),
-                    imageVector = Icons.Sharp.ThumbUp,
-                    contentDescription = "Voto",
-                )
-            }
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = post.titulo, style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = post.texto, style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+//            if (post.livro != null) {
+//                Text(text = "Livro: ${post.livro.volumeInfo.title}", style = MaterialTheme.typography.bodySmall)
+//            }
         }
     }
 }

@@ -24,6 +24,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.bookie.components.ConfiguracoesViewModel
 import com.example.bookie.models.FcmToken
+import com.example.bookie.services.BooksRepositorio
+import com.example.bookie.services.FeedViewModel
+import com.example.bookie.services.PostRepository
 import com.example.bookie.ui.screens.*
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen1
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen2
@@ -45,6 +48,7 @@ import com.example.bookie.ui.screens.ResultadosDescScreen
 import com.example.bookie.ui.screens.TelaLivro
 import com.example.bookie.ui.screens.TelaNotificacoes
 import com.example.bookie.ui.screens.TelaPerfil
+import com.example.bookie.ui.theme.BookieTheme
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
@@ -150,7 +154,7 @@ class MainActivity : ComponentActivity() {
                     composable("cadastroScreen2") { CadastroScreen2(navController) }
                     composable("cadastroScreen3") { CadastroScreen3(navController) }
                     composable("editarPerfil") { EditarPerfil(navController) }
-                    composable("feedScreen") { FeedScreen(navController) }
+                    composable("feedScreen") { FeedScreen(navController, feedViewModel = FeedViewModel(postRepository = PostRepository())) }
                     composable("listarLivros") { ListarLivros(navController) }
                     composable("minhaEstante") { MinhaEstante(navController) }
                     composable("telaPerfil") { TelaPerfil(navController) }
@@ -259,6 +263,13 @@ class MainActivity : ComponentActivity() {
                     composable("temaConfig") { TemaConfig(navController) }
                     composable("animacaoConfig") { AnimacaoConfig(navController) }
                     composable("notiConfig") { NotificacoesConfig(navController) }
+                    composable("createPost") {
+                        CreatePostScreen(
+                            navController = navController,
+                            postRepository = PostRepository(),
+                            booksRepositorio = BooksRepositorio()
+                        )
+                    }
                 }
             }
         }
