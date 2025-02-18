@@ -1,5 +1,6 @@
 package com.example.bookie
 
+import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -77,18 +79,18 @@ class MainActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     this,
-                    android.Manifest.permission.POST_NOTIFICATIONS
+                    Manifest.permission.POST_NOTIFICATIONS
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
                 // FCM SDK (and your app) can post notifications.
-            } else if (shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS)) {
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
                 // TODO: display an educational UI explaining to the user the features that will be enabled
                 //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
                 //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
                 //       If the user selects "No thanks," allow the user to continue without notifications.
             } else {
                 // Directly ask for the permission
-                requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
     }
@@ -205,6 +207,54 @@ class MainActivity : ComponentActivity() {
                         if (id != null) {
                             TelaConversa(navController, id)
                         }
+                    }
+
+                    composable("descobrirLivro") { DescobrirScreen(navController) }
+                    composable("resultadosDescobrir") { ResultadosDescScreen(
+                        navController,
+                        query = TODO(),
+                        context = TODO()
+                    ) }
+                    composable("criarLista") { CriarListaScreen(navController) }
+                    composable(
+                        route = "detalhesListas/{id}/{nome}/{descricao}/{quantidadeLivros}",
+                        arguments = listOf(
+                            navArgument("id") { type = NavType.StringType },
+                            navArgument("nome") { type = NavType.StringType },
+                            navArgument("descricao") { type = NavType.StringType },
+                            navArgument("quantidadeLivros") { type = NavType.IntType }
+                        )
+                    ) { backStackEntry ->
+                        val id = backStackEntry.arguments?.getString("id") ?: "ID Indisponível"
+                        val nome = backStackEntry.arguments?.getString("nome") ?: "Nome Indisponível"
+                        val descricao = backStackEntry.arguments?.getString("descricao") ?: "Sem descrição"
+                        val quantidadeLivros = backStackEntry.arguments?.getInt("quantidadeLivros") ?: 0
+
+                        // Agora passando o ID corretamente
+                        ThematicListDetailsScreen(navController, nome, descricao, quantidadeLivros, id)
+                    }
+                    composable(
+                        route = "adicionarLivrosScreen/{nome}/{descricao}"
+                    ) { backStackEntry ->
+                        val nome = backStackEntry.arguments?.getString("nome") ?: ""
+                        val descricao = backStackEntry.arguments?.getString("descricao") ?: ""
+
+                        AdicionarLivrosScreen(navController, nome, descricao)
+                    }
+                    composable("friendsScreen") { FriendsScreen(navController) }
+                    composable("friendsSolicitationScreen") { FriendsSolicitationScreen(navController) }
+                    composable("clubesScreen"){ ClubesScreen(navController) }
+                    composable("createClubScreen"){ CreateClubScreen(navController) }
+                    composable("clube/{clubeId}") { backStackEntry ->
+                        val clubeId = backStackEntry.arguments?.getString("clubeId")
+                        if (clubeId != null) {
+                            TelaClubeDetalhes(clubeId, navController)
+                        }
+                    }
+                    composable("selecionarLivroScreen"){SelecionarLivroScreen(navController)}
+                    composable("criarTopico/{clubeId}") { backStackEntry ->
+                        val clubeId = backStackEntry.arguments?.getString("clubeId")
+                        clubeId?.let { CriarTopicoScreen(it, navController) }
                     }
                     composable(
                         route = "disponibilizarParaTrocaScreen/{id}/{estante}",
