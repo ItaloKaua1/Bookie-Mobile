@@ -26,13 +26,25 @@ import com.example.bookie.UserRepository
 import com.example.bookie.components.DropdownInput
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.models.Livro
+import com.example.bookie.models.Notificacao
 import com.example.bookie.models.TrocaDisponivel
+import com.example.bookie.models.TrocaOferecida
 import com.example.bookie.models.Usuario
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.util.Date
+
+private fun enviarNotificacao(trocaDisponivel: TrocaDisponivel, id: String) {
+    val db = FirebaseFirestore.getInstance()
+
+    val usuarioOrigem = trocaDisponivel.usuario?.id.toString()
+    val corpo = "Você disponibilizou o livro ${trocaDisponivel.livro?.volumeInfo?.nome.toString()} para troca, cique aqui para acompanhar."
+    val notificacao = Notificacao("", "Livro Disponível para Troca", corpo, listOf(usuarioOrigem), usuarioOrigem, Date(), "listarLivrosTroca")
+    db.collection("notificacoes").add(notificacao)
+}
 
 private fun atualizarLivro(livro: Livro?) {
     val db = FirebaseFirestore.getInstance()
@@ -52,6 +64,7 @@ private fun disponibilizarParaTroca(navController: NavController, context: Conte
         if (it.isSuccessful) {
             atualizarLivro(trocaDisponivel.livro)
             Toast.makeText(context, "Livro disponibilizado para troca!", Toast.LENGTH_SHORT).show()
+            enviarNotificacao(trocaDisponivel, it.result.id)
             navController.popBackStack()
         } else {
             Toast.makeText(context, "Desculpe, ocorreu um erro ao disponibilizar livro para troca", Toast.LENGTH_SHORT).show()

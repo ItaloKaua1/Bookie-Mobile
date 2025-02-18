@@ -32,8 +32,24 @@ private val postsTroca: List<Post> = listOf()
 
 private fun getTroca(id: String): TrocaDisponivel? {
     val appData = AppData.getInstance()
+    val troca = appData.getTrocaDisponivel(id)
 
-    return appData.getTrocaDisponivel(id)
+    if (troca == null) {
+        return appData.getMinhasTrocaDisponivel(id)
+    } else {
+        return troca
+    }
+}
+
+private fun getIsMeuLivro(id: String): Boolean {
+    val appData = AppData.getInstance()
+    val troca = appData.getTrocaDisponivel(id)
+
+    if (troca == null) {
+        return true
+    } else {
+        return false
+    }
 }
 
 private fun proporTroca(navController: NavController, id: String?) {
@@ -45,6 +61,7 @@ private fun proporTroca(navController: NavController, id: String?) {
 @Composable
 fun TelaLivroTroca(navController: NavController, id: String) {
     var troca by remember { mutableStateOf(getTroca(id)) }
+    var meuLivro by remember { mutableStateOf(getIsMeuLivro(id)) }
     var livro by remember { mutableStateOf(troca?.livro) }
     var titulo = if (livro !== null) livro!!.volumeInfo!!.nome else "Não encontrado"
     val getSinopse = { if (livro!!.volumeInfo!!.sinopse.isNullOrEmpty()) "" else livro!!.volumeInfo!!.sinopse!! }
@@ -133,7 +150,8 @@ fun TelaLivroTroca(navController: NavController, id: String) {
                                 Button(
                                     onClick = {
                                         proporTroca(navController, troca!!.document)
-                                    }
+                                    },
+                                    enabled = !meuLivro
                                 ) {
                                     Text(text = "Propor Troca")
                                 }
