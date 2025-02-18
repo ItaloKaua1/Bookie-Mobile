@@ -32,6 +32,7 @@ import com.example.bookie.models.Notificacao
 import com.example.bookie.services.BooksRepositorio
 import com.example.bookie.ui.theme.BookieTheme
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import kotlinx.coroutines.flow.first
 import java.util.Date
 
@@ -43,10 +44,16 @@ fun TelaNotificacoes(navController: NavController) {
     val context = LocalContext.current
     val userRepo = UserRepository(context)
 
+    val onClick = { notificacao: Notificacao ->
+        if (!notificacao.irPara.isNullOrEmpty()) {
+            navController.navigate(notificacao.irPara!!)
+        }
+    }
+
     LaunchedEffect(Unit) {
         val userId = userRepo.currentUserId.first()
         
-        db.collection("notificacoes").whereArrayContains("usuarioDestino", userId).get().addOnSuccessListener { documents ->
+        db.collection("notificacoes").whereArrayContains("usuarioDestino", userId).orderBy("dataHora", Query.Direction.DESCENDING).get().addOnSuccessListener { documents ->
             val localNotificacoes: ArrayList<Notificacao> = arrayListOf()
             for (document in documents) {
                 val localNotificacao = document.toObject(Notificacao::class.java)
@@ -67,7 +74,7 @@ fun TelaNotificacoes(navController: NavController) {
                     ) {
                     notificacoes.forEachIndexed() { index, notificacao ->
                         item{
-                            CardNotificacao(notificacao)
+                            CardNotificacao(notificacao, onClick)
                             if (index < notificacoes.size - 1) {
                                 HorizontalDivider(
                                     thickness = 0.5.dp,

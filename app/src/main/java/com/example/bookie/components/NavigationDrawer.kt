@@ -31,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,16 +42,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.bookie.R
+import com.example.bookie.UserRepository
 import com.example.bookie.models.Livro
 import com.example.bookie.models.NavigationItem
 import kotlinx.coroutines.launch
 import com.google.firebase.auth.FirebaseAuth
-
-private fun logout(navController: NavController, context: Context) {
-    FirebaseAuth.getInstance().signOut()
-    Toast.makeText(context, "Logout realizado com sucesso!", Toast.LENGTH_SHORT).show()
-    navController.navigate("loginScreen")
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,19 +84,24 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
         NavigationItem(
             title = "trocar livros",
             icon = Icons.Outlined.Refresh,
-            action = { navController.navigate("telaPerfil") }
+            action = { navController.navigate("listarLivrosTroca") }
         ),
-        NavigationItem(
-            title = "sair",
-            icon = Icons.Outlined.ExitToApp,
-            action = { logout(navController, context) },
-        ),
+//        NavigationItem(
+//            title = "sair",
+//            icon = Icons.Outlined.ExitToApp,
+//            action = { logout(navController, context) },
+//        ),
     )
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
+
+                val context = LocalContext.current
+                val userRepo = UserRepository(context)
+                val userName = userRepo.currentUserName.collectAsState(initial = "")
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
@@ -111,8 +112,7 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
                         contentDescription = "Imagem de Usuário"
                     )
                     Column {
-                        Text(text = "Olivia")
-                        Text(text = "@oliviarodri")
+                        Text(text = "${userName.value}")
                     }
                 }
                 Row(
@@ -166,7 +166,7 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
                 BottomBar(navController)
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = { /* Navegar para tela de newpost */ }) {
+                FloatingActionButton(onClick = { -> navController.navigate("createPost") }) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_add),
                         contentDescription = "Adicionar novo post"

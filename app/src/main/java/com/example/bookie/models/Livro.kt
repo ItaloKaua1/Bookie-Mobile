@@ -28,24 +28,31 @@ class VolumeInfo(
 
 
 @Serializable
-open class Livro (
+data class Livro (
     var id: String? = null,
     var volumeInfo: VolumeInfo? = null,
     var favorito: Boolean? = null,
     var document: String? = null,
+    var disponivelTroca: Boolean? = null,
+    var usuario: Usuario? = null,
 ): java.io.Serializable {
 
 
-    constructor(): this(null, null)
+    constructor(): this(null, null, null, null, null, null)
 
 
     public fun getAutor(): String {
-        if (volumeInfo?.autor!!.isNotEmpty()) {
-            return volumeInfo?.autor!![0];
+        if (volumeInfo == null) {
+            return ""
         }
 
+        val autores = volumeInfo!!.autor
 
-        return "";
+        if (autores == null || autores.isEmpty()) {
+            return ""
+        }
+
+        return autores[0]
     }
 
 

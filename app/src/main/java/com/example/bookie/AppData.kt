@@ -3,6 +3,7 @@ package com.example.bookie
 
 import com.example.bookie.models.Conversa
 import com.example.bookie.models.Livro
+import com.example.bookie.models.TrocaDisponivel
 import com.example.bookie.models.ThematicList
 import com.example.bookie.models.Usuario
 
@@ -12,6 +13,8 @@ class AppData {
     private var minhaEstante: List<Livro> = listOf()
     private var conversas: MutableList<Conversa> = mutableListOf()
     private var usuarioLogado: Usuario? = null
+    private var trocasDisponiveis: MutableList<TrocaDisponivel> = mutableListOf()
+    private var minhasTrocasDisponiveis: MutableList<TrocaDisponivel> = mutableListOf()
     private var listaTematica: List<ThematicList> = mutableListOf()
 
 
@@ -83,5 +86,25 @@ class AppData {
 
     fun setListaTematica(lista: List<ThematicList>) {
         this.listaTematica = lista
+    }
+
+    fun getTrocasDisponiveis(): MutableList<TrocaDisponivel> {
+        return trocasDisponiveis
+    }
+
+    fun setTrocasDisponiveis(trocas: List<TrocaDisponivel>) {
+        trocasDisponiveis = trocas.toMutableList()
+    }
+
+    fun getTrocaDisponivel(id: String): TrocaDisponivel? {
+        return trocasDisponiveis.find { troca -> troca.document == id }
+    }
+
+    fun setMinhasTrocasDisponiveis(trocas: List<TrocaDisponivel>) {
+        minhasTrocasDisponiveis = trocas.toMutableList()
+    }
+
+    fun getMinhasTrocaDisponivel(id: String): TrocaDisponivel? {
+        return minhasTrocasDisponiveis.find { troca -> troca.document == id }
     }
 }

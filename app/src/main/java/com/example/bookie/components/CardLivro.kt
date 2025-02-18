@@ -30,6 +30,9 @@ import com.example.bookie.ui.theme.BookieTheme
 
 @Composable
 fun CardLivro(livro: Livro, onClick: (Livro) -> Unit = {}) {
+    val getSinopse = { if (livro.volumeInfo!!.sinopse.isNullOrEmpty()) "" else livro.volumeInfo!!.sinopse!! }
+    val getNome = { if (livro.volumeInfo!!.nome.isNullOrEmpty()) "" else livro.volumeInfo!!.nome!! }
+
     Card (
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
@@ -37,7 +40,7 @@ fun CardLivro(livro: Livro, onClick: (Livro) -> Unit = {}) {
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.outline,
         ),
-        modifier = Modifier.clickable { onClick(livro) },
+        modifier = Modifier.fillMaxWidth().clickable { onClick(livro) },
     ) {
         Row (
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -58,9 +61,9 @@ fun CardLivro(livro: Livro, onClick: (Livro) -> Unit = {}) {
                 )
             }
             Column {
-                Text(text = livro.volumeInfo?.nome!!, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(bottom = 2.dp))
+                Text(text = getNome(), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(bottom = 2.dp))
                 Text(text = livro.getAutor(), style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(bottom = 8.dp))
-                Text(text = livro.volumeInfo?.sinopse!!, maxLines = 2, style = MaterialTheme.typography.bodySmall)
+                Text(text = getSinopse(), maxLines = 2, style = MaterialTheme.typography.bodySmall)
             }
         }
 

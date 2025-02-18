@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primario"
-    android:gravity="center"
-    >
+    android:fitsSystemWindows="true"
+    android:gravity="center">
 
     <ImageView
         android:id="@+id/bookie_logo"
-        android:layout_width="327dp"
-        android:layout_height="494dp"
+        android:layout_width="284dp"
+        android:layout_height="399dp"
+        android:scaleType="fitCenter"
         android:src="@mipmap/icon_foreground" />
 </LinearLayout>

@@ -1,6 +1,7 @@
 package com.example.bookie.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,11 +27,15 @@ import com.example.bookie.ui.theme.BookieTheme
 import java.util.Date
 
 @Composable
-fun CardNotificacao(notificacao: Notificacao) {
+fun CardNotificacao(notificacao: Notificacao, onClick: ((Notificacao) -> Unit)? = null) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable {
+            if (onClick != null) {
+                onClick(notificacao)
+            }
+        },
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_local_library),
@@ -41,7 +46,7 @@ fun CardNotificacao(notificacao: Notificacao) {
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.weight(1f)
         ) {
-            Text(text = notificacao.usuarioOrigem!!, style = MaterialTheme.typography.titleMedium)
+            Text(text = notificacao.titulo!!, style = MaterialTheme.typography.titleMedium)
             Text(text = notificacao.corpo!!, style = MaterialTheme.typography.bodySmall)
             Text(text = notificacao.dataHora.toString(), style = MaterialTheme.typography.labelSmall, color = Color.Gray)
         }
@@ -56,11 +61,11 @@ fun CardNotificacao(notificacao: Notificacao) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun GreetingPreview() {
-    val notificacao = Notificacao(usuarioOrigem = "teste", corpo =  "notificacao de teste", dataHora =  Date())
-    BookieTheme {
-        CardNotificacao(notificacao)
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun GreetingPreview() {
+//    val notificacao = Notificacao(usuarioOrigem = "teste", corpo =  "notificacao de teste", dataHora =  Date())
+//    BookieTheme {
+//        CardNotificacao(notificacao)
+//    }
+//}

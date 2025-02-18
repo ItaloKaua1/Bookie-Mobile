@@ -1,5 +1,6 @@
 package com.example.bookie
 
+import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -27,18 +28,26 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.bookie.components.ConfiguracoesViewModel
 import com.example.bookie.models.FcmToken
+import com.example.bookie.services.BooksRepositorio
+import com.example.bookie.services.FeedViewModel
+import com.example.bookie.services.PostRepository
 import com.example.bookie.ui.screens.*
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen1
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen2
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen3
+import com.example.bookie.ui.screens.ConfigsScreen.AnimacaoConfig
+import com.example.bookie.ui.screens.ConfigsScreen.EditEmail
+import com.example.bookie.ui.screens.ConfigsScreen.EditNome
+import com.example.bookie.ui.screens.ConfigsScreen.EditSenha
+import com.example.bookie.ui.screens.ConfigsScreen.EditarPerfil
+import com.example.bookie.ui.screens.ConfigsScreen.NotificacoesConfig
+import com.example.bookie.ui.screens.ConfigsScreen.TemaConfig
 import com.example.bookie.ui.screens.ConfiguracoesTela
 import com.example.bookie.ui.screens.DescobrirScreen
 import com.example.bookie.ui.screens.FeedScreen
 import com.example.bookie.ui.screens.ListarLivros
 import com.example.bookie.ui.screens.LoginScreen
 import com.example.bookie.ui.screens.MinhaEstante
-import com.example.bookie.ui.screens.TelaChat
-import com.example.bookie.ui.screens.TelaConversa
 import com.example.bookie.ui.screens.ResultadosDescScreen
 import com.example.bookie.ui.screens.TelaLivro
 import com.example.bookie.ui.screens.TelaNotificacoes
@@ -70,18 +79,18 @@ class MainActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     this,
-                    android.Manifest.permission.POST_NOTIFICATIONS
+                    Manifest.permission.POST_NOTIFICATIONS
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
                 // FCM SDK (and your app) can post notifications.
-            } else if (shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS)) {
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
                 // TODO: display an educational UI explaining to the user the features that will be enabled
                 //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
                 //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
                 //       If the user selects "No thanks," allow the user to continue without notifications.
             } else {
                 // Directly ask for the permission
-                requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
     }
@@ -135,7 +144,6 @@ class MainActivity : ComponentActivity() {
             val cores = if (temaEscuro) darkColorScheme() else lightColorScheme()
 
             MaterialTheme(colorScheme = cores) {
-                // Configura a barra de status com a cor do tema
                 val primaryColor = MaterialTheme.colorScheme.primaryContainer
                 SideEffect {
                     window.statusBarColor = primaryColor.toArgb()
@@ -148,10 +156,11 @@ class MainActivity : ComponentActivity() {
                     composable("cadastroScreen1") { CadastroScreen1(navController) }
                     composable("cadastroScreen2") { CadastroScreen2(navController) }
                     composable("cadastroScreen3") { CadastroScreen3(navController) }
-                    composable("feedScreen") { FeedScreen(navController) }
+                    composable("editarPerfil") { EditarPerfil(navController) }
+                    composable("feedScreen") { FeedScreen(navController, feedViewModel = FeedViewModel(postRepository = PostRepository())) }
                     composable("listarLivros") { ListarLivros(navController) }
                     composable("minhaEstante") { MinhaEstante(navController) }
-                    composable("telaPerfil") { TelaPerfil(navController) }
+                    composable("telaPerfil") { TelaPerfil(navController, feedViewModel = FeedViewModel(postRepository = PostRepository()))}
                     composable("telaNotificacoes") { TelaNotificacoes(navController) }
                     composable("configuracoesTela") {
                         ConfiguracoesTela(navController = navController, viewModel = configuracoesViewModel)
@@ -167,6 +176,22 @@ class MainActivity : ComponentActivity() {
                         val estante = backstackEntry.arguments?.getBoolean("estante")
                         if (idLivro != null) {
                             TelaLivro(navController, id = idLivro, estante = estante)
+                        }
+                    }
+                    composable("descobrirLivro") { DescobrirScreen(navController) }
+                    composable("resultadosDescobrir/{query}") { backStackEntry ->
+                        val query = backStackEntry.arguments?.getString("query") ?: ""
+                        ResultadosDescScreen(navController, query, context)
+                    }
+                    composable(
+                        route = "telaAudioBook/{id}",
+                        arguments = listOf(
+                            navArgument(name = "id") { type = NavType.StringType }
+                        )
+                    ) { backstackEntry ->
+                        val idLivro = backstackEntry.arguments?.getString("id")
+                        if (idLivro != null) {
+                            TelaAudioBook(navController, bookId = idLivro)
                         }
                     }
                     composable("telaChat") { TelaChat(navController) }
@@ -185,7 +210,11 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable("descobrirLivro") { DescobrirScreen(navController) }
-                    composable("resultadosDescobrir") { ResultadosDescScreen(navController) }
+                    composable("resultadosDescobrir") { ResultadosDescScreen(
+                        navController,
+                        query = TODO(),
+                        context = TODO()
+                    ) }
                     composable("criarLista") { CriarListaScreen(navController) }
                     composable(
                         route = "detalhesListas/{nome}/{descricao}/{quantidadeLivros}",
@@ -224,7 +253,73 @@ class MainActivity : ComponentActivity() {
                         val clubeId = backStackEntry.arguments?.getString("clubeId")
                         clubeId?.let { CriarTopicoScreen(it, navController) }
                     }
-
+                    composable(
+                        route = "disponibilizarParaTrocaScreen/{id}/{estante}",
+                        arguments = listOf(
+                            navArgument(name = "id") {
+                                type = NavType.StringType
+                            },
+                            navArgument(name = "estante") {
+                                type = NavType.BoolType
+                            },
+                        )
+                    ) { backstackEntry ->
+                        val id = backstackEntry.arguments?.getString("id")
+                        val estante = backstackEntry.arguments?.getBoolean("estante")
+                        if (id != null) {
+                            DisponibilizarParaTrocaScreen(navController, id, estante)
+                        }
+                    }
+                    composable("listarLivrosTroca") { ListarLivrosTroca(navController) }
+                    composable("finalizarPropostaSucesso") { FinalizarPropostaSucesso(navController) }
+                    composable(
+                        route = "telaLivroTroca/{id}",
+                        arguments = listOf(
+                            navArgument(name = "id") { type = NavType.StringType },
+                        )
+                    ) { backstackEntry ->
+                        val id = backstackEntry.arguments?.getString("id")
+                        if (id != null) {
+                            TelaLivroTroca(navController, id)
+                        }
+                    }
+                    composable(
+                        route = "finalizarProposta/{id}",
+                        arguments = listOf(
+                            navArgument(name = "id") { type = NavType.StringType },
+                        )
+                    ) { backstackEntry ->
+                        val id = backstackEntry.arguments?.getString("id")
+                        if (id != null) {
+                            FinalizarProposta(navController, id)
+                        }
+                    }
+                    composable(
+                        route = "visualizarProposta/{id}",
+                        arguments = listOf(
+                            navArgument(name = "id") { type = NavType.StringType },
+                        )
+                    ) { backstackEntry ->
+                        val id = backstackEntry.arguments?.getString("id")
+                        if (id != null) {
+                            VisualizarProposta(navController, id)
+                        }
+                    }
+                    composable("editNome") { EditNome(navController) }
+                    composable("editEmail") { EditEmail(navController) }
+                    composable("editSenha") { EditSenha(navController) }
+                    composable("temaConfig") { TemaConfig(navController) }
+                    composable("animacaoConfig") { AnimacaoConfig(navController) }
+                    composable("notiConfig") { NotificacoesConfig(navController) }
+                    composable("createPost") {
+                        val context = LocalContext.current // Obtém o contexto atual
+                        CreatePostScreen(
+                            navController = navController,
+                            postRepository = PostRepository(),
+                            booksRepositorio = BooksRepositorio(),
+                            userRepository = UserRepository(context) // Passa o contexto para o UserRepository
+                        )
+                    }
                 }
             }
         }

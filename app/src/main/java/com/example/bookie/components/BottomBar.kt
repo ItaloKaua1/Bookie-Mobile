@@ -41,7 +41,7 @@ fun BottomBar(navController: NavController) {
         NavigationItem(
             title = "criar",
             icon = Icons.Outlined.Add,
-            action = {  -> navController.navigate("telaPerfil")}
+            action = {  -> navController.navigate("createPost")}
         ),
         NavigationItem(
             title = "chat",

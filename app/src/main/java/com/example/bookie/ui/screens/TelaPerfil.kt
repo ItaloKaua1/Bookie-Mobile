@@ -8,14 +8,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,11 +28,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.bookie.R
+import com.example.bookie.UserRepository
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.components.MinhasListas
 import com.example.bookie.components.MinhasPostagens
@@ -36,11 +43,12 @@ import com.example.bookie.models.Livro
 import com.example.bookie.models.Post
 import com.example.bookie.models.ThematicList
 import com.example.bookie.models.VolumeInfo
+import com.example.bookie.services.FeedViewModel
 import java.util.Date
 
 
 @Composable
-fun TelaPerfil(navController: NavHostController) {
+fun TelaPerfil(navController: NavHostController, feedViewModel: FeedViewModel) {
     var tabIndex by rememberSaveable { mutableStateOf(0) }
     val tabs = listOf("minhas postagens", "minhas listas")
     val post = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date())
@@ -54,6 +62,11 @@ fun TelaPerfil(navController: NavHostController) {
     }
 
 
+    val context = LocalContext.current
+    val userRepo = UserRepository(context)
+    val userName by userRepo.currentUserName.collectAsState(initial = "")
+
+    val posts by feedViewModel.posts.collectAsState()
 
     LayoutVariant(navController, "Meu perfil", true) {
         Column {
@@ -62,12 +75,11 @@ fun TelaPerfil(navController: NavHostController) {
                     horizontalArrangement = Arrangement.spacedBy(72.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.avatar),
-                        contentDescription = stringResource(id = R.string.capa_livro),
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "Foto do usuário",
                         modifier = Modifier
-                            .height(64.dp)
-                            .width(64.dp),
+                            .size(64.dp)
                     )
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(40.dp),
@@ -101,12 +113,11 @@ fun TelaPerfil(navController: NavHostController) {
             }
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.padding(top = 16.dp),
+                modifier = Modifier.padding(top = 16.dp).padding(horizontal = 8.dp),
             ) {
-                Text(text = "name", style = MaterialTheme.typography.titleMedium)
+                Text(text = userName, style = MaterialTheme.typography.titleMedium)
                 Text(text = "sobre", style = MaterialTheme.typography.bodyMedium)
             }
-
 
             Column {
                 TabRow(selectedTabIndex = tabIndex) {
@@ -123,7 +134,7 @@ fun TelaPerfil(navController: NavHostController) {
                 }
 
                 when (tabIndex) {
-                    0 -> MinhasPostagens(listOf(post, post2))
+                    0 -> MinhasPostagens(posts = posts, userName = userName)
                     1 -> MinhasListas(navController, thematicList)
                 }
             }

@@ -1,6 +1,7 @@
 package com.example.bookie.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -23,7 +24,7 @@ fun LayoutVariant(navController: NavController, titulo: String, mostrarAcoes: Bo
         },
     ) { innerPadding ->
         // Screen content
-        Box(modifier = Modifier.padding(innerPadding)) {
+        Column(modifier = Modifier.padding(innerPadding)) {
             content()
         }
     }

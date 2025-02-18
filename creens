@@ -1,0 +1,13 @@
+[33m3e0be24[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeat/post-func[m[33m)[m HEAD@{0}: reset: moving to HEAD
+[33m3e0be24[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeat/post-func[m[33m)[m HEAD@{1}: commit: post guardando e mostrando o livro
+[33mbfc7636[m HEAD@{2}: commit: adc mais coisas nos cards
+[33m5e13bc2[m HEAD@{3}: rebase (finish): returning to refs/heads/feat/post-func
+[33m5e13bc2[m HEAD@{4}: rebase (pick): posts passando nome e foto de usuario
+[33m74ed194[m HEAD@{5}: rebase (continue): post funcional
+[33ma5cf484[m[33m ([m[1;32mmain[m[33m)[m HEAD@{6}: rebase (start): checkout main
+[33m526b4a7[m[33m ([m[1;31morigin/feat/post-func[m[33m)[m HEAD@{7}: checkout: moving from main to feat/post-func
+[33ma5cf484[m[33m ([m[1;32mmain[m[33m)[m HEAD@{8}: pull: Fast-forward
+[33m1acee2f[m HEAD@{9}: checkout: moving from feat/post-func to main
+[33m526b4a7[m[33m ([m[1;31morigin/feat/post-func[m[33m)[m HEAD@{10}: commit: posts passando nome e foto de usuario
+[33mceee70e[m HEAD@{11}: checkout: moving from main to feat/post-func
+[33m1acee2f[m HEAD@{12}: clone: from https://www.github.com/ItaloKaua1/Bookie-Mobile
