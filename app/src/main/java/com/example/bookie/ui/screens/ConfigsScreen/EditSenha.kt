@@ -39,23 +39,25 @@ import androidx.navigation.NavController
 import com.example.bookie.UserRepository
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.ui.theme.PurpleBookie
+import kotlinx.coroutines.launch
 
 @Composable
-fun EditSenha(navController: NavController){
-    var senha by remember { mutableStateOf("") }
+fun EditSenha(navController: NavController) {
+    var senhaAtual by remember { mutableStateOf("") }
+    var novaSenha by remember { mutableStateOf("") }
     var confirmarSenha by remember { mutableStateOf("") }
 
-    var showPassword by remember { mutableStateOf(false) }
+    var showCurrentPassword by remember { mutableStateOf(false) }
+    var showNewPassword by remember { mutableStateOf(false) }
     var showConfirmPassword by remember { mutableStateOf(false) }
+
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var successMessage by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
     val userRepo = UserRepository(context)
     val focusManager = LocalFocusManager.current
-    var senhaAtual by remember { mutableStateOf("") }
-    var novaSenha by remember { mutableStateOf("") }
-
-    var showCurrentPassword by remember { mutableStateOf(false) }
-    var showNewPassword by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     val colorScheme = MaterialTheme.colorScheme
 
@@ -67,7 +69,6 @@ fun EditSenha(navController: NavController){
                     .clickable { focusManager.clearFocus() }
                     .padding(16.dp)
             ) {
-                // Título
                 Text(
                     text = "Alterar Senha",
                     fontWeight = FontWeight.Bold,
@@ -76,7 +77,6 @@ fun EditSenha(navController: NavController){
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Campo para a senha atual
                 TextField(
                     value = senhaAtual,
                     onValueChange = { senhaAtual = it },
@@ -90,42 +90,29 @@ fun EditSenha(navController: NavController){
                             )
                         }
                     },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = colorScheme.surfaceVariant,
-                        unfocusedContainerColor = colorScheme.surface,
-                        focusedIndicatorColor = colorScheme.primary,
-                        unfocusedIndicatorColor = colorScheme.onSurfaceVariant
-                    ),
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 TextField(
-                    value = senha,
-                    onValueChange = { senha = it },
+                    value = novaSenha,
+                    onValueChange = { novaSenha = it },
                     label = { Text("Nova Senha") },
-                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (showNewPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
-                        IconButton(onClick = { showPassword = !showPassword }) {
+                        IconButton(onClick = { showNewPassword = !showNewPassword }) {
                             Icon(
-                                imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                contentDescription = if (showPassword) "Ocultar senha" else "Mostrar senha"
+                                imageVector = if (showNewPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                contentDescription = if (showNewPassword) "Ocultar senha" else "Mostrar senha"
                             )
                         }
                     },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = colorScheme.surfaceVariant,
-                        unfocusedContainerColor = colorScheme.surface,
-                        focusedIndicatorColor = colorScheme.primary,
-                        unfocusedIndicatorColor = colorScheme.onSurfaceVariant
-                    ),
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Campo de confirmar senha
                 TextField(
                     value = confirmarSenha,
                     onValueChange = { confirmarSenha = it },
@@ -139,27 +126,49 @@ fun EditSenha(navController: NavController){
                             )
                         }
                     },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = colorScheme.surfaceVariant,
-                        unfocusedContainerColor = colorScheme.surface,
-                        focusedIndicatorColor = colorScheme.primary,
-                        unfocusedIndicatorColor = colorScheme.onSurfaceVariant
-                    ),
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+
+                errorMessage?.let {
+                    Text(text = it, color = Color.Red, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                successMessage?.let {
+                    Text(text = it, color = Color.Green, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
 
                 Button(
-                    onClick = { navController.navigate("configuracoesTela") },
+                    onClick = {
+                        if (novaSenha != confirmarSenha) {
+                            errorMessage = "As senhas não coincidem!"
+                            return@Button
+                        }
+                        if (novaSenha.length < 6) {
+                            errorMessage = "A nova senha deve ter pelo menos 6 caracteres!"
+                            return@Button
+                        }
+
+                        coroutineScope.launch {
+                            val success = userRepo.reauthenticateAndUpdatePassword(senhaAtual, novaSenha)
+                            if (success) {
+                                successMessage = "Senha alterada com sucesso!"
+                                errorMessage = null
+                                navController.navigate("configuracoesTela")
+                            } else {
+                                errorMessage = "Erro ao alterar a senha. Verifique sua senha atual."
+                                successMessage = null
+                            }
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp)
-                        .height(56.dp)
-                        .padding(bottom = 8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = PurpleBookie
-                    ),
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = PurpleBookie),
                     shape = RoundedCornerShape(6.dp)
                 ) {
                     Text(

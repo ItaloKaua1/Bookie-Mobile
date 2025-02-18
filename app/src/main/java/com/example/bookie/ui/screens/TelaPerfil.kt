@@ -39,21 +39,20 @@ import com.example.bookie.models.ImageLinks
 import com.example.bookie.models.Livro
 import com.example.bookie.models.Post
 import com.example.bookie.models.VolumeInfo
+import com.example.bookie.services.FeedViewModel
 import java.util.Date
 
 
 @Composable
-fun TelaPerfil(navController: NavHostController) {
+fun TelaPerfil(navController: NavHostController, feedViewModel: FeedViewModel) {
     var tabIndex by rememberSaveable { mutableStateOf(0) }
     val tabs = listOf("minhas postagens", "minhas listas")
-    val post = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date())
-    val livro = Livro("", VolumeInfo(ImageLinks("", ""), "Livro Teste", listOf("Autor Teste"), "Sinopse Teste", 34))
-    val post2 = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date(), livro)
-
 
     val context = LocalContext.current
     val userRepo = UserRepository(context)
-    val userName = userRepo.currentUserName.collectAsState(initial = "")
+    val userName by userRepo.currentUserName.collectAsState(initial = "")
+
+    val posts by feedViewModel.posts.collectAsState()
 
     LayoutVariant(navController, "Meu perfil", true) {
         Column {
@@ -100,10 +99,9 @@ fun TelaPerfil(navController: NavHostController) {
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier.padding(top = 16.dp).padding(horizontal = 8.dp),
             ) {
-                Text(text = "${userName.value}", style = MaterialTheme.typography.titleMedium)
+                Text(text = userName, style = MaterialTheme.typography.titleMedium)
                 Text(text = "sobre", style = MaterialTheme.typography.bodyMedium)
             }
-
 
             Column {
                 TabRow(selectedTabIndex = tabIndex) {
@@ -115,7 +113,7 @@ fun TelaPerfil(navController: NavHostController) {
                     }
                 }
                 when (tabIndex) {
-                    0 -> MinhasPostagens(listOf(post, post2))
+                    0 -> MinhasPostagens(posts = posts, userName = userName)
                     1 -> MinhasListas()
                 }
             }

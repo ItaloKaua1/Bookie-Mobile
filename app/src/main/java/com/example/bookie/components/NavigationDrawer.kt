@@ -113,7 +113,6 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
                     )
                     Column {
                         Text(text = "${userName.value}")
-                        Text(text = "@oliviarodri")
                     }
                 }
                 Row(
@@ -167,7 +166,7 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
                 BottomBar(navController)
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = { /* Navegar para tela de newpost */ }) {
+                FloatingActionButton(onClick = { -> navController.navigate("createPost") }) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_add),
                         contentDescription = "Adicionar novo post"

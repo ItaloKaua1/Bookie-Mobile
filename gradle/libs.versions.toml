@@ -20,6 +20,8 @@ animationCoreLint = "1.8.0-alpha08"
 firebaseAuthKtx = "23.1.0"
 firebaseCrashlyticsBuildtools = "3.0.3"
 accessibilityTestFramework = "4.1.1"
+roomCommon = "2.6.1"
+roomKtx = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -55,6 +57,8 @@ androidx-animation-core-lint = { group = "androidx.compose.animation", name = "a
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 accessibility-test-framework = { group = "com.google.android.apps.common.testing.accessibility.framework", name = "accessibility-test-framework", version.ref = "accessibilityTestFramework" }
+androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

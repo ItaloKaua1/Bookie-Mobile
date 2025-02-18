@@ -1,5 +1,6 @@
 package com.example.bookie
 
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +16,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavType
@@ -24,6 +26,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.bookie.components.ConfiguracoesViewModel
 import com.example.bookie.models.FcmToken
+import com.example.bookie.services.BooksRepositorio
+import com.example.bookie.services.FeedViewModel
+import com.example.bookie.services.PostRepository
 import com.example.bookie.ui.screens.*
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen1
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen2
@@ -45,6 +50,7 @@ import com.example.bookie.ui.screens.ResultadosDescScreen
 import com.example.bookie.ui.screens.TelaLivro
 import com.example.bookie.ui.screens.TelaNotificacoes
 import com.example.bookie.ui.screens.TelaPerfil
+import com.example.bookie.ui.theme.BookieTheme
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
@@ -136,7 +142,6 @@ class MainActivity : ComponentActivity() {
             val cores = if (temaEscuro) darkColorScheme() else lightColorScheme()
 
             MaterialTheme(colorScheme = cores) {
-                // Configura a barra de status com a cor do tema
                 val primaryColor = MaterialTheme.colorScheme.primaryContainer
                 SideEffect {
                     window.statusBarColor = primaryColor.toArgb()
@@ -150,10 +155,10 @@ class MainActivity : ComponentActivity() {
                     composable("cadastroScreen2") { CadastroScreen2(navController) }
                     composable("cadastroScreen3") { CadastroScreen3(navController) }
                     composable("editarPerfil") { EditarPerfil(navController) }
-                    composable("feedScreen") { FeedScreen(navController) }
+                    composable("feedScreen") { FeedScreen(navController, feedViewModel = FeedViewModel(postRepository = PostRepository())) }
                     composable("listarLivros") { ListarLivros(navController) }
                     composable("minhaEstante") { MinhaEstante(navController) }
-                    composable("telaPerfil") { TelaPerfil(navController) }
+                    composable("telaPerfil") { TelaPerfil(navController, feedViewModel = FeedViewModel(postRepository = PostRepository()))}
                     composable("telaNotificacoes") { TelaNotificacoes(navController) }
                     composable("configuracoesTela") {
                         ConfiguracoesTela(navController = navController, viewModel = configuracoesViewModel)
@@ -259,6 +264,15 @@ class MainActivity : ComponentActivity() {
                     composable("temaConfig") { TemaConfig(navController) }
                     composable("animacaoConfig") { AnimacaoConfig(navController) }
                     composable("notiConfig") { NotificacoesConfig(navController) }
+                    composable("createPost") {
+                        val context = LocalContext.current // Obtém o contexto atual
+                        CreatePostScreen(
+                            navController = navController,
+                            postRepository = PostRepository(),
+                            booksRepositorio = BooksRepositorio(),
+                            userRepository = UserRepository(context) // Passa o contexto para o UserRepository
+                        )
+                    }
                 }
             }
         }

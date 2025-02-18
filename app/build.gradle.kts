@@ -67,6 +67,8 @@ dependencies {
     implementation(libs.androidx.animation.core.lint)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.accessibility.test.framework)
+    implementation(libs.androidx.room.common)
+    implementation(libs.androidx.room.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

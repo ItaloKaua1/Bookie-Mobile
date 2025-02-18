@@ -1,5 +1,6 @@
 package com.example.bookie.ui.screens.ConfigsScreen
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -45,11 +46,34 @@ fun EditEmail(navController: NavController) {
     // Variável mutável para armazenar o valor temporário do email
     var email by remember { mutableStateOf(currentEmail) }
 
+    // Estado para controlar a exibição do diálogo de reautenticação
+    var showReauthDialog by remember { mutableStateOf(false) }
+
     // Escopo de coroutine para operações assíncronas
     val coroutineScope = rememberCoroutineScope()
 
     val focusManager = LocalFocusManager.current
     val colorScheme = MaterialTheme.colorScheme
+
+    // Exibe o diálogo de reautenticação se necessário
+    if (showReauthDialog) {
+        ReauthenticateDialog(
+            onConfirm = { password ->
+                coroutineScope.launch {
+                    val success = userRepo.reauthenticateAndUpdateEmail(email, password)
+                    if (success) {
+                        // Navega de volta para a tela de configurações após salvar
+                        navController.navigate("configuracoesTela")
+                    } else {
+                        // Mostrar uma mensagem de erro ao usuário
+                        // (pode ser um Snackbar ou um Toast)
+                    }
+                    showReauthDialog = false
+                }
+            },
+            onDismiss = { showReauthDialog = false }
+        )
+    }
 
     MaterialTheme {
         LayoutVariant(navController, "Editar Email", false) {
@@ -83,12 +107,7 @@ fun EditEmail(navController: NavController) {
 
                 Button(
                     onClick = {
-                        // Usa o escopo de coroutine para chamar a função suspensa
-                        coroutineScope.launch {
-                            userRepo.saveUserEmail(email)
-                            // Navega de volta para a tela de configurações após salvar
-                            navController.navigate("configuracoesTela")
-                        }
+                        showReauthDialog = true
                     },
                     modifier = Modifier
                         .fillMaxWidth()
