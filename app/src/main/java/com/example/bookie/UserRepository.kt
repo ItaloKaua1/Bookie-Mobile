@@ -53,6 +53,23 @@ class UserRepository(private val context: Context) {
         }
     }
 
+    suspend fun reauthenticateAndUpdatePassword(currentPassword: String, newPassword: String): Boolean {
+        val user = firebaseAuth.currentUser
+        return if (user != null && user.email != null) {
+            try {
+                val credential = EmailAuthProvider.getCredential(user.email!!, currentPassword)
+                user.reauthenticate(credential).await()
+                user.updatePassword(newPassword).await()
+                true
+            } catch (e: Exception) {
+                false
+            }
+        } else {
+            false
+        }
+    }
+
+
     private companion object {
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("userRepository")
 

@@ -113,7 +113,6 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
                     )
                     Column {
                         Text(text = "${userName.value}")
-                        Text(text = "@oliviarodri")
                     }
                 }
                 Row(
