@@ -56,7 +56,7 @@ fun AdicionarLivrosScreen(navController: NavHostController, nomeLista: String, d
         db.collection("livros").get().addOnSuccessListener { result ->
             val livrosCarregados = result.documents.mapNotNull { it.toObject(Livro::class.java)?.apply { document = it.id } }
             livros = livrosCarregados
-        }
+        } 
     }
 
     LayoutVariant(navController, "Adicionar Livros à Lista") {
