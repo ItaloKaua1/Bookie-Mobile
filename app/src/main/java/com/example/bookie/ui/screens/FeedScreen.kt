@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -16,7 +17,7 @@ import com.example.bookie.services.FeedViewModel
 @Composable
 fun FeedScreen(navController: NavController, feedViewModel: FeedViewModel) {
     val posts by feedViewModel.posts.collectAsState()
-    var isViewingMyPosts by remember { mutableStateOf(false) }
+    var selectedTabIndex by remember { mutableStateOf(0) } // 0 = Feed Geral, 1 = Minhas Postagens
 
     LaunchedEffect(Unit) {
         feedViewModel.fetchPosts()
@@ -27,65 +28,69 @@ fun FeedScreen(navController: NavController, feedViewModel: FeedViewModel) {
             content = { paddingValues ->
                 Box(modifier = Modifier.padding(paddingValues)) {
                     Column {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
+                        // Abas para alternar entre Feed Geral e Minhas Postagens
+                        TabRow(
+                            selectedTabIndex = selectedTabIndex,
+                            modifier = Modifier.fillMaxWidth(),
+                            indicator = { tabPositions ->
+                                TabRowDefaults.Indicator(
+                                    modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                                    height = 2.dp,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         ) {
-                            Button(
-                                onClick = { isViewingMyPosts = false },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (!isViewingMyPosts) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                                )
-                            ) {
-                                Text("Feed Geral")
-                            }
-                            Button(
-                                onClick = { isViewingMyPosts = true },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (isViewingMyPosts) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                                )
-                            ) {
-                                Text("Minhas Postagens")
-                            }
+                            Tab(
+                                selected = selectedTabIndex == 0,
+                                onClick = { selectedTabIndex = 0 },
+                                text = { Text("Feed Geral") }
+                            )
+                            Tab(
+                                selected = selectedTabIndex == 1,
+                                onClick = { selectedTabIndex = 1 },
+                                text = { Text("Minhas Postagens") }
+                            )
                         }
 
-                        if (isViewingMyPosts) {
-                            val userPosts = posts.filter { it.usuario == "NomeDoUsuarioLogado" }
-
-                            if (userPosts.isEmpty()) {
-                                Text(
-                                    text = "Sem postagens ainda",
-                                    modifier = Modifier.padding(16.dp)
-                                )
-                            } else {
-                                LazyColumn(
-                                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(16.dp)
-                                ) {
-                                    items(userPosts) { post ->
-                                        CardPost(post = post)
+                        // Conteúdo das abas
+                        when (selectedTabIndex) {
+                            0 -> {
+                                if (posts.isEmpty()) {
+                                    Text(
+                                        text = "Nenhum post encontrado",
+                                        modifier = Modifier.padding(16.dp)
+                                    )
+                                } else {
+                                    LazyColumn(
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(16.dp)
+                                    ) {
+                                        items(posts) { post ->
+                                            CardPost(post = post)
+                                        }
                                     }
                                 }
                             }
-                        } else {
-                            if (posts.isEmpty()) {
-                                Text(
-                                    text = "Nenhum post encontrado",
-                                    modifier = Modifier.padding(16.dp)
-                                )
-                            } else {
-                                LazyColumn(
-                                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(16.dp)
-                                ) {
-                                    items(posts) { post ->
-                                        CardPost(post = post)
+                            1 -> {
+                                val userPosts = posts.filter { it.usuario == "NomeDoUsuarioLogado" }
+
+                                if (userPosts.isEmpty()) {
+                                    Text(
+                                        text = "Sem postagens ainda",
+                                        modifier = Modifier.padding(16.dp)
+                                    )
+                                } else {
+                                    LazyColumn(
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(16.dp)
+                                    ) {
+                                        items(userPosts) { post ->
+                                            CardPost(post = post)
+                                        }
                                     }
                                 }
                             }

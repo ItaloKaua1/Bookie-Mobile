@@ -1,6 +1,7 @@
 package com.example.bookie.ui.screens
 
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -32,22 +33,35 @@ fun CreatePostScreen(
     var livros by remember { mutableStateOf<List<Livro>>(emptyList()) }
     var selectedLivro by remember { mutableStateOf<Livro?>(null) }
     var avaliacao by remember { mutableStateOf(0f) }
+    var showSuggestions by remember { mutableStateOf(false) }
 
     // Coleta o nome do usuário logado
     val userName by userRepository.currentUserName.collectAsState(initial = "Usuário Atual")
 
     // Busca livros na API do Google Books quando o texto da pesquisa muda
-//    LaunchedEffect(livroQuery) {
-//        if (livroQuery.isNotEmpty()) {
-//            val response = booksRepositorio.buscarLivros(livroQuery)
-//            livros = response.items?.toList() ?: emptyList() // Conversão de Array para List
-//        } else {
-//            livros = emptyList()
-//        }
-//    }
+    LaunchedEffect(livroQuery) {
+        if (livroQuery.isNotEmpty()) {
+            val response = booksRepositorio.buscarLivros(livroQuery)
+            livros = response.items?.map { livro ->
+                Livro(
+                    id = livro.id,
+                    volumeInfo = livro.volumeInfo,
+                    favorito = null,
+                    document = null,
+                    disponivelTroca = null,
+                    usuario = null
+                )
+            } ?: emptyList()
+            showSuggestions = true
+        } else {
+            livros = emptyList()
+            showSuggestions = false
+        }
+    }
 
     LayoutVariant(navController, "Publicar", false) {
         Column(modifier = Modifier.padding(16.dp)) {
+            // Campos de título e texto
             TextField(
                 value = titulo,
                 onValueChange = { titulo = it },
@@ -64,6 +78,7 @@ fun CreatePostScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Campo de pesquisa de livros
             TextField(
                 value = livroQuery,
                 onValueChange = { livroQuery = it },
@@ -72,14 +87,40 @@ fun CreatePostScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-//        LazyColumn {
-//            items(livros) { livro ->
-//                LivroItem(
-//                    livro = livro,
-//                    onLivroSelected = { selectedLivro = it }
-//                )
-//            }
-//        }
+            // Lista de sugestões de livros
+            if (showSuggestions) {
+                LazyColumn {
+                    items(livros) { livro ->
+                        LivroItem(
+                            livro = livro,
+                            onLivroSelected = {
+                                selectedLivro = it
+                                showSuggestions = false
+                                livroQuery = ""
+                            }
+                        )
+                    }
+                }
+            }
+
+            // Exibir o livro selecionado
+            selectedLivro?.let { livro ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    Text(
+                        text = "Livro selecionado: ${livro.volumeInfo?.nome ?: "Sem título"}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    AsyncImage(
+                        model = livro.getCapa(),
+                        contentDescription = "Capa do livro",
+                        modifier = Modifier.size(100.dp)
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -93,10 +134,11 @@ fun CreatePostScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Botão para publicar o post
             Button(
                 onClick = {
                     val post = Post(
-                        usuario = userName, // Usando o nome do usuário logado
+                        usuario = userName,
                         titulo = titulo,
                         texto = texto,
                         curtidas = 0,
@@ -124,41 +166,37 @@ fun CreatePostScreen(
     }
 }
 
-
-//@Composable
-//fun LivroItem(livro: Livro, onLivroSelected: (Livro) -> Unit) {
-//    Card(
-//        onClick = { onLivroSelected(livro) },
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(8.dp)
-//    ) {
-//        Row(
-//            modifier = Modifier
-//                .padding(8.dp)
-//                .fillMaxWidth(),
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            // Exibe a capa do livro
-//            AsyncImage(
-//                model = livro.volumeInfo.imageLinks?.getCapa(),
-//                contentDescription = "Capa do Livro",
-//                modifier = Modifier
-//                    .size(64.dp)
-//                    .padding(end = 8.dp)
-//            )
-//            // Detalhes do livro
-//            Column {
-//                Text(
-//                    text = livro.volumeInfo.title,
-//                    style = MaterialTheme.typography.titleSmall,
-//                    modifier = Modifier.padding(bottom = 4.dp)
-//                )
-//                Text(
-//                    text = livro.getAutor(),
-//                    style = MaterialTheme.typography.bodySmall
-//                )
-//            }
-//        }
-//    }
-//}
+@Composable
+fun LivroItem(livro: Livro, onLivroSelected: (Livro) -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable { onLivroSelected(livro) } // Adicione o clickable aqui
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(8.dp)
+        ) {
+            // Exibir a capa do livro
+            AsyncImage(
+                model = livro.getCapa(),
+                contentDescription = "Capa do livro",
+                modifier = Modifier.size(50.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column {
+                // Exibir o título do livro
+                Text(
+                    text = livro.volumeInfo?.nome ?: "Sem título",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                // Exibir o autor do livro
+                Text(
+                    text = livro.getAutor(),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+    }
+}
