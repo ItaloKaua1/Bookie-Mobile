@@ -142,7 +142,6 @@ class MainActivity : ComponentActivity() {
             val cores = if (temaEscuro) darkColorScheme() else lightColorScheme()
 
             MaterialTheme(colorScheme = cores) {
-                // Configura a barra de status com a cor do tema
                 val primaryColor = MaterialTheme.colorScheme.primaryContainer
                 SideEffect {
                     window.statusBarColor = primaryColor.toArgb()
@@ -159,7 +158,7 @@ class MainActivity : ComponentActivity() {
                     composable("feedScreen") { FeedScreen(navController, feedViewModel = FeedViewModel(postRepository = PostRepository())) }
                     composable("listarLivros") { ListarLivros(navController) }
                     composable("minhaEstante") { MinhaEstante(navController) }
-                    composable("telaPerfil") { TelaPerfil(navController)}
+                    composable("telaPerfil") { TelaPerfil(navController, feedViewModel = FeedViewModel(postRepository = PostRepository()))}
                     composable("telaNotificacoes") { TelaNotificacoes(navController) }
                     composable("configuracoesTela") {
                         ConfiguracoesTela(navController = navController, viewModel = configuracoesViewModel)

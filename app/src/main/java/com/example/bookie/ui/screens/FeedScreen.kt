@@ -7,8 +7,10 @@ import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.bookie.UserRepository
 import com.example.bookie.components.CardPost
 import com.example.bookie.components.NavigationDrawer
 import com.example.bookie.services.FeedViewModel
@@ -17,7 +19,11 @@ import com.example.bookie.services.FeedViewModel
 @Composable
 fun FeedScreen(navController: NavController, feedViewModel: FeedViewModel) {
     val posts by feedViewModel.posts.collectAsState()
-    var selectedTabIndex by remember { mutableStateOf(0) } // 0 = Feed Geral, 1 = Minhas Postagens
+    var selectedTabIndex by remember { mutableStateOf(0) }
+
+    val context = LocalContext.current
+    val userRepo = UserRepository(context)
+    val userName by userRepo.currentUserName.collectAsState(initial = "")
 
     LaunchedEffect(Unit) {
         feedViewModel.fetchPosts()
@@ -28,7 +34,6 @@ fun FeedScreen(navController: NavController, feedViewModel: FeedViewModel) {
             content = { paddingValues ->
                 Box(modifier = Modifier.padding(paddingValues)) {
                     Column {
-                        // Abas para alternar entre Feed Geral e Minhas Postagens
                         TabRow(
                             selectedTabIndex = selectedTabIndex,
                             modifier = Modifier.fillMaxWidth(),
@@ -52,7 +57,6 @@ fun FeedScreen(navController: NavController, feedViewModel: FeedViewModel) {
                             )
                         }
 
-                        // Conteúdo das abas
                         when (selectedTabIndex) {
                             0 -> {
                                 if (posts.isEmpty()) {
@@ -74,7 +78,7 @@ fun FeedScreen(navController: NavController, feedViewModel: FeedViewModel) {
                                 }
                             }
                             1 -> {
-                                val userPosts = posts.filter { it.usuario == "NomeDoUsuarioLogado" }
+                                val userPosts = posts.filter { it.usuario == userName }
 
                                 if (userPosts.isEmpty()) {
                                     Text(

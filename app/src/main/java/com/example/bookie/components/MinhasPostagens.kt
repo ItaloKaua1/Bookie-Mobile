@@ -16,18 +16,19 @@ import com.example.bookie.UserRepository
 import com.example.bookie.models.Post
 
 @Composable
-fun MinhasPostagens(posts: List<Post>) { // Removido o parâmetro userRepository
+fun MinhasPostagens(posts: List<Post>, userName: String) {
+    val userPosts = posts.filter { it.usuario == userName }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.padding(top = 16.dp)
     ) {
-        if (posts.isNotEmpty()) {
+        if (userPosts.isNotEmpty()) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                items(posts) { post ->
-                    // Passa apenas o post, pois o nome do usuário já está dentro dele
+                items(userPosts) { post ->
                     CardPost(post = post)
                 }
             }
