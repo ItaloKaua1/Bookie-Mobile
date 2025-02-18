@@ -23,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,21 +36,25 @@ import androidx.navigation.NavController
 import com.example.bookie.UserRepository
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.ui.theme.PurpleBookie
+import kotlinx.coroutines.launch
 
 @Composable
-fun EditNome(navController: NavController){
-
-    var nome by remember { mutableStateOf("") }
+fun EditNome(navController: NavController) {
     val context = LocalContext.current
     val userRepo = UserRepository(context)
+
+    // Recupera o nome atual do usuário
     val userName by userRepo.currentUserName.collectAsState(initial = "")
 
+    // Variável mutável para armazenar o valor temporário do nome
+    var nome by remember { mutableStateOf(userName) }
+
+    // Atualiza o estado `nome` quando `userName` é carregado
     LaunchedEffect(userName) {
         nome = userName
     }
 
     val focusManager = LocalFocusManager.current
-
     val colorScheme = MaterialTheme.colorScheme
 
     MaterialTheme {
@@ -82,8 +87,15 @@ fun EditNome(navController: NavController){
 
                 Spacer(modifier = Modifier.height(24.dp))
 
+                val coroutineScope = rememberCoroutineScope()
+
                 Button(
-                    onClick = { navController.navigate("configuracoesTela") },
+                    onClick = {
+                        coroutineScope.launch {
+                            userRepo.saveUserName(nome)
+                            navController.navigate("configuracoesTela")
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp)
@@ -100,6 +112,7 @@ fun EditNome(navController: NavController){
                         color = Color.White
                     )
                 }
+
             }
         }
     }
