@@ -126,14 +126,19 @@ fun FinalizarProposta(navController: NavController, id: String) {
     }
 
     LaunchedEffect(Unit) {
-        db.collection("livros").get().addOnSuccessListener { documents ->
-            val localLivros: ArrayList<Livro> = arrayListOf()
-            for (document in documents) {
-                val localLivro = document.toObject(Livro::class.java)
-                localLivro.document = document.id
-                localLivros.add(localLivro)
+        GlobalScope.launch {
+            val userRepo = UserRepository(context)
+            var userId = userRepo.currentUserId.first()
+
+            db.collection("livros").whereEqualTo("usuario.id", userId).get().addOnSuccessListener { documents ->
+                val localLivros: ArrayList<Livro> = arrayListOf()
+                for (document in documents) {
+                    val localLivro = document.toObject(Livro::class.java)
+                    localLivro.document = document.id
+                    localLivros.add(localLivro)
+                }
+                livros = localLivros.toList()
             }
-            livros = localLivros.toList()
         }
     }
 

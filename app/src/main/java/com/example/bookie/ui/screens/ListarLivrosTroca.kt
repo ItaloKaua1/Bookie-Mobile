@@ -5,8 +5,10 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -50,6 +53,7 @@ fun ListarLivrosTroca(navController: NavController, modifier: Modifier = Modifie
     var text by remember { mutableStateOf("") }
 //    var livros: SnapshotStateList<Livro> = mutableStateListOf()
     var trocasDisponiveis by remember { mutableStateOf(listOf<TrocaDisponivel>()) }
+    var minhasTrocasDisponiveis by remember { mutableStateOf(listOf<TrocaDisponivel>()) }
     val appData = AppData.getInstance()
     val db = FirebaseFirestore.getInstance()
     val context = LocalContext.current
@@ -74,6 +78,27 @@ fun ListarLivrosTroca(navController: NavController, modifier: Modifier = Modifie
                     }
                     trocasDisponiveis = trocas
                     appData.setTrocasDisponiveis(trocas)
+                }
+        }
+    }
+
+    LaunchedEffect(text) {
+        launch {
+            val userIdLocal = userRepo.currentUserId.first()
+
+            db.collection("trocas_disponiveis")
+                .whereEqualTo("usuario.id", userIdLocal)
+                .whereEqualTo("finalizada", false)
+                .get()
+                .addOnSuccessListener { documents ->
+                    val trocas: ArrayList<TrocaDisponivel> = arrayListOf()
+                    for (document in documents) {
+                        val troca = document.toObject(TrocaDisponivel::class.java)
+                        troca.document = document.id
+                        trocas.add(troca)
+                    }
+                    minhasTrocasDisponiveis = trocas
+                    appData.setMinhasTrocasDisponiveis(trocas)
                 }
         }
     }
@@ -109,6 +134,27 @@ fun ListarLivrosTroca(navController: NavController, modifier: Modifier = Modifie
             Column(
                 modifier = Modifier.fillMaxWidth().padding(top = 22.dp, start = 16.dp, end = 16.dp, bottom = 4.dp).weight(1f)
             ) {
+                if (minhasTrocasDisponiveis.isNotEmpty()) {
+                    Text(text = "Meus Livros para Troca", style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(8.dp))
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+
+
+                        minhasTrocasDisponiveis.forEach { troca ->
+                            item{
+                                CardLivroTroca(troca, itemClick)
+                            }
+                        }
+
+
+                    }
+                    Spacer(Modifier.height(16.dp))
+                }
+                Text(text = "Trocas Disponíveis", style = MaterialTheme.typography.titleMedium)
+                Spacer(Modifier.height(8.dp))
                 if (trocasDisponiveis.isNotEmpty()) {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(8.dp),

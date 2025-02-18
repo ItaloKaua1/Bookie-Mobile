@@ -83,7 +83,7 @@ private fun enviarNotificacaoRecusa(trocaOferecida: TrocaOferecida, id: String) 
     db.collection("notificacoes").add(notificacao)
 }
 
-private fun recusarProposta(context: Context, proposta: TrocaOferecida?, id: String): TrocaOferecida? {
+private fun recusarProposta(context: Context, navController: NavController, proposta: TrocaOferecida?, id: String): TrocaOferecida? {
     if (proposta == null) {
         return proposta
     }
@@ -97,6 +97,7 @@ private fun recusarProposta(context: Context, proposta: TrocaOferecida?, id: Str
             Toast.makeText(context, "Proposta recusada!", Toast.LENGTH_SHORT).show()
             enviarNotificacaoRecusaAutor(proposta, id)
             enviarNotificacaoRecusa(proposta, id)
+            navController.navigate("telaNotificacoes")
         }
     }
 
@@ -121,7 +122,7 @@ private fun enviarNotificacaoAceita(trocaOferecida: TrocaOferecida, id: String) 
     db.collection("notificacoes").add(notificacao)
 }
 
-private fun aceitarProposta(context: Context, proposta: TrocaOferecida?, id: String): TrocaOferecida? {
+private fun aceitarProposta(context: Context, navController: NavController, proposta: TrocaOferecida?, id: String): TrocaOferecida? {
     if (proposta == null) {
         return proposta
     }
@@ -135,6 +136,7 @@ private fun aceitarProposta(context: Context, proposta: TrocaOferecida?, id: Str
             Toast.makeText(context, "Proposta aceita!", Toast.LENGTH_SHORT).show()
             enviarNotificacaoAceitaAutor(proposta, id)
             enviarNotificacaoAceita(proposta, id)
+            navController.navigate("telaNotificacoes")
         }
     }
 
@@ -159,7 +161,7 @@ private fun enviarNotificacaoCancelada(trocaOferecida: TrocaOferecida, id: Strin
     db.collection("notificacoes").add(notificacao)
 }
 
-private fun cancelarProposta(context: Context, proposta: TrocaOferecida?, id: String): TrocaOferecida? {
+private fun cancelarProposta(context: Context, navController: NavController, proposta: TrocaOferecida?, id: String): TrocaOferecida? {
     if (proposta == null) {
         return proposta
     }
@@ -173,6 +175,7 @@ private fun cancelarProposta(context: Context, proposta: TrocaOferecida?, id: St
             Toast.makeText(context, "Proposta cancelada!", Toast.LENGTH_SHORT).show()
             enviarNotificacaoCanceladaAutor(proposta, id)
             enviarNotificacaoCancelada(proposta, id)
+            navController.navigate("telaNotificacoes")
         }
     }
 
@@ -207,6 +210,7 @@ private fun trocarLivro2Estante(context: Context, navController: NavController, 
     val livro = proposta.trocaDisponivel?.livro?.copy()
     if (livro != null) {
         livro.usuario = proposta.usuario
+        livro.disponivelTroca = false
 
         db.collection("livros").document(livro.document!!).set(livro).addOnCompleteListener { response ->
             if (response.isSuccessful) {
@@ -229,12 +233,35 @@ private fun trocarLivro1Estante(context: Context, navController: NavController, 
     val livro = proposta.livroOferecido?.copy()
     if (livro != null) {
         livro.usuario = proposta.trocaDisponivel?.usuario
+        livro.disponivelTroca = false
+
         db.collection("livros").document(livro.document!!).set(livro).addOnCompleteListener { response ->
             if (response.isSuccessful) {
                 trocarLivro2Estante(context, navController, proposta, id)
             }
         }
     }
+}
+
+private fun finalizarDisponivelTroca(context: Context, navController: NavController, proposta: TrocaOferecida?, id: String) {
+    if (proposta == null) {
+        return
+    }
+
+    val db = FirebaseFirestore.getInstance()
+
+    val trocaDisponivel = proposta.trocaDisponivel
+
+    if (trocaDisponivel != null) {
+        trocaDisponivel.finalizada = true
+
+        db.collection("trocas_disponiveis").document(trocaDisponivel.document!!).set(trocaDisponivel).addOnCompleteListener { response ->
+            if (response.isSuccessful) {
+                trocarLivro1Estante(context, navController, proposta, id)
+            }
+        }
+    }
+
 }
 
 private fun trocarLivros(context: Context, navController: NavController, proposta: TrocaOferecida?, id: String) {
@@ -249,7 +276,7 @@ private fun trocarLivros(context: Context, navController: NavController, propost
 
     db.collection("trocas_oferecidas").document(id).set(proposta).addOnCompleteListener { response ->
         if (response.isSuccessful) {
-            trocarLivro1Estante(context, navController, proposta, id)
+            finalizarDisponivelTroca(context, navController, proposta, id)
         }
     }
 }
@@ -523,21 +550,21 @@ fun VisualizarProposta(navController: NavController, id: String) {
                     }
                 } else if (proposta?.usuario?.id == userIdLocal.value) {
                     Button(
-                        onClick = { proposta = cancelarProposta(context, proposta, id) },
+                        onClick = { proposta = cancelarProposta(context, navController, proposta, id) },
                         enabled = proposta?.status == "aberta"
                     ) {
                         Text(text = "Cancelar Envio")
                     }
                 } else {
                     OutlinedButton(
-                        onClick = { proposta = recusarProposta(context, proposta, id) },
+                        onClick = { proposta = recusarProposta(context, navController, proposta, id) },
                         enabled = proposta?.status == "aberta"
                     ) {
                         Text(text = "Recusar")
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Button(
-                        onClick = { proposta = aceitarProposta(context, proposta, id) },
+                        onClick = { proposta = aceitarProposta(context, navController, proposta, id) },
                         enabled = proposta?.status == "aberta"
                     ) {
                         Text(text = "Aceitar")

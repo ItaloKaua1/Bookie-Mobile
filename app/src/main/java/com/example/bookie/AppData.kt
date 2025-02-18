@@ -13,6 +13,7 @@ class AppData {
     private var conversas: MutableList<Conversa> = mutableListOf()
     private var usuarioLogado: Usuario? = null
     private var trocasDisponiveis: MutableList<TrocaDisponivel> = mutableListOf()
+    private var minhasTrocasDisponiveis: MutableList<TrocaDisponivel> = mutableListOf()
 
 
     companion object {
@@ -87,5 +88,13 @@ class AppData {
 
     fun getTrocaDisponivel(id: String): TrocaDisponivel? {
         return trocasDisponiveis.find { troca -> troca.document == id }
+    }
+
+    fun setMinhasTrocasDisponiveis(trocas: List<TrocaDisponivel>) {
+        minhasTrocasDisponiveis = trocas.toMutableList()
+    }
+
+    fun getMinhasTrocaDisponivel(id: String): TrocaDisponivel? {
+        return minhasTrocasDisponiveis.find { troca -> troca.document == id }
     }
 }
