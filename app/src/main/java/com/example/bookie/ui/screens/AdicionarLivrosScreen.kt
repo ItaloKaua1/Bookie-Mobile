@@ -102,15 +102,19 @@ fun AdicionarLivrosScreen(navController: NavHostController, nomeLista: String, d
                     livros = livrosSelecionados.toList()
                 )
 
-                db.collection("listasTematicas").add(novaLista).addOnSuccessListener {
-                    Toast.makeText(context, "Lista salva com sucesso!", Toast.LENGTH_SHORT).show()
-                    navController.popBackStack("telaPerfil", false)
-                }.addOnFailureListener {
-                    Toast.makeText(context, "Erro ao salvar lista", Toast.LENGTH_SHORT).show()
-                }
+                db.collection("listasTematicas").document(novaLista.id)
+                    .set(novaLista)
+                    .addOnSuccessListener {
+                        Toast.makeText(context, "Lista salva com sucesso!", Toast.LENGTH_SHORT).show()
+                        navController.popBackStack("telaPerfil", false)
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(context, "Erro ao salvar lista", Toast.LENGTH_SHORT).show()
+                    }
             }, modifier = Modifier.fillMaxWidth()) {
                 Text("Salvar Lista")
             }
+
         }
     }
 }

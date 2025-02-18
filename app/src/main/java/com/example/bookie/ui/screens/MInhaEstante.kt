@@ -1,11 +1,7 @@
 package com.example.bookie.ui.screens
 
-
 import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -16,23 +12,9 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.ShoppingCart
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -40,58 +22,13 @@ import androidx.navigation.NavHostController
 import com.example.bookie.AppData
 import com.example.bookie.components.CardLivroVariante
 import com.example.bookie.components.LayoutVariant
-import com.example.bookie.models.ImageLinks
 import com.example.bookie.models.Livro
-import com.example.bookie.models.VolumeInfo
 import com.google.firebase.firestore.FirebaseFirestore
-
 
 private data class TabItem(
     val text: String,
     val icon: ImageVector,
 )
-
-
-private val livro = Livro("", VolumeInfo(ImageLinks("", ""), "Teste", listOf("Autor Teste"), "Livro de Teste", 23))
-
-
-object LivroClassificador {
-
-    private val db = FirebaseFirestore.getInstance()
-
-    fun atualizarStatusLivro(
-        livroId: String,
-        novoStatus: String,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
-    ) {
-        db.collection("livros").document(livroId)
-            .update("status", novoStatus)
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { e -> onFailure(e) }
-    }
-}
-
-@Composable
-private fun LivroItem(livro: Livro, onStatusChange: (String) -> Unit) {
-    var expanded by remember { mutableStateOf(false) }
-    val statusOptions = listOf("Lido", "Lendo", "Quero Ler", "Favorito")
-
-    CardLivroVariante(livro, onClick = { expanded = true })
-
-    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-        statusOptions.forEach { status ->
-            DropdownMenuItem(
-                text = { Text(status) },
-                onClick = {
-                    onStatusChange(status.lowercase())
-                    expanded = false
-                }
-            )
-        }
-    }
-}
-
 
 @Composable
 private fun Todos(livros: List<Livro>, onClick: (Livro) -> Unit = {}) {
@@ -104,7 +41,6 @@ private fun Todos(livros: List<Livro>, onClick: (Livro) -> Unit = {}) {
         }
     }
 }
-
 
 @Composable
 private fun Lidos() {
@@ -177,8 +113,6 @@ private fun QueroLer() {
         }
     }
 }
-
-
 
 @Composable
 private fun Favoritos(livros: List<Livro>, onClick: (Livro) -> Unit = {}) {
@@ -281,7 +215,6 @@ fun MinhaEstante(navController: NavHostController) {
         }
     }
 }
-
 
 
 //@Preview(showBackground = true)

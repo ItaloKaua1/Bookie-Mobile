@@ -32,40 +32,44 @@ fun ThematicListsScreen(navController: NavHostController, thematicLists: List<Th
         }
     }
 
-    Column(
+    LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.padding(16.dp)
     ) {
-        Text(
-            text = "Minhas Listas Temáticas",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        item {
+            Text(
+                text = "Minhas Listas Temáticas",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
 
         if (thematicLists.isEmpty()) {
-            Text(
-                text = "Você ainda não possui nenhuma lista.",
-                style = MaterialTheme.typography.bodyLarge
-            )
+            item {
+                Text(
+                    text = "Você ainda não possui nenhuma lista.",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
         } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.weight(1f)
-            ) {
-                items(thematicLists) { list ->
-                    ThematicListCard(navController, list)
-                }
+            items(thematicLists) { list ->
+                ThematicListCard(navController, list)
             }
         }
 
-        Button(
-            onClick = { navController.navigate("criarLista") },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Criar Nova Lista +")
+        item {
+            Button(
+                onClick = { navController.navigate("criarLista") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            ) {
+                Text("Criar Nova Lista +")
+            }
         }
     }
 }
+
 
 @Composable
 fun ThematicListCard(navController: NavHostController, list: ThematicList) {
@@ -73,7 +77,8 @@ fun ThematicListCard(navController: NavHostController, list: ThematicList) {
         modifier = Modifier
             .padding(horizontal = 8.dp)
             .clickable {
-                navController.navigate("detalhesListas/${list.nome}/${list.descricao}/${list.livros.size}")
+                // Passa a lista completa de livros para a tela de detalhes
+                navController.navigate("detalhesListas/${list.id}/${list.nome}/${list.descricao}/${list.livros.size}")
             }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -95,3 +100,4 @@ fun ThematicListCard(navController: NavHostController, list: ThematicList) {
         }
     }
 }
+

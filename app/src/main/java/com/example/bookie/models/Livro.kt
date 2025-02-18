@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 public class ImageLinks(
     val smallThumbnail: String? = null,
-    val thumbnail: String? = null,
+    var thumbnail: String? = null,
 ): java.io.Serializable
 
 
@@ -35,10 +35,11 @@ data class Livro (
     var document: String? = null,
     var disponivelTroca: Boolean? = null,
     var usuario: Usuario? = null,
+    var status: String? = null,
 ): java.io.Serializable {
 
 
-    constructor(): this(null, null, null, null, null, null)
+    constructor(): this(null, null, null, null, null, null, null)
 
 
     public fun getAutor(): String {

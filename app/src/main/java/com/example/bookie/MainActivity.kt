@@ -217,18 +217,21 @@ class MainActivity : ComponentActivity() {
                     ) }
                     composable("criarLista") { CriarListaScreen(navController) }
                     composable(
-                        route = "detalhesListas/{nome}/{descricao}/{quantidadeLivros}",
+                        route = "detalhesListas/{id}/{nome}/{descricao}/{quantidadeLivros}",
                         arguments = listOf(
+                            navArgument("id") { type = NavType.StringType },
                             navArgument("nome") { type = NavType.StringType },
                             navArgument("descricao") { type = NavType.StringType },
                             navArgument("quantidadeLivros") { type = NavType.IntType }
                         )
                     ) { backStackEntry ->
+                        val id = backStackEntry.arguments?.getString("id") ?: "ID Indisponível"
                         val nome = backStackEntry.arguments?.getString("nome") ?: "Nome Indisponível"
                         val descricao = backStackEntry.arguments?.getString("descricao") ?: "Sem descrição"
                         val quantidadeLivros = backStackEntry.arguments?.getInt("quantidadeLivros") ?: 0
 
-                        ThematicListDetailsScreen(navController, nome, descricao, quantidadeLivros)
+                        // Agora passando o ID corretamente
+                        ThematicListDetailsScreen(navController, nome, descricao, quantidadeLivros, id)
                     }
                     composable(
                         route = "adicionarLivrosScreen/{nome}/{descricao}"
