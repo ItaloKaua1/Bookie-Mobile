@@ -2,6 +2,7 @@ package com.example.bookie.ui.screens
 
 import android.content.Context
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -56,13 +57,13 @@ fun ResultadosDescScreen(navController: NavController, query: String, context: C
                 ) {
                     CircularProgressIndicator()
                 }
-            } else {
-                LazyColumn {
-                    items(books) { book ->
-                        BookItem(book)
+                } else {
+                    LazyColumn {
+                        items(books) { book ->
+                            BookItem(book, navController)
+                        }
                     }
                 }
-            }
         }
     }
 }
@@ -70,8 +71,9 @@ fun ResultadosDescScreen(navController: NavController, query: String, context: C
 data class Book(
     val title: String,
     val author: String,
-    val thumbnail: String?
-)
+    val thumbnail: String?,
+    val description: String?
+) : java.io.Serializable
 
 suspend fun fetchBooks(context: Context, query: String): List<Book> {
     return withContext(Dispatchers.IO) {
@@ -88,7 +90,8 @@ suspend fun fetchBooks(context: Context, query: String): List<Book> {
                 Book(
                     title = volumeInfo.optString("title", "Sem título"),
                     author = volumeInfo.optJSONArray("authors")?.optString(0) ?: "Desconhecido",
-                    thumbnail = volumeInfo.optJSONObject("imageLinks")?.optString("thumbnail")
+                    thumbnail = volumeInfo.optJSONObject("imageLinks")?.optString("thumbnail"),
+                    description = volumeInfo.optString("description", "Sem descrição disponível")
                 )
             }
         } catch (e: Exception) {
@@ -97,12 +100,17 @@ suspend fun fetchBooks(context: Context, query: String): List<Book> {
     }
 }
 
+
 @Composable
-fun BookItem(book: Book) {
+fun BookItem(book: Book, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 8.dp)
+            .clickable {
+                navController.currentBackStackEntry?.savedStateHandle?.set("book", book)
+                navController.navigate("bookDetail")
+            },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(modifier = Modifier.padding(16.dp)) {
