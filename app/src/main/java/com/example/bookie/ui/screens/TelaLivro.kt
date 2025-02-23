@@ -1,9 +1,9 @@
 package com.example.bookie.ui.screens
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,7 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Headphones
-import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -24,11 +24,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.example.bookie.AppData
 import com.example.bookie.R
 import com.example.bookie.UserRepository
-import com.example.bookie.components.CardPost
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.models.Livro
 import com.example.bookie.models.Post
@@ -38,6 +37,9 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import android.widget.Toast.LENGTH_SHORT
+import androidx.compose.material.icons.filled.Check
+
 
 val posts: List<Post> = listOf()
 
@@ -46,9 +48,9 @@ private fun adicionarLivro(context: Context, livro: Livro) {
 
     db.collection("livros").add(livro).addOnCompleteListener { it ->
         if (it.isSuccessful) {
-            Toast.makeText(context, "Livro adicionado com sucesso!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Livro adicionado com sucesso!", LENGTH_SHORT).show()
         } else {
-            Toast.makeText(context, "Desculpe, ocorreu um erro ao adicionar o livro", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Desculpe, ocorreu um erro ao adicionar o livro", LENGTH_SHORT).show()
         }
     }
 }
@@ -60,10 +62,10 @@ private fun favoritarLivro(context: Context, livro: Livro, onFavoritado: () -> U
         livro.favorito = true
         db.collection("livros").document(documentId).set(livro).addOnCompleteListener { it ->
             if (it.isSuccessful) {
-                Toast.makeText(context, "Livro favoritado com sucesso!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Livro favoritado com sucesso!", LENGTH_SHORT).show()
                 onFavoritado()
             } else {
-                Toast.makeText(context, "Desculpe, ocorreu um erro ao favoritar o livro", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Desculpe, ocorreu um erro ao favoritar o livro", LENGTH_SHORT).show()
                 livro.favorito = false
                 onError()
             }
@@ -78,10 +80,10 @@ private fun desfavoritarLivro(context: Context, livro: Livro, onDesfavoritado: (
         livro.favorito = false
         db.collection("livros").document(documentId).set(livro).addOnCompleteListener { it ->
             if (it.isSuccessful) {
-                Toast.makeText(context, "Livro removido dos favoritos!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Livro removido dos favoritos!", LENGTH_SHORT).show()
                 onDesfavoritado()
             } else {
-                Toast.makeText(context, "Desculpe, ocorreu um erro ao remover o livro dos favoritos", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Desculpe, ocorreu um erro ao remover o livro dos favoritos", LENGTH_SHORT).show()
                 livro.favorito = true
                 onError()
             }
@@ -128,6 +130,11 @@ fun TelaLivro(navController: NavController, id: String, estante: Boolean? = fals
     val db = FirebaseFirestore.getInstance()
     var estaNaEstante by remember { mutableStateOf(false) }
 
+    var expanded by remember { mutableStateOf(false) }  // Controle do menu suspenso
+    var selectedStatus by remember { mutableStateOf(livro?.status ?: "Quero Ler") }  // Estado inicial do livro
+
+    val statusOptions = listOf("Lido", "Lendo", "Quero Ler")
+
     val onAdicionarLivro = { ->
         GlobalScope.launch {
             val userRepo = UserRepository(context)
@@ -164,6 +171,19 @@ fun TelaLivro(navController: NavController, id: String, estante: Boolean? = fals
         }
     }
 
+    fun atualizarStatusLivro(novoStatus: String) {
+        livro?.let {
+            it.volumeInfo?.nome = novoStatus
+            db.collection("livros").document(it.document ?: "").set(it).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(context, "Status do livro atualizado para $novoStatus", LENGTH_SHORT).show()
+                    livro = it.copy()
+                } else {
+                    Toast.makeText(context, "Erro ao atualizar o status", LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
     LayoutVariant(navController, titulo = if (titulo !== null) titulo else "Não encontrado") {
         if (livro != null) {
             Column {
@@ -203,6 +223,34 @@ fun TelaLivro(navController: NavController, id: String, estante: Boolean? = fals
                                     modifier = Modifier.height(157.dp).width(104.dp)
                                         .absoluteOffset(y = 28.dp),
                                 )
+                            }
+                        }
+                        Box {
+                            IconButton(onClick = { expanded = true }) {
+                                Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Menu")
+                            }
+
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }
+                            ) {
+                                statusOptions.forEach { status ->
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            selectedStatus = status
+                                            atualizarStatusLivro(status)
+                                            expanded = false
+                                        },
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        text = { Text(text = status) },
+                                        modifier = Modifier.padding(horizontal = 16.dp),
+                                        leadingIcon = { Icon(imageVector = Icons.Outlined.Star, contentDescription = "Status") },
+                                        trailingIcon = { if (selectedStatus == status) Icon(Icons.Default.Check, contentDescription = "Selected") },
+                                        enabled = true,
+                                        colors = MenuDefaults.itemColors(),  // Alterado para MenuItemColors
+                                        contentPadding = PaddingValues(horizontal = 16.dp)
+                                    )
+                                }
                             }
                         }
                         Column(
@@ -384,6 +432,33 @@ fun TelaLivro(navController: NavController, id: String, estante: Boolean? = fals
         }
     }
 }
+
+@Composable
+fun DropdownMenuItem(
+    onClick: () -> Unit,
+    interactionSource: MutableInteractionSource,
+    text: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    enabled: Boolean = true,
+    colors: MenuItemColors = MenuDefaults.itemColors(),  // Corrigido para MenuItemColors
+    contentPadding: PaddingValues = PaddingValues(16.dp)
+) {
+    // Usando o DropdownMenuItem do material3 corretamente
+    androidx.compose.material3.DropdownMenuItem(
+        onClick = onClick,
+        interactionSource = interactionSource,
+        modifier = modifier,
+        enabled = enabled,
+        contentPadding = contentPadding,
+        colors = colors,  // Agora passando MenuItemColors
+        text = text,  // Passando a função `text`
+        leadingIcon = leadingIcon,  // Passando o ícone à esquerda, se presente
+        trailingIcon = trailingIcon  // Passando o ícone à direita, se presente
+    )
+}
+
 
 //@Preview(showBackground = true)
 //@Composable
