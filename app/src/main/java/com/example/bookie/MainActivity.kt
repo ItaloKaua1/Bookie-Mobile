@@ -181,12 +181,6 @@ class MainActivity : ComponentActivity() {
                         val query = backStackEntry.arguments?.getString("query") ?: ""
                         ResultadosDescScreen(navController, query, context)
                     }
-                    composable("bookDetail") {
-                        val book = navController.previousBackStackEntry?.savedStateHandle?.get<Book>("book")
-                        if (book != null) {
-                            BookDetailScreen(navController, book)
-                        }
-                    }
                     composable(
                         route = "telaAudioBook/{id}",
                         arguments = listOf(

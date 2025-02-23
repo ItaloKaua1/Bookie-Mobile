@@ -16,7 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.bookie.AppData
 import com.example.bookie.components.LayoutVariant
+import com.example.bookie.models.ImageLinks
+import com.example.bookie.models.Livro
+import com.example.bookie.models.VolumeInfo
 import com.example.bookie.services.getApiKey
 import com.example.bookie.ui.theme.quaternary
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +36,21 @@ fun ResultadosDescScreen(navController: NavController, query: String, context: C
     LaunchedEffect(query) {
         books = fetchBooks(context, query)
         isLoading = false
+
+        val livrosConvertidos = books.map { book ->
+            Livro(
+                id = book.id,
+                volumeInfo = VolumeInfo(
+                    nome = book.title,
+                    autor = listOf(book.author),
+                    sinopse = book.description,
+                    imageLinks = ImageLinks(thumbnail = book.thumbnail)
+                )
+            )
+        }
+        AppData.getInstance().setLivrosBusca(livrosConvertidos)
     }
+
 
     LayoutVariant(navController, "Descobrir", false) {
         Column(
@@ -69,11 +87,13 @@ fun ResultadosDescScreen(navController: NavController, query: String, context: C
 }
 
 data class Book(
+    val id: String,
     val title: String,
     val author: String,
     val thumbnail: String?,
     val description: String?
 ) : java.io.Serializable
+
 
 suspend fun fetchBooks(context: Context, query: String): List<Book> {
     return withContext(Dispatchers.IO) {
@@ -88,6 +108,7 @@ suspend fun fetchBooks(context: Context, query: String): List<Book> {
                 val item = items.optJSONObject(index)
                 val volumeInfo = item?.optJSONObject("volumeInfo") ?: return@mapNotNull null
                 Book(
+                    id = item.optString("id", "sem_id"),
                     title = volumeInfo.optString("title", "Sem título"),
                     author = volumeInfo.optJSONArray("authors")?.optString(0) ?: "Desconhecido",
                     thumbnail = volumeInfo.optJSONObject("imageLinks")?.optString("thumbnail"),
@@ -108,8 +129,18 @@ fun BookItem(book: Book, navController: NavController) {
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clickable {
-                navController.currentBackStackEntry?.savedStateHandle?.set("book", book)
-                navController.navigate("bookDetail")
+                val livro = Livro(
+                    id = book.id,
+                    volumeInfo = VolumeInfo(
+                        nome = book.title,
+                        autor = listOf(book.author),
+                        sinopse = book.description,
+                        imageLinks = ImageLinks(thumbnail = book.thumbnail)
+                    )
+                )
+
+                navController.currentBackStackEntry?.savedStateHandle?.set("livro", livro)
+                navController.navigate("telaLivro/${livro.id}/false")
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
