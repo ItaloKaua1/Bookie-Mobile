@@ -31,11 +31,22 @@ private data class TabItem(
 )
 
 @Composable
+private fun FiltrarLivros(query: (Livro) -> Boolean): List<Livro> {
+    var livrosFiltrados by remember { mutableStateOf(listOf<Livro>()) }
+    val db = FirebaseFirestore.getInstance()
+
+    LaunchedEffect(Unit) {
+        db.collection("livros").get().addOnSuccessListener { snapshot ->
+            livrosFiltrados = snapshot.documents.mapNotNull { it.toObject(Livro::class.java) }.filter(query)
+            Log.d("Firestore", "Livros filtrados atualizados: ${livrosFiltrados.size}")
+        }
+    }
+    return livrosFiltrados
+}
+
+@Composable
 private fun Todos(livros: List<Livro>, onClick: (Livro) -> Unit = {}) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+    LazyVerticalGrid(columns = GridCells.Fixed(3), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(livros) { item ->
             CardLivroVariante(item, mostrarAvaliacao = true, onClick = onClick)
         }
@@ -44,22 +55,8 @@ private fun Todos(livros: List<Livro>, onClick: (Livro) -> Unit = {}) {
 
 @Composable
 private fun Lidos() {
-    var livrosLidos by remember { mutableStateOf(listOf<Livro>()) }
-    val db = FirebaseFirestore.getInstance()
-
-    LaunchedEffect(Unit) {
-        db.collection("livros")
-            .whereEqualTo("status", "lido")
-            .get()
-            .addOnSuccessListener { result ->
-                livrosLidos = result.documents.mapNotNull { it.toObject(Livro::class.java) }
-            }
-    }
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+    val livrosLidos = FiltrarLivros { it.lido == true }
+    LazyVerticalGrid(columns = GridCells.Fixed(3), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(livrosLidos) { livro ->
             CardLivroVariante(livro, mostrarAvaliacao = true)
         }
@@ -68,22 +65,8 @@ private fun Lidos() {
 
 @Composable
 private fun Lendo() {
-    var livrosLendo by remember { mutableStateOf(listOf<Livro>()) }
-    val db = FirebaseFirestore.getInstance()
-
-    LaunchedEffect(Unit) {
-        db.collection("livros")
-            .whereEqualTo("status", "lendo")
-            .get()
-            .addOnSuccessListener { result ->
-                livrosLendo = result.documents.mapNotNull { it.toObject(Livro::class.java) }
-            }
-    }
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+    val livrosLendo = FiltrarLivros { it.lendo == true }
+    LazyVerticalGrid(columns = GridCells.Fixed(3), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(livrosLendo) { livro ->
             CardLivroVariante(livro, mostrarPorcentagem = true)
         }
@@ -92,22 +75,8 @@ private fun Lendo() {
 
 @Composable
 private fun QueroLer() {
-    var livrosQueroLer by remember { mutableStateOf(listOf<Livro>()) }
-    val db = FirebaseFirestore.getInstance()
-
-    LaunchedEffect(Unit) {
-        db.collection("livros")
-            .whereEqualTo("status", "quero ler")
-            .get()
-            .addOnSuccessListener { result ->
-                livrosQueroLer = result.documents.mapNotNull { it.toObject(Livro::class.java) }
-            }
-    }
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+    val livrosQueroLer = FiltrarLivros { it.queroLer == true }
+    LazyVerticalGrid(columns = GridCells.Fixed(3), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(livrosQueroLer) { livro ->
             CardLivroVariante(livro)
         }
@@ -116,22 +85,8 @@ private fun QueroLer() {
 
 @Composable
 private fun Favoritos(livros: List<Livro>, onClick: (Livro) -> Unit = {}) {
-    var livrosFavoritos by remember { mutableStateOf(listOf<Livro>()) }
-    val db = FirebaseFirestore.getInstance()
-
-    LaunchedEffect(Unit) {
-        db.collection("livros")
-            .whereEqualTo("favorito", true)
-            .get()
-            .addOnSuccessListener { result ->
-                livrosFavoritos = result.documents.mapNotNull { it.toObject(Livro::class.java) }
-            }
-    }
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+    val livrosFavoritos = FiltrarLivros { it.favorito == true }
+    LazyVerticalGrid(columns = GridCells.Fixed(3), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(livrosFavoritos) { livro ->
             CardLivroVariante(livro, mostrarAvaliacao = true, onClick = onClick)
         }
@@ -215,12 +170,3 @@ fun MinhaEstante(navController: NavHostController) {
         }
     }
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//private fun GreetingPreview() {
-//    BookieTheme {
-//        MinhaEstante(navController)
-//    }
-//}

@@ -101,7 +101,7 @@ fun TelaClubeDetalhes(clubeId: String, navController: NavHostController) {
 @Composable
 fun InformacoesGeraisClube(clube: ClubeLeitura) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Livro do Mês: ${clube.Livro?.volumeInfo?.nome ?: "Nenhum livro selecionado"}", style = MaterialTheme.typography.bodyLarge)
+            Text("Livro do Mês: ${clube.Livro?.volumeInfo?.nome ?: "Nenhum livro selecionado"}")
             Text("Metas e Sprints: Defina suas metas!", style = MaterialTheme.typography.bodyLarge)
             Text("Regras de Convivência: ${clube.descricaoClube}", style = MaterialTheme.typography.bodyLarge)
         }

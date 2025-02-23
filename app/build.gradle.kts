@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.accessibility.test.framework)
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.room.ktx)
+    implementation("androidx.room:room-ktx:2.6.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
