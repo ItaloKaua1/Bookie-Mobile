@@ -1,11 +1,13 @@
 package com.example.bookie.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.bookie.components.LayoutVariant
@@ -13,10 +15,13 @@ import com.example.bookie.models.ClubeLeitura
 import com.example.bookie.models.Livro
 import com.google.firebase.firestore.FirebaseFirestore
 import androidx.compose.runtime.saveable.rememberSaveable
+import org.slf4j.MDC.put
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateClubScreen(navController: NavHostController) {
+    val context = LocalContext.current
+
     var nomeClubeLeitura by rememberSaveable { mutableStateOf("") }
     var descricaoClubeLeitura by rememberSaveable { mutableStateOf("") }
     var publico by rememberSaveable { mutableStateOf(true) }
@@ -107,18 +112,34 @@ fun CreateClubScreen(navController: NavHostController) {
                                         nomeClube = nomeClubeLeitura,
                                         descricaoClube = descricaoClubeLeitura,
                                         publico = publico,
-                                        Livro = livroSelecionado!!,
+                                        Livro = null,
                                         membros = mutableListOf()
+                                    )
+                                    val clubData = mutableMapOf(
+                                        "id" to club.id,
+                                        "nomeClube" to club.nomeClube,
+                                        "descricaoClube" to club.descricaoClube,
+                                        "publico" to club.publico,
+                                        "Livro" to livroSelecionado?.let { livro ->
+                                            mapOf(
+                                                "id" to livro.id,
+                                                "volumeInfo" to mapOf(
+                                                    "nome" to livro.volumeInfo?.nome,
+                                                    "autor" to livro.volumeInfo?.autor
+                                                )
+                                            )
+                                        },
+                                        "membros" to club.membros
                                     )
 
                                     FirebaseFirestore.getInstance().collection("clubes")
-                                        .document(club.id).set(club)
-
+                                        .document(club.id).set(clubData)
                                     navController.popBackStack()
+                                } else {
+                                    Toast.makeText(context, "Nenhum livro selecionado", Toast.LENGTH_SHORT).show()
                                 }
                             },
-                            modifier = Modifier.padding(top = 16.dp),
-                            enabled = livroSelecionado != null
+                            modifier = Modifier.padding(top = 16.dp)
                         ) {
                             Text("Criar Clube")
                         }
@@ -128,17 +149,16 @@ fun CreateClubScreen(navController: NavHostController) {
         }
     }
 
-    LaunchedEffect(navController.currentBackStackEntry) {
-        val livroRetornado = navController.previousBackStackEntry
-            ?.savedStateHandle
-            ?.get<Livro>("livroSelecionado")
-
-        if (livroRetornado != null) {
-            livroSelecionado = livroRetornado
-        }
+    LaunchedEffect(navController.currentBackStackEntry?.savedStateHandle) {
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Livro>("livroSelecionado")
+            ?.observeForever { livroRetornado ->
+                if (livroRetornado != null) {
+                    livroSelecionado = livroRetornado
+                }
+            }
     }
-}
 
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
