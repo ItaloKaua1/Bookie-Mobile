@@ -70,9 +70,9 @@ private fun registerUserInFirestore(id: String?, email: String, nome: String, co
     db.collection("usuarios").document(id).set(usuario).addOnCompleteListener { it ->
         if (it.isSuccessful) {
             Toast.makeText(context, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
-            navController.navigate("loginScreen")
+            navController.navigate("cadastroScreen2")
         } else {
-            Toast.makeText(context, "Desculpe, ocorreu um erro ao adicionar o livro", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Desculpe, ocorreu um erro ao realizar cadastro.", Toast.LENGTH_SHORT).show()
             auth.currentUser!!.delete()
         }
     }
