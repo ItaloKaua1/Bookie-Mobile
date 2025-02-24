@@ -25,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.bookie.components.ConfiguracoesViewModel
+import com.example.bookie.components.NavigationDrawer
 import com.example.bookie.models.FcmToken
 import com.example.bookie.services.BooksRepositorio
 import com.example.bookie.services.FeedViewModel

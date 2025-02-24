@@ -1,6 +1,8 @@
 package com.example.bookie
 
 import android.content.Context
+import android.net.Uri
+import android.widget.Toast
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -8,7 +10,10 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 
@@ -50,6 +55,34 @@ class UserRepository(private val context: Context) {
             }
         } else {
             false
+        }
+    }
+
+    val currentUserPhotoUrl: Flow<String?> = flow {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            val userDoc = FirebaseFirestore.getInstance()
+                .collection("usuarios")
+                .document(userId)
+                .get()
+                .await()
+            emit(userDoc.getString("photoUrl"))
+        } else {
+            emit(null)
+        }
+    }
+
+    val currentBio: Flow<String?> = flow {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            val userDoc = FirebaseFirestore.getInstance()
+                .collection("usuarios")
+                .document(userId)
+                .get()
+                .await()
+            emit(userDoc.getString("bio"))
+        } else {
+            emit(null)
         }
     }
 

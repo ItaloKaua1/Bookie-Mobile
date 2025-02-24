@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Icon
@@ -25,11 +26,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import coil3.compose.rememberAsyncImagePainter
 import com.example.bookie.R
 import com.example.bookie.UserRepository
 import com.example.bookie.components.LayoutVariant
@@ -54,6 +58,9 @@ fun TelaPerfil(navController: NavHostController, feedViewModel: FeedViewModel) {
 
     val posts by feedViewModel.posts.collectAsState()
 
+    val userPhotoUrl by userRepo.currentUserPhotoUrl.collectAsState(initial = null)
+    val userBio by userRepo.currentBio.collectAsState(initial = null)
+
     LayoutVariant(navController, "Meu perfil", true) {
         Column {
             Column {
@@ -61,12 +68,23 @@ fun TelaPerfil(navController: NavHostController, feedViewModel: FeedViewModel) {
                     horizontalArrangement = Arrangement.spacedBy(72.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.AccountCircle,
-                        contentDescription = "Foto do usuário",
-                        modifier = Modifier
-                            .size(64.dp)
-                    )
+                    if (userPhotoUrl != null) {
+                        Image(
+                            painter = rememberAsyncImagePainter(userPhotoUrl),
+                            contentDescription = "Foto do usuário",
+                            modifier = Modifier
+                                .size(64.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "Foto do usuário",
+                            modifier = Modifier
+                                .size(64.dp)
+                        )
+                    }
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(40.dp),
                     ) {
@@ -100,21 +118,25 @@ fun TelaPerfil(navController: NavHostController, feedViewModel: FeedViewModel) {
                 modifier = Modifier.padding(top = 16.dp).padding(horizontal = 8.dp),
             ) {
                 Text(text = userName, style = MaterialTheme.typography.titleMedium)
-                Text(text = "sobre", style = MaterialTheme.typography.bodyMedium)
-            }
-
-            Column {
-                TabRow(selectedTabIndex = tabIndex) {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(text = { Text(title) },
-                            selected = tabIndex == index,
-                            onClick = { tabIndex = index }
-                        )
-                    }
+                if (userPhotoUrl != null) {
+                    userBio?.let { Text(text = it, style = MaterialTheme.typography.bodyMedium) }
+                } else {
+                    Text("sobre", style = MaterialTheme.typography.bodyMedium)
                 }
-                when (tabIndex) {
-                    0 -> MinhasPostagens(posts = posts, userName = userName)
-                    1 -> MinhasListas()
+
+                Column {
+                    TabRow(selectedTabIndex = tabIndex) {
+                        tabs.forEachIndexed { index, title ->
+                            Tab(text = { Text(title) },
+                                selected = tabIndex == index,
+                                onClick = { tabIndex = index }
+                            )
+                        }
+                    }
+                    when (tabIndex) {
+                        0 -> MinhasPostagens(posts = posts, userName = userName)
+                        1 -> MinhasListas()
+                    }
                 }
             }
         }

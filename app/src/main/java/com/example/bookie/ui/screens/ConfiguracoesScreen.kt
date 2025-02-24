@@ -2,6 +2,7 @@ package com.example.bookie.ui.screens
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -27,7 +28,11 @@ import com.example.bookie.models.AuthManager.logout
 import com.example.bookie.models.NavigationItem
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.rememberAsyncImagePainter
 
 private fun logout(navController: NavController, context: Context) {
     FirebaseAuth.getInstance().signOut()
@@ -44,6 +49,7 @@ fun ConfiguracoesTela(navController: NavController, viewModel: ConfiguracoesView
     val userRepo = UserRepository(context)
     val userName by userRepo.currentUserName.collectAsState(initial = "")
     val email by userRepo.currentUserEmail.collectAsState(initial = "")
+    val userPhotoUrl by userRepo.currentUserPhotoUrl.collectAsState(initial = null)
 
     MaterialTheme(colorScheme = cores) {
         LayoutVariant(navController, "Configurações", false) {
@@ -52,19 +58,29 @@ fun ConfiguracoesTela(navController: NavController, viewModel: ConfiguracoesView
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                // Seção do Perfil do Usuário
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { navController.navigate("editarPerfil") },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Foto do usuário (pode ser um ícone ou uma imagem carregada)
-                    Icon(
-                        imageVector = Icons.Default.AccountCircle,
-                        contentDescription = "Foto do usuário",
-                        modifier = Modifier.size(64.dp)
-                    )
+                    if (userPhotoUrl != null) {
+                        Image(
+                            painter = rememberAsyncImagePainter(userPhotoUrl),
+                            contentDescription = "Foto do usuário",
+                            modifier = Modifier
+                                .size(64.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "Foto do usuário",
+                            modifier = Modifier
+                                .size(64.dp)
+                        )
+                    }
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
                         Text(
