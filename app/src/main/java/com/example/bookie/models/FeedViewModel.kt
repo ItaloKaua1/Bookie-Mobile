@@ -2,6 +2,7 @@ package com.example.bookie.services
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.bookie.models.Post
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,5 +21,18 @@ class FeedViewModel @Inject constructor(private val postRepository: PostReposito
                 Log.e("FeedViewModel", "Erro ao buscar posts: ${e.message}")
             }
         )
+    }
+}
+
+
+class FeedViewModelFactory(
+    private val postRepository: PostRepository
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(FeedViewModel::class.java)) {
+            return FeedViewModel(postRepository) as T
+        }
+        throw IllegalArgumentException("ViewModel desconhecido")
     }
 }

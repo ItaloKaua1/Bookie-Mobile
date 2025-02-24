@@ -9,22 +9,26 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.bookie.UserRepository
 import com.example.bookie.components.CardPost
 import com.example.bookie.components.NavigationDrawer
 import com.example.bookie.services.FeedViewModel
+import com.example.bookie.services.FeedViewModelFactory
+import com.example.bookie.services.PostRepository
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedScreen(navController: NavController, feedViewModel: FeedViewModel) {
+fun FeedScreen(navController: NavController) {
+    // Cria/recupera o ViewModel usando o nosso factory
+    val feedViewModel: FeedViewModel = viewModel(
+        factory = FeedViewModelFactory(PostRepository())
+    )
+
     val posts by feedViewModel.posts.collectAsState()
     var selectedTabIndex by remember { mutableStateOf(0) }
 
-    val context = LocalContext.current
-    val userRepo = UserRepository(context)
-    val userName by userRepo.currentUserName.collectAsState(initial = "")
-
+    // Resto do código permanece igual...
     LaunchedEffect(Unit) {
         feedViewModel.fetchPosts()
     }
@@ -78,6 +82,9 @@ fun FeedScreen(navController: NavController, feedViewModel: FeedViewModel) {
                                 }
                             }
                             1 -> {
+                                // Filtra os posts do usuário
+                                val userRepo = UserRepository(LocalContext.current)
+                                val userName by userRepo.currentUserName.collectAsState(initial = "")
                                 val userPosts = posts.filter { it.usuario == userName }
 
                                 if (userPosts.isEmpty()) {
