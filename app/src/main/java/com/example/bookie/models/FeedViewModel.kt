@@ -3,9 +3,11 @@ package com.example.bookie.services
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.example.bookie.models.Post
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class FeedViewModel @Inject constructor(private val postRepository: PostRepository) : ViewModel() {
@@ -21,6 +23,17 @@ class FeedViewModel @Inject constructor(private val postRepository: PostReposito
                 Log.e("FeedViewModel", "Erro ao buscar posts: ${e.message}")
             }
         )
+    }
+
+    fun updateLikes(post: Post, newLikesCount: Int) {
+        viewModelScope.launch {
+            postRepository.updateLikes(
+                postId = post.id,
+                newLikes = newLikesCount,
+                onSuccess = { fetchPosts() },
+                onFailure = { e -> Log.e("FeedViewModel", "Erro ao atualizar curtidas: ${e.message}") }
+            )
+        }
     }
 }
 

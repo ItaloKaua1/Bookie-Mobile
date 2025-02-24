@@ -20,15 +20,12 @@ import com.example.bookie.services.PostRepository
 
 @Composable
 fun FeedScreen(navController: NavController) {
-    // Cria/recupera o ViewModel usando o nosso factory
     val feedViewModel: FeedViewModel = viewModel(
         factory = FeedViewModelFactory(PostRepository())
     )
-
     val posts by feedViewModel.posts.collectAsState()
     var selectedTabIndex by remember { mutableStateOf(0) }
 
-    // Resto do código permanece igual...
     LaunchedEffect(Unit) {
         feedViewModel.fetchPosts()
     }
@@ -76,13 +73,15 @@ fun FeedScreen(navController: NavController) {
                                             .padding(16.dp)
                                     ) {
                                         items(posts) { post ->
-                                            CardPost(post = post)
+                                            // Ao clicar, navega para a tela de post expandido
+                                            CardPost(post = post, onClick = {
+                                                navController.navigate("expandedPost/${post.id}")
+                                            })
                                         }
                                     }
                                 }
                             }
                             1 -> {
-                                // Filtra os posts do usuário
                                 val userRepo = UserRepository(LocalContext.current)
                                 val userName by userRepo.currentUserName.collectAsState(initial = "")
                                 val userPosts = posts.filter { it.usuario == userName }
@@ -100,7 +99,9 @@ fun FeedScreen(navController: NavController) {
                                             .padding(16.dp)
                                     ) {
                                         items(userPosts) { post ->
-                                            CardPost(post = post)
+                                            CardPost(post = post, onClick = {
+                                                navController.navigate("expandedPost/${post.id}")
+                                            })
                                         }
                                     }
                                 }

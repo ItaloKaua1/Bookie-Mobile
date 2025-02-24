@@ -23,8 +23,28 @@ class PostRepository @Inject constructor() {
             .orderBy("data_criacao", com.google.firebase.firestore.Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { result ->
-                val posts = result.documents.mapNotNull { it.toObject(Post::class.java) }
+                val posts = result.documents.mapNotNull { document ->
+                    // Converte o documento para Post e preenche o campo 'id'
+                    document.toObject(Post::class.java)?.copy(id = document.id)
+                }
                 onSuccess(posts)
+            }
+            .addOnFailureListener { e ->
+                onFailure(e)
+            }
+    }
+
+    fun updateLikes(
+        postId: String,
+        newLikes: Int,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        db.collection("posts")
+            .document(postId)
+            .update("curtidas", newLikes)
+            .addOnSuccessListener {
+                onSuccess()
             }
             .addOnFailureListener { e ->
                 onFailure(e)

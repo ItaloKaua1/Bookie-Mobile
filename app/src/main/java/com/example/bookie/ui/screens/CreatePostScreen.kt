@@ -35,10 +35,8 @@ fun CreatePostScreen(
     var avaliacao by remember { mutableStateOf(0f) }
     var showSuggestions by remember { mutableStateOf(false) }
 
-    // Coleta o nome do usuário logado
     val userName by userRepository.currentUserName.collectAsState(initial = "Usuário Atual")
 
-    // Busca livros na API do Google Books quando o texto da pesquisa muda
     LaunchedEffect(livroQuery) {
         if (livroQuery.isNotEmpty()) {
             val response = booksRepositorio.buscarLivros(livroQuery)
@@ -61,7 +59,6 @@ fun CreatePostScreen(
 
     LayoutVariant(navController, "Publicar", false) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Campos de título e texto
             TextField(
                 value = titulo,
                 onValueChange = { titulo = it },
@@ -78,7 +75,6 @@ fun CreatePostScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Campo de pesquisa de livros
             TextField(
                 value = livroQuery,
                 onValueChange = { livroQuery = it },
@@ -87,7 +83,6 @@ fun CreatePostScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Lista de sugestões de livros
             if (showSuggestions) {
                 LazyColumn {
                     items(livros) { livro ->

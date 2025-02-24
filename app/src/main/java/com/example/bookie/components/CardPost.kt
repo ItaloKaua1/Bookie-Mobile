@@ -1,5 +1,6 @@
 package com.example.bookie.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -26,11 +27,15 @@ fun Date.formatarData(): String {
 }
 
 @Composable
-fun CardPost(post: Post) {
+fun CardPost(
+    post: Post,
+    onClick: () -> Unit = {} // Callback para navegação ao clicar no card
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .clickable { onClick() } // Torna o card clicável
     ) {
         Column(
             modifier = Modifier
@@ -60,20 +65,20 @@ fun CardPost(post: Post) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = post.titulo,
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.fillMaxWidth())
+                    modifier = Modifier.fillMaxWidth()
+                )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
                     text = post.texto,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.fillMaxWidth())
+                    modifier = Modifier.fillMaxWidth()
+                )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -94,14 +99,20 @@ fun CardPost(post: Post) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Box(
-                modifier = Modifier.fillMaxWidth()
+            // Linha inferior com data, curtidas e (opcionalmente) comentários
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = post.data_criacao.formatarData(),
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier.align(Alignment.BottomEnd)
+                    style = MaterialTheme.typography.bodySmall
+                )
+                // Exemplo: exibindo curtidas (você pode adicionar também comentários)
+                Text(
+                    text = "${post.curtidas} curtidas",
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }

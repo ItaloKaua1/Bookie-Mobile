@@ -1,5 +1,6 @@
 package com.example.bookie
 
+import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -25,9 +26,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.bookie.components.ConfiguracoesViewModel
-import com.example.bookie.components.NavigationDrawer
 import com.example.bookie.models.FcmToken
+import com.example.bookie.models.Post
 import com.example.bookie.services.BooksRepositorio
+import com.example.bookie.services.CommentRepository
 import com.example.bookie.services.FeedViewModel
 import com.example.bookie.services.PostRepository
 import com.example.bookie.ui.screens.*
@@ -78,18 +80,18 @@ class MainActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     this,
-                    android.Manifest.permission.POST_NOTIFICATIONS
+                    Manifest.permission.POST_NOTIFICATIONS
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
                 // FCM SDK (and your app) can post notifications.
-            } else if (shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS)) {
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
                 // TODO: display an educational UI explaining to the user the features that will be enabled
                 //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
                 //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
                 //       If the user selects "No thanks," allow the user to continue without notifications.
             } else {
                 // Directly ask for the permission
-                requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
     }
@@ -275,6 +277,14 @@ class MainActivity : ComponentActivity() {
                             booksRepositorio = BooksRepositorio(),
                             userRepository = UserRepository(context) // Passa o contexto para o UserRepository
                         )
+                    }
+                    composable(
+                        route = "expandedPost/{postId}",
+                        arguments = listOf(navArgument("postId") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val postId = backStackEntry.arguments?.getString("postId") ?: ""
+                        val context = LocalContext.current
+                        ExpandedPostScreen(postId = postId, navController = navController, userRepository = UserRepository(context))
                     }
                 }
             }
