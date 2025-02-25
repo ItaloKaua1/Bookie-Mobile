@@ -1,6 +1,5 @@
 package com.example.bookie.ui.screens.CadastroScreens
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,62 +26,13 @@ import androidx.navigation.NavHostController
 import com.example.bookie.components.BackComponent
 import com.example.bookie.ui.theme.PurpleBookie
 import android.net.Uri
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
 import com.example.bookie.components.SelectPhotoBox
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-
-private fun updateUserProfile(
-    userId: String,
-    photoUri: Uri?,
-    bio: String,
-    context: Context,
-    navController: NavHostController
-) {
-    val db = FirebaseFirestore.getInstance()
-    val storageRef = FirebaseStorage.getInstance().reference
-    val userRef = db.collection("usuarios").document(userId)
-
-    val updates = hashMapOf<String, Any>()
-    updates["bio"] = bio
-
-    if (photoUri != null) {
-        val photoRef = storageRef.child("users/$userId/profile_${System.currentTimeMillis()}.jpg")
-        photoRef.putFile(photoUri)
-            .addOnSuccessListener {
-                photoRef.downloadUrl.addOnSuccessListener { uri ->
-                    updates["photoUrl"] = uri.toString()
-                    userRef.update(updates)
-                        .addOnSuccessListener {
-                            Toast.makeText(context, "Perfil atualizado com sucesso!", Toast.LENGTH_SHORT).show()
-                            navController.navigate("cadastroScreen3") // Alterar para sua tela principal
-                        }
-                }
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(context, "Erro ao fazer upload da foto: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-    } else {
-        userRef.update(updates)
-            .addOnSuccessListener {
-                Toast.makeText(context, "Perfil atualizado com sucesso!", Toast.LENGTH_SHORT).show()
-                navController.navigate("cadastroScreen3") // Alterar para sua tela principal
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(context, "Erro ao atualizar perfil: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
-}
 
 @Composable
 fun CadastroScreen2(navController: NavHostController) {
+    var username by remember { mutableStateOf("") }
     var bio by remember { mutableStateOf("") }
     var profilePictureUri by remember { mutableStateOf<Uri?>(null) }
-    val context = LocalContext.current
-    val currentUser = FirebaseAuth.getInstance().currentUser
-
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -140,6 +90,27 @@ fun CadastroScreen2(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                Text(text = "Nome de usuário")
+                BasicTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, Color.Gray, RoundedCornerShape(6.dp))
+                        .padding(8.dp),
+                    textStyle = TextStyle.Default.copy(color = Color.Black),
+                    decorationBox = { innerTextField ->
+                        Box(modifier = Modifier.padding(4.dp)) {
+                            if (username.isEmpty()) {
+                                Text(text = "Nome", color = Color.Gray)
+                            }
+                            innerTextField()
+                        }
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
                     text = buildAnnotatedString {
                         append("Biografia ")
@@ -171,20 +142,7 @@ fun CadastroScreen2(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = {
-                        if (currentUser == null) {
-                            Toast.makeText(context, "Usuário não autenticado!", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-
-                        updateUserProfile(
-                            userId = currentUser.uid,
-                            photoUri = profilePictureUri,
-                            bio = bio,
-                            context = context,
-                            navController = navController
-                        )
-                    },
+                    onClick = { navController.navigate("cadastroScreen3") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp)

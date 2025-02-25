@@ -26,10 +26,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.bookie.models.ConfiguracoesViewModel
+import com.example.bookie.components.ConfiguracoesViewModel
 import com.example.bookie.models.FcmToken
-import com.example.bookie.models.ThemeOption
 import com.example.bookie.services.BooksRepositorio
+import com.example.bookie.services.FeedViewModel
 import com.example.bookie.services.PostRepository
 import com.example.bookie.ui.screens.*
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen1
@@ -52,6 +52,7 @@ import com.example.bookie.ui.screens.ResultadosDescScreen
 import com.example.bookie.ui.screens.TelaLivro
 import com.example.bookie.ui.screens.TelaNotificacoes
 import com.example.bookie.ui.screens.TelaPerfil
+import com.example.bookie.ui.theme.BookieTheme
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
@@ -59,7 +60,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.util.Calendar
 
 class MainActivity : ComponentActivity() {
     private val configuracoesViewModel: ConfiguracoesViewModel by viewModels()
@@ -140,23 +140,14 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-            val themeOption = configuracoesViewModel.themeOption.collectAsState().value
-
-            val isDarkTheme = when (themeOption) {
-                ThemeOption.DARK -> true
-                ThemeOption.LIGHT -> false
-                ThemeOption.AUTO -> {
-                    val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-                    hour < 6 || hour >= 18
-                }
-            }
-            val cores = if (isDarkTheme) darkColorScheme() else lightColorScheme()
+            val temaEscuro = configuracoesViewModel.temaEscuro.collectAsState().value
+            val cores = if (temaEscuro) darkColorScheme() else lightColorScheme()
 
             MaterialTheme(colorScheme = cores) {
                 val primaryColor = MaterialTheme.colorScheme.primaryContainer
                 SideEffect {
                     window.statusBarColor = primaryColor.toArgb()
-                    WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = !isDarkTheme
+                    WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = !temaEscuro
                 }
 
                 val startDestination = intent.getStringExtra("startDestination") ?: "loginScreen"
@@ -166,10 +157,10 @@ class MainActivity : ComponentActivity() {
                     composable("cadastroScreen2") { CadastroScreen2(navController) }
                     composable("cadastroScreen3") { CadastroScreen3(navController) }
                     composable("editarPerfil") { EditarPerfil(navController) }
-                    composable("feedScreen") { FeedScreen(navController) }
+                    composable("feedScreen") { FeedScreen(navController, feedViewModel = FeedViewModel(postRepository = PostRepository())) }
                     composable("listarLivros") { ListarLivros(navController) }
                     composable("minhaEstante") { MinhaEstante(navController) }
-                    composable("telaPerfil") { TelaPerfil(navController) }
+                    composable("telaPerfil") { TelaPerfil(navController, feedViewModel = FeedViewModel(postRepository = PostRepository()))}
                     composable("telaNotificacoes") { TelaNotificacoes(navController) }
                     composable("configuracoesTela") {
                         ConfiguracoesTela(navController = navController, viewModel = configuracoesViewModel)
@@ -207,7 +198,9 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = "telaConversa/{id}",
                         arguments = listOf(
-                            navArgument(name = "id") { type = NavType.StringType }
+                            navArgument(name = "id") {
+                                type = NavType.StringType
+                            },
                         )
                     ) { backstackEntry ->
                         val id = backstackEntry.arguments?.getString("id")
@@ -266,8 +259,12 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = "disponibilizarParaTrocaScreen/{id}/{estante}",
                         arguments = listOf(
-                            navArgument(name = "id") { type = NavType.StringType },
-                            navArgument(name = "estante") { type = NavType.BoolType }
+                            navArgument(name = "id") {
+                                type = NavType.StringType
+                            },
+                            navArgument(name = "estante") {
+                                type = NavType.BoolType
+                            },
                         )
                     ) { backstackEntry ->
                         val id = backstackEntry.arguments?.getString("id")
@@ -281,7 +278,7 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = "telaLivroTroca/{id}",
                         arguments = listOf(
-                            navArgument(name = "id") { type = NavType.StringType }
+                            navArgument(name = "id") { type = NavType.StringType },
                         )
                     ) { backstackEntry ->
                         val id = backstackEntry.arguments?.getString("id")
@@ -292,7 +289,7 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = "finalizarProposta/{id}",
                         arguments = listOf(
-                            navArgument(name = "id") { type = NavType.StringType }
+                            navArgument(name = "id") { type = NavType.StringType },
                         )
                     ) { backstackEntry ->
                         val id = backstackEntry.arguments?.getString("id")
@@ -303,7 +300,7 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = "visualizarProposta/{id}",
                         arguments = listOf(
-                            navArgument(name = "id") { type = NavType.StringType }
+                            navArgument(name = "id") { type = NavType.StringType },
                         )
                     ) { backstackEntry ->
                         val id = backstackEntry.arguments?.getString("id")
@@ -318,23 +315,14 @@ class MainActivity : ComponentActivity() {
                     composable("animacaoConfig") { AnimacaoConfig(navController) }
                     composable("notiConfig") { NotificacoesConfig(navController) }
                     composable("createPost") {
-                        val context = LocalContext.current
+                        val context = LocalContext.current // Obtém o contexto atual
                         CreatePostScreen(
                             navController = navController,
                             postRepository = PostRepository(),
                             booksRepositorio = BooksRepositorio(),
-                            userRepository = UserRepository(context)
+                            userRepository = UserRepository(context) // Passa o contexto para o UserRepository
                         )
                     }
-                    composable(
-                        route = "expandedPost/{postId}",
-                        arguments = listOf(navArgument("postId") { type = NavType.StringType })
-                    ) { backStackEntry ->
-                        val postId = backStackEntry.arguments?.getString("postId") ?: ""
-                        val context = LocalContext.current
-                        ExpandedPostScreen(postId = postId, navController = navController, userRepository = UserRepository(context))
-                    }
-                    composable("savedPostsScreen") { SavedPostsScreen(navController) }
                 }
             }
         }

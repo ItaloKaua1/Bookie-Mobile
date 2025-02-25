@@ -42,7 +42,7 @@ android {
 }
 
 dependencies {
-    implementation ("com.google.firebase:firebase-storage-ktx:20.3.0")
+
     implementation ("androidx.compose.animation:animation:1.0.0")
 
     implementation ("com.squareup.retrofit2:converter-simplexml:2.9.0")

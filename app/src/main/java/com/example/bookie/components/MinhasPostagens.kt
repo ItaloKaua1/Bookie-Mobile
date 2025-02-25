@@ -12,13 +12,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.bookie.UserRepository
 import com.example.bookie.models.Post
-import com.example.bookie.services.SavedPostsStore
 
 @Composable
 fun MinhasPostagens(posts: List<Post>, userName: String) {
     val userPosts = posts.filter { it.usuario == userName }
-    val savedPosts by SavedPostsStore.savedPosts.collectAsState()
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -30,18 +29,7 @@ fun MinhasPostagens(posts: List<Post>, userName: String) {
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 items(userPosts) { post ->
-                    val isSaved = savedPosts.any { it.id == post.id }
-                    CardPost(
-                        post = post,
-                        isSaved = isSaved,
-                        onSaveClick = {
-                            if (isSaved) {
-                                SavedPostsStore.unsavePost(post)
-                            } else {
-                                SavedPostsStore.savePost(post)
-                            }
-                        }
-                    )
+                    CardPost(post = post)
                 }
             }
         } else {

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.bookie.models.ConfiguracoesViewModel
+import com.example.bookie.components.ConfiguracoesViewModel
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.ui.theme.quaternary
 
