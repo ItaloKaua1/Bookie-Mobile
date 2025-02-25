@@ -36,10 +36,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil3.compose.rememberAsyncImagePainter
+import com.example.bookie.R
 import com.example.bookie.UserRepository
 import com.example.bookie.components.CardPost
 import com.example.bookie.components.LayoutVariant
@@ -64,9 +66,7 @@ fun TelaPerfil(navController: NavHostController) {
 
     var tabIndex by rememberSaveable { mutableStateOf(0) }
     val tabs = listOf("minhas postagens", "minhas listas")
-    val post = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date())
     val livro = Livro("", VolumeInfo(ImageLinks("", ""), "Livro Teste", listOf("Autor Teste"), "Sinopse Teste", 34))
-    val post2 = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date(), livro)
     val thematicList = remember {
         listOf(
             ThematicList("1", "Favoritos", "Livros que eu amei ler!", listOf()),
@@ -124,34 +124,13 @@ fun TelaPerfil(navController: NavHostController) {
                         Text(text = "19", style = MaterialTheme.typography.titleMedium)
                         Text(text = "livros", style = MaterialTheme.typography.bodySmall)
                     }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.clickable { navController.navigate("friendsScreen") }
+                    ) {
                         Text(text = "89", style = MaterialTheme.typography.titleMedium)
                         Text(text = "amigos", style = MaterialTheme.typography.bodySmall)
-                        
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                        ) {
-                            Text(text = "13", style = MaterialTheme.typography.titleMedium)
-                            Text(text = "postagens", style = MaterialTheme.typography.bodySmall)
-                        }
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                            modifier = Modifier.clickable { navController.navigate("minhaEstante") }
-                        ) {
-                            Text(text = "19", style = MaterialTheme.typography.titleMedium)
-                            Text(text = "livros", style = MaterialTheme.typography.bodySmall)
-                        }
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                            modifier = Modifier.clickable { navController.navigate("friendsScreen") }
-                        ) {
-                            Text(text = "89", style = MaterialTheme.typography.titleMedium)
-                            Text(text = "amigos", style = MaterialTheme.typography.bodySmall)
-                        }
-
                     }
                 }
             }
@@ -218,7 +197,7 @@ fun TelaPerfil(navController: NavHostController) {
                                 }
                             }
                         }
-                        1 -> MinhasListas()
+                        1 -> MinhasListas(Unit)
                     }
                 }
                 @Composable
