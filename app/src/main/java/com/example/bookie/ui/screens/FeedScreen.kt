@@ -17,6 +17,7 @@ import com.example.bookie.components.NavigationDrawer
 import com.example.bookie.services.FeedViewModel
 import com.example.bookie.services.FeedViewModelFactory
 import com.example.bookie.services.PostRepository
+import com.example.bookie.services.SavedPostsRepository
 
 @Composable
 fun FeedScreen(navController: NavController) {
@@ -24,6 +25,8 @@ fun FeedScreen(navController: NavController) {
         factory = FeedViewModelFactory(PostRepository())
     )
     val posts by feedViewModel.posts.collectAsState()
+    val savedPosts by SavedPostsRepository.getSavedPostsFlow().collectAsState(initial = emptyList())
+
     var selectedTabIndex by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
@@ -73,10 +76,20 @@ fun FeedScreen(navController: NavController) {
                                             .padding(16.dp)
                                     ) {
                                         items(posts) { post ->
-                                            // Ao clicar, navega para a tela de post expandido
-                                            CardPost(post = post, onClick = {
-                                                navController.navigate("expandedPost/${post.id}")
-                                            })
+                                            // Verifica se o post atual está salvo
+                                            val isSaved = savedPosts.any { it.id == post.id }
+                                            CardPost(
+                                                post = post,
+                                                isSaved = isSaved,
+                                                onClick = { navController.navigate("expandedPost/${post.id}") },
+                                                onSaveClick = {
+                                                    if (isSaved) {
+                                                        SavedPostsRepository.unsavePost(post)
+                                                    } else {
+                                                        SavedPostsRepository.savePost(post)
+                                                    }
+                                                }
+                                            )
                                         }
                                     }
                                 }
@@ -99,9 +112,20 @@ fun FeedScreen(navController: NavController) {
                                             .padding(16.dp)
                                     ) {
                                         items(userPosts) { post ->
-                                            CardPost(post = post, onClick = {
-                                                navController.navigate("expandedPost/${post.id}")
-                                            })
+                                            // Mesma lógica para definir se o post está salvo
+                                            val isSaved = savedPosts.any { it.id == post.id }
+                                            CardPost(
+                                                post = post,
+                                                isSaved = isSaved,
+                                                onClick = { navController.navigate("expandedPost/${post.id}") },
+                                                onSaveClick = {
+                                                    if (isSaved) {
+                                                        SavedPostsRepository.unsavePost(post)
+                                                    } else {
+                                                        SavedPostsRepository.savePost(post)
+                                                    }
+                                                }
+                                            )
                                         }
                                     }
                                 }

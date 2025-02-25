@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.bookie.models.Post
+import com.example.bookie.services.SavedPostsStore
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -29,19 +32,20 @@ fun Date.formatarData(): String {
 @Composable
 fun CardPost(
     post: Post,
-    onClick: () -> Unit = {} // Callback para navegação ao clicar no card
+    onClick: () -> Unit = {},
+    isSaved: Boolean,
+    onSaveClick: (Post) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { onClick() } // Torna o card clicável
+            .clickable { onClick() }
     ) {
         Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
+            modifier = Modifier.padding(16.dp).fillMaxWidth()
         ) {
+            // Cabeçalho do post
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -65,6 +69,7 @@ fun CardPost(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Conteúdo do post
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = post.titulo,
@@ -99,7 +104,7 @@ fun CardPost(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Linha inferior com data, curtidas e (opcionalmente) comentários
+            // Linha inferior com data, curtidas e ícone de salvar/unsave
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -109,11 +114,21 @@ fun CardPost(
                     text = post.data_criacao.formatarData(),
                     style = MaterialTheme.typography.bodySmall
                 )
-                // Exemplo: exibindo curtidas (você pode adicionar também comentários)
-                Text(
-                    text = "${post.curtidas} curtidas",
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "${post.curtidas} curtidas",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Icon(
+                        imageVector = if (isSaved) Icons.Filled.Bookmark
+                        else Icons.Outlined.BookmarkBorder,
+                        contentDescription = if (isSaved) "Post salvo" else "Salvar post",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { onSaveClick(post) }
+                    )
+                }
             }
         }
     }

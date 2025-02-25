@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Bookmark
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.ExitToApp
 import androidx.compose.material.icons.outlined.List
@@ -88,8 +89,8 @@ fun NavigationDrawer(navController: NavController, content: @Composable () -> Un
         ),
         NavigationItem(
             title = "salvos",
-            icon = Icons.Outlined.Done,
-            action = { navController.navigate("telaPerfil") }
+            icon = Icons.Outlined.Bookmark,
+            action = { navController.navigate("savedPostsScreen") }
         ),
         NavigationItem(
             title = "trocar livros",

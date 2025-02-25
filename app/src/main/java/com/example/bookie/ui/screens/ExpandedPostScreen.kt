@@ -24,6 +24,7 @@ import com.example.bookie.services.CommentViewModelFactory
 import com.example.bookie.services.FeedViewModel
 import com.example.bookie.services.FeedViewModelFactory
 import com.example.bookie.services.PostRepository
+import com.example.bookie.services.SavedPostsStore
 
 @Composable
 fun ExpandedPostScreen(
@@ -41,6 +42,7 @@ fun ExpandedPostScreen(
     val post = posts.find { it.id == postId }
 
     val userName by userRepository.currentUserName.collectAsState(initial = "Usuário Atual")
+    val savedPosts by SavedPostsStore.savedPosts.collectAsState()
 
     if (post == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -65,7 +67,19 @@ fun ExpandedPostScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            CardPost(post = post)
+            CardPost(
+                post = post,
+                isSaved = savedPosts.any { it.id == post.id },
+                onSaveClick = {
+                    if (savedPosts.any { it.id == post.id }) {
+                        SavedPostsStore.unsavePost(post)
+                    } else {
+                        SavedPostsStore.savePost(post)
+                    }
+                },
+                onClick = {
+                }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -124,7 +138,6 @@ fun ExpandedPostScreen(
                     Text("Enviar")
                 }
             }
-
         }
     }
 }

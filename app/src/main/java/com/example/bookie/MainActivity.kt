@@ -286,6 +286,7 @@ class MainActivity : ComponentActivity() {
                         val context = LocalContext.current
                         ExpandedPostScreen(postId = postId, navController = navController, userRepository = UserRepository(context))
                     }
+                    composable("savedPostsScreen") { SavedPostsScreen(navController) }
                 }
             }
         }
