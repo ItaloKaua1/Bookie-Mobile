@@ -6,38 +6,35 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.BookmarkBorder
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.example.bookie.UserRepository
 import com.example.bookie.models.Post
-import com.example.bookie.services.SavedPostsStore
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 fun Date.formatarData(): String {
     val formato = SimpleDateFormat("dd/MM HH:mm", Locale.getDefault())
     return formato.format(this)
 }
 
-
 @Composable
 fun CardPost(
     post: Post,
     onClick: () -> Unit = {},
     isSaved: Boolean,
-    onSaveClick: (Post) -> Unit
+    onSaveClick: (Post) -> Unit,
+    isOwner: Boolean = false,
+    onDelete: (() -> Unit)? = null
 ) {
+    var menuExpanded by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,7 +42,9 @@ fun CardPost(
             .clickable { onClick() }
     ) {
         Column(
-            modifier = Modifier.padding(16.dp).fillMaxWidth()
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
         ) {
             // Cabeçalho do post
             Row(
@@ -69,12 +68,38 @@ fun CardPost(
                             .clip(CircleShape)
                     )
                 }
+
                 Spacer(modifier = Modifier.width(8.dp))
+
                 Text(
                     text = post.usuario,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f)
                 )
+
+                // Se o post for do usuário logado, exibe o menu de opções
+                if (isOwner && onDelete != null) {
+                    Box {
+                        IconButton(onClick = { menuExpanded = true }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "Opções do post"
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = menuExpanded,
+                            onDismissRequest = { menuExpanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Excluir post") },
+                                onClick = {
+                                    menuExpanded = false
+                                    onDelete()
+                                }
+                            )
+                        }
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -103,6 +128,7 @@ fun CardPost(
                 )
             }
 
+            // Exibe a capa do livro, se houver
             post.livro?.let { livro ->
                 Spacer(modifier = Modifier.height(8.dp))
                 AsyncImage(
@@ -114,7 +140,6 @@ fun CardPost(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Linha inferior com data, curtidas e ícone de salvar/unsave
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

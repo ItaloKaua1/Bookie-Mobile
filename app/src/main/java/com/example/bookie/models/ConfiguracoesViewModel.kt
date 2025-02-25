@@ -1,4 +1,4 @@
-package com.example.bookie.components
+package com.example.bookie.models
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -6,14 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.bookie.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class ConfiguracoesViewModel(application: Application) : AndroidViewModel(application) {
     private val userRepository = UserRepository(application)
 
-    private val _temaEscuro = MutableStateFlow(false)
-    val temaEscuro: StateFlow<Boolean> = _temaEscuro
+    private val _themeOption = MutableStateFlow(ThemeOption.LIGHT)
+    val themeOption: StateFlow<ThemeOption> = _themeOption
 
     private val _notificacoesAtivadas = MutableStateFlow(false)
     val notificacoesAtivadas: StateFlow<Boolean> = _notificacoesAtivadas
@@ -24,7 +23,11 @@ class ConfiguracoesViewModel(application: Application) : AndroidViewModel(applic
     init {
         viewModelScope.launch {
             userRepository.customTheme.collect { theme ->
-                _temaEscuro.value = theme == "dark"
+                _themeOption.value = when(theme) {
+                    "dark" -> ThemeOption.DARK
+                    "auto" -> ThemeOption.AUTO
+                    else -> ThemeOption.LIGHT
+                }
             }
         }
         viewModelScope.launch {
@@ -39,10 +42,15 @@ class ConfiguracoesViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    fun alternarTema() {
+    fun setThemeOption(option: ThemeOption) {
         viewModelScope.launch {
-            val novoTema = if (_temaEscuro.value) "light" else "dark"
-            userRepository.updateCustomTheme(novoTema)
+            _themeOption.value = option
+            val themeString = when(option) {
+                ThemeOption.DARK -> "dark"
+                ThemeOption.AUTO -> "auto"
+                else -> "light"
+            }
+            userRepository.updateCustomTheme(themeString)
         }
     }
 
@@ -56,9 +64,5 @@ class ConfiguracoesViewModel(application: Application) : AndroidViewModel(applic
         viewModelScope.launch {
             userRepository.updateAnimationsEnabled(habilitado)
         }
-    }
-
-    fun definirTema(escuro: Boolean) {
-        _temaEscuro.value = escuro
     }
 }

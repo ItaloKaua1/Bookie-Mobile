@@ -1,8 +1,5 @@
 package com.example.bookie.ui.screens
 
-import android.content.Context
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,7 +24,6 @@ import com.example.bookie.components.LayoutVariant
 import com.example.bookie.models.Post
 import com.example.bookie.models.TrocaDisponivel
 import com.example.bookie.services.SavedPostsStore
-import com.example.bookie.services.SavedPostsStore.savedPosts
 
 private val postsTroca: List<Post> = listOf()
 

@@ -18,6 +18,7 @@ import com.example.bookie.services.FeedViewModel
 import com.example.bookie.services.FeedViewModelFactory
 import com.example.bookie.services.PostRepository
 import com.example.bookie.services.SavedPostsRepository
+import android.util.Log
 
 @Composable
 fun FeedScreen(navController: NavController) {
@@ -26,6 +27,9 @@ fun FeedScreen(navController: NavController) {
     )
     val posts by feedViewModel.posts.collectAsState()
     val savedPosts by SavedPostsRepository.getSavedPostsFlow().collectAsState(initial = emptyList())
+
+    val userRepository = UserRepository(LocalContext.current)
+    val currentUserName by userRepository.currentUserName.collectAsState(initial = "")
 
     var selectedTabIndex by remember { mutableStateOf(0) }
 
@@ -76,8 +80,8 @@ fun FeedScreen(navController: NavController) {
                                             .padding(16.dp)
                                     ) {
                                         items(posts) { post ->
-                                            // Verifica se o post atual está salvo
                                             val isSaved = savedPosts.any { it.id == post.id }
+                                            val isOwner = post.usuario == currentUserName
                                             CardPost(
                                                 post = post,
                                                 isSaved = isSaved,
@@ -88,16 +92,28 @@ fun FeedScreen(navController: NavController) {
                                                     } else {
                                                         SavedPostsRepository.savePost(post)
                                                     }
-                                                }
+                                                },
+                                                isOwner = isOwner,
+                                                onDelete = if (isOwner) {
+                                                    {
+                                                        PostRepository().deletePost(post,
+                                                            onSuccess = {
+                                                                Log.d("FeedScreen", "Post excluído com sucesso")
+                                                                feedViewModel.fetchPosts()
+                                                            },
+                                                            onFailure = { e ->
+                                                                Log.e("FeedScreen", "Erro ao excluir post: ${e.message}")
+                                                            }
+                                                        )
+                                                    }
+                                                } else null,
                                             )
                                         }
                                     }
                                 }
                             }
                             1 -> {
-                                val userRepo = UserRepository(LocalContext.current)
-                                val userName by userRepo.currentUserName.collectAsState(initial = "")
-                                val userPosts = posts.filter { it.usuario == userName }
+                                val userPosts = posts.filter { it.usuario == currentUserName }
 
                                 if (userPosts.isEmpty()) {
                                     Text(
@@ -112,7 +128,6 @@ fun FeedScreen(navController: NavController) {
                                             .padding(16.dp)
                                     ) {
                                         items(userPosts) { post ->
-                                            // Mesma lógica para definir se o post está salvo
                                             val isSaved = savedPosts.any { it.id == post.id }
                                             CardPost(
                                                 post = post,
@@ -124,6 +139,17 @@ fun FeedScreen(navController: NavController) {
                                                     } else {
                                                         SavedPostsRepository.savePost(post)
                                                     }
+                                                },
+                                                isOwner = true,
+                                                onDelete = {
+                                                    PostRepository().deletePost(post,
+                                                        onSuccess = {
+                                                            Log.d("FeedScreen", "Post excluído com sucesso")
+                                                        },
+                                                        onFailure = { e ->
+                                                            Log.e("FeedScreen", "Erro ao excluir post: ${e.message}")
+                                                        }
+                                                    )
                                                 }
                                             )
                                         }

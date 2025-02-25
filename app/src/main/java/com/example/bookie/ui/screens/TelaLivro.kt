@@ -1,7 +1,6 @@
 package com.example.bookie.ui.screens
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -11,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Headphones
-import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,7 +26,6 @@ import coil.compose.AsyncImage
 import com.example.bookie.AppData
 import com.example.bookie.R
 import com.example.bookie.UserRepository
-import com.example.bookie.components.CardPost
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.models.Livro
 import com.example.bookie.models.Post

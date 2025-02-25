@@ -50,4 +50,21 @@ class PostRepository @Inject constructor() {
                 onFailure(e)
             }
     }
+
+    fun deletePost(
+        post: Post,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        if (post.id.isEmpty()) {
+            onFailure(Exception("ID do post inválido"))
+            return
+        }
+        db.collection("posts")
+            .document(post.id)
+            .delete()
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { e -> onFailure(e) }
+    }
+
 }
