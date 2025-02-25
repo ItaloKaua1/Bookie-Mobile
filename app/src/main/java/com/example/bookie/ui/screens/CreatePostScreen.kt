@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -16,6 +17,7 @@ import com.example.bookie.UserRepository
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.models.Livro
 import com.example.bookie.models.Post
+import com.example.bookie.models.Usuario
 import com.example.bookie.services.BooksRepositorio
 import com.example.bookie.services.PostRepository
 import java.util.Date
@@ -35,7 +37,10 @@ fun CreatePostScreen(
     var avaliacao by remember { mutableStateOf(0f) }
     var showSuggestions by remember { mutableStateOf(false) }
 
-    val userName by userRepository.currentUserName.collectAsState(initial = "Usuário Atual")
+    val context = LocalContext.current
+    // Observe o nome e a foto do usuário:
+    val userNameState = userRepository.currentUserName.collectAsState(initial = "")
+    val userPhotoUrlState = userRepository.currentUserPhotoUrl.collectAsState(initial = null)
 
     LaunchedEffect(livroQuery) {
         if (livroQuery.isNotEmpty()) {
@@ -129,11 +134,12 @@ fun CreatePostScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Botão para publicar o post
             Button(
                 onClick = {
+                    // Cria o post utilizando os dados do usuário, incluindo a foto
                     val post = Post(
-                        usuario = userName,
+                        usuario = userNameState.value,
+                        photoUrl = userPhotoUrlState.value,
                         titulo = titulo,
                         texto = texto,
                         curtidas = 0,

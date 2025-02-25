@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.example.bookie.UserRepository
 import com.example.bookie.models.Post
 import com.example.bookie.services.SavedPostsStore
 import java.text.SimpleDateFormat
@@ -28,6 +29,7 @@ fun Date.formatarData(): String {
     val formato = SimpleDateFormat("dd/MM HH:mm", Locale.getDefault())
     return formato.format(this)
 }
+
 
 @Composable
 fun CardPost(
@@ -50,16 +52,24 @@ fun CardPost(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(
-                    imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Foto do usuário",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                )
-
+                if (!post.photoUrl.isNullOrEmpty()) {
+                    AsyncImage(
+                        model = post.photoUrl,
+                        contentDescription = "Foto do usuário",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "Foto do usuário",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                    )
+                }
                 Spacer(modifier = Modifier.width(8.dp))
-
                 Text(
                     text = post.usuario,
                     style = MaterialTheme.typography.titleMedium,

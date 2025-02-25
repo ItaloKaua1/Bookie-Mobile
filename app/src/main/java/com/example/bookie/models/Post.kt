@@ -11,7 +11,8 @@ data class Post(
     val comentarios: Int = 0,
     val avaliacao: Float = 0f,
     val data_criacao: Date = Date(),
-    val livro: Livro? = null
+    val livro: Livro? = null,
+    val photoUrl: String? = null,
 )
 
 data class Comment(
