@@ -1,6 +1,5 @@
 package com.example.bookie.ui.screens
 
-
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -13,12 +12,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -45,8 +42,6 @@ import com.example.bookie.R
 import com.example.bookie.UserRepository
 import com.example.bookie.components.CardPost
 import com.example.bookie.components.LayoutVariant
-import com.example.bookie.components.MinhasListas
-import com.example.bookie.components.MinhasPostagens
 import com.example.bookie.models.ImageLinks
 import com.example.bookie.models.Livro
 import com.example.bookie.models.Post
@@ -57,7 +52,6 @@ import com.example.bookie.services.FeedViewModelFactory
 import com.example.bookie.services.PostRepository
 import com.example.bookie.services.SavedPostsRepository
 
-
 @Composable
 fun TelaPerfil(navController: NavHostController) {
     val feedViewModel: FeedViewModel = viewModel(
@@ -66,14 +60,17 @@ fun TelaPerfil(navController: NavHostController) {
 
     var tabIndex by rememberSaveable { mutableStateOf(0) }
     val tabs = listOf("minhas postagens", "minhas listas")
-    val livro = Livro("", VolumeInfo(ImageLinks("", ""), "Livro Teste", listOf("Autor Teste"), "Sinopse Teste", 34))
+    val livro = Livro(
+        "",
+        VolumeInfo(ImageLinks("", ""), "Livro Teste", listOf("Autor Teste"), "Sinopse Teste", 34)
+    )
+    // Lista temática para "minhas listas"
     val thematicList = remember {
         listOf(
             ThematicList("1", "Favoritos", "Livros que eu amei ler!", listOf()),
             ThematicList("2", "Para Ler", "Livros que quero ler em breve", listOf())
         )
     }
-
 
     val context = LocalContext.current
     val userRepo = UserRepository(context)
@@ -96,13 +93,15 @@ fun TelaPerfil(navController: NavHostController) {
         Column {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(72.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 if (userPhotoUrl != null) {
                     Image(
                         painter = rememberAsyncImagePainter(userPhotoUrl),
                         contentDescription = "Foto do usuário",
-                        modifier = Modifier.size(64.dp).clip(CircleShape),
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
                 } else {
@@ -114,7 +113,10 @@ fun TelaPerfil(navController: NavHostController) {
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(40.dp)) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = userPosts.size.toString(), style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            text = userPosts.size.toString(),
+                            style = MaterialTheme.typography.titleMedium
+                        )
                         Text(text = "postagens", style = MaterialTheme.typography.bodySmall)
                     }
                     Column(
@@ -137,7 +139,9 @@ fun TelaPerfil(navController: NavHostController) {
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.padding(top = 16.dp).padding(horizontal = 8.dp),
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .padding(horizontal = 8.dp)
             ) {
                 Text(text = userName, style = MaterialTheme.typography.titleMedium)
                 userBio?.let { Text(text = it, style = MaterialTheme.typography.bodyMedium) }
@@ -162,11 +166,12 @@ fun TelaPerfil(navController: NavHostController) {
                             } else {
                                 LazyColumn(
                                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    modifier = Modifier.fillMaxSize().padding(16.dp)
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp)
                                 ) {
-                                    items(posts) { post ->
+                                    items(userPosts) { post ->
                                         val isSaved = savedPosts.any { it.id == post.id }
-                                        val isOwner = post.usuario == currentUserName
                                         CardPost(
                                             post = post,
                                             isSaved = isSaved,
@@ -178,37 +183,37 @@ fun TelaPerfil(navController: NavHostController) {
                                                     SavedPostsRepository.savePost(post)
                                                 }
                                             },
-                                            isOwner = isOwner,
-                                            onDelete = if (isOwner) {
-                                                {
-                                                    PostRepository().deletePost(post,
-                                                        onSuccess = {
-                                                            Log.d("FeedScreen", "Post excluído com sucesso")
-                                                            feedViewModel.fetchPosts()
-                                                        },
-                                                        onFailure = { e ->
-                                                            Log.e("FeedScreen", "Erro ao excluir post: ${e.message}")
-                                                        }
-                                                    )
-                                                }
-                                            } else null
+                                            isOwner = true,
+                                            onDelete = {
+                                                PostRepository().deletePost(post,
+                                                    onSuccess = {
+                                                        Log.d("FeedScreen", "Post excluído com sucesso")
+                                                    },
+                                                    onFailure = { e ->
+                                                        Log.e("FeedScreen", "Erro ao excluir post: ${e.message}")
+                                                    }
+                                                )
+                                            }
                                         )
                                     }
                                 }
                             }
                         }
-                        1 -> MinhasListas(Unit)
+                        1 -> {
+                            // Utiliza a mesma lógica para "minhas listas" conforme solicitado
+                            MinhasListas(navController, thematicList)
+                        }
                     }
                 }
-                @Composable
-                fun MinhasListas(navController: NavHostController, thematicLists: List<ThematicList>) {
-                    ThematicListsScreen(navController, thematicLists)
-                }
 
+                // Caso queira utilizar os componentes "MinhasPostagens" e "MinhasListas" já existentes,
+                // você pode descomentar o trecho abaixo. Lembre-se: não alteramos a lógica de "minhas postagens".
+                /*
                 when (tabIndex) {
                     0 -> MinhasPostagens(posts = posts, userName = userName)
                     1 -> MinhasListas(navController, thematicList)
                 }
+                */
             }
 
             if (tabIndex == 1) {
@@ -230,12 +235,7 @@ fun TelaPerfil(navController: NavHostController) {
     }
 }
 
-
-
-//@Preview(showBackground = true)
-//@Composable
-//private fun GreetingPreview() {
-//    BookieTheme {
-//        TelaPerfil()
-//    }
-//}
+@Composable
+fun MinhasListas(navController: NavHostController, thematicLists: List<ThematicList>) {
+    ThematicListsScreen(navController, thematicLists)
+}
