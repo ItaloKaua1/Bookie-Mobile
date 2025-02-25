@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Icon
@@ -25,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -40,6 +44,12 @@ import com.example.bookie.UserRepository
 import com.example.bookie.components.CardPost
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.components.MinhasListas
+import com.example.bookie.components.MinhasPostagens
+import com.example.bookie.models.ImageLinks
+import com.example.bookie.models.Livro
+import com.example.bookie.models.Post
+import com.example.bookie.models.ThematicList
+import com.example.bookie.models.VolumeInfo
 import com.example.bookie.services.FeedViewModel
 import com.example.bookie.services.FeedViewModelFactory
 import com.example.bookie.services.PostRepository
@@ -54,6 +64,16 @@ fun TelaPerfil(navController: NavHostController) {
 
     var tabIndex by rememberSaveable { mutableStateOf(0) }
     val tabs = listOf("minhas postagens", "minhas listas")
+    val post = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date())
+    val livro = Livro("", VolumeInfo(ImageLinks("", ""), "Livro Teste", listOf("Autor Teste"), "Sinopse Teste", 34))
+    val post2 = Post("usuario", "Post de Teste", "Texto do post de teste", 5, 3, 4.5f, Date(), livro)
+    val thematicList = remember {
+        listOf(
+            ThematicList("1", "Favoritos", "Livros que eu amei ler!", listOf()),
+            ThematicList("2", "Para Ler", "Livros que quero ler em breve", listOf())
+        )
+    }
+
 
     val context = LocalContext.current
     val userRepo = UserRepository(context)
@@ -107,6 +127,31 @@ fun TelaPerfil(navController: NavHostController) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(text = "89", style = MaterialTheme.typography.titleMedium)
                         Text(text = "amigos", style = MaterialTheme.typography.bodySmall)
+                        
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            Text(text = "13", style = MaterialTheme.typography.titleMedium)
+                            Text(text = "postagens", style = MaterialTheme.typography.bodySmall)
+                        }
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                            modifier = Modifier.clickable { navController.navigate("minhaEstante") }
+                        ) {
+                            Text(text = "19", style = MaterialTheme.typography.titleMedium)
+                            Text(text = "livros", style = MaterialTheme.typography.bodySmall)
+                        }
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                            modifier = Modifier.clickable { navController.navigate("friendsScreen") }
+                        ) {
+                            Text(text = "89", style = MaterialTheme.typography.titleMedium)
+                            Text(text = "amigos", style = MaterialTheme.typography.bodySmall)
+                        }
+
                     }
                 }
             }
@@ -175,6 +220,31 @@ fun TelaPerfil(navController: NavHostController) {
                         }
                         1 -> MinhasListas()
                     }
+                }
+                @Composable
+                fun MinhasListas(navController: NavHostController, thematicLists: List<ThematicList>) {
+                    ThematicListsScreen(navController, thematicLists)
+                }
+
+                when (tabIndex) {
+                    0 -> MinhasPostagens(posts = posts, userName = userName)
+                    1 -> MinhasListas(navController, thematicList)
+                }
+            }
+
+            if (tabIndex == 1) {
+                FloatingActionButton(
+                    onClick = { navController.navigate("criarLista") },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_add),
+                        contentDescription = "Criar Lista",
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
                 }
             }
         }

@@ -1,16 +1,13 @@
 package com.example.bookie.models
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-
 
 @Serializable
 public class ImageLinks(
     val smallThumbnail: String? = null,
-    val thumbnail: String? = null,
+    var thumbnail: String? = null,
 ): java.io.Serializable
-
 
 @Serializable
 class VolumeInfo(
@@ -26,7 +23,6 @@ class VolumeInfo(
     var paginas: Int? = null
 ): java.io.Serializable
 
-
 @Serializable
 data class Livro (
     var id: String? = null,
@@ -35,13 +31,14 @@ data class Livro (
     var document: String? = null,
     var disponivelTroca: Boolean? = null,
     var usuario: Usuario? = null,
+    var lido: Boolean? = false,
+    var lendo: Boolean? = false,
+    var queroLer: Boolean? = false,
 ): java.io.Serializable {
 
+    constructor(): this(null, null, null, null, null, null, null, null, null)
 
-    constructor(): this(null, null, null, null, null, null)
-
-
-    public fun getAutor(): String {
+    fun getAutor(): String {
         if (volumeInfo == null) {
             return ""
         }
@@ -55,13 +52,17 @@ data class Livro (
         return autores[0]
     }
 
-
-    public fun getCapa(): String {
+    fun getCapa(): String {
         if (!volumeInfo?.imageLinks?.thumbnail.isNullOrBlank()) {
-            return volumeInfo?.imageLinks?.thumbnail!!;
+            return volumeInfo?.imageLinks?.thumbnail!!
         }
 
-
         return ""
+    }
+
+    fun atualizarStatus(novoStatus: String) {
+        lido = novoStatus == "lido"
+        lendo = novoStatus == "lendo"
+        queroLer = novoStatus == "quero ler"
     }
 }

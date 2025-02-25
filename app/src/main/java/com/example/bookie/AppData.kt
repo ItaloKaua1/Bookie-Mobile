@@ -4,6 +4,7 @@ package com.example.bookie
 import com.example.bookie.models.Conversa
 import com.example.bookie.models.Livro
 import com.example.bookie.models.TrocaDisponivel
+import com.example.bookie.models.ThematicList
 import com.example.bookie.models.Usuario
 
 
@@ -14,6 +15,7 @@ class AppData {
     private var usuarioLogado: Usuario? = null
     private var trocasDisponiveis: MutableList<TrocaDisponivel> = mutableListOf()
     private var minhasTrocasDisponiveis: MutableList<TrocaDisponivel> = mutableListOf()
+    private var listaTematica: List<ThematicList> = mutableListOf()
 
 
     companion object {
@@ -76,6 +78,14 @@ class AppData {
 
     fun setUsuarioLogado(usuario: Usuario) {
         this.usuarioLogado = usuario
+    }
+
+    fun getListaTematica(): List<ThematicList> {
+        return listaTematica
+    }
+
+    fun setListaTematica(lista: List<ThematicList>) {
+        this.listaTematica = lista
     }
 
     fun getTrocasDisponiveis(): MutableList<TrocaDisponivel> {

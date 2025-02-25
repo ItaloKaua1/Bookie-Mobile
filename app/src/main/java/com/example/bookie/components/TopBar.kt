@@ -90,7 +90,7 @@ fun TopBar(
                     contentDescription = "Descobrir Livros",
                 )
             }
-            IconButton(onClick = {}) {
+            IconButton(onClick = {navController.navigate("clubesScreen")}) {
                 Icon(
                     modifier = Modifier
                         .size(48.dp)

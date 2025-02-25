@@ -3,6 +3,7 @@ package com.example.bookie.ui.screens
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Headphones
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,7 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.example.bookie.AppData
 import com.example.bookie.R
 import com.example.bookie.UserRepository
@@ -35,6 +37,10 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import android.widget.Toast.LENGTH_SHORT
+import androidx.compose.material.icons.filled.Check
+import androidx.room.util.copy
+
 
 val posts: List<Post> = listOf()
 
@@ -43,9 +49,9 @@ private fun adicionarLivro(context: Context, livro: Livro) {
 
     db.collection("livros").add(livro).addOnCompleteListener { it ->
         if (it.isSuccessful) {
-            Toast.makeText(context, "Livro adicionado com sucesso!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Livro adicionado com sucesso!", LENGTH_SHORT).show()
         } else {
-            Toast.makeText(context, "Desculpe, ocorreu um erro ao adicionar o livro", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Desculpe, ocorreu um erro ao adicionar o livro", LENGTH_SHORT).show()
         }
     }
 }
@@ -57,10 +63,10 @@ private fun favoritarLivro(context: Context, livro: Livro, onFavoritado: () -> U
         livro.favorito = true
         db.collection("livros").document(documentId).set(livro).addOnCompleteListener { it ->
             if (it.isSuccessful) {
-                Toast.makeText(context, "Livro favoritado com sucesso!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Livro favoritado com sucesso!", LENGTH_SHORT).show()
                 onFavoritado()
             } else {
-                Toast.makeText(context, "Desculpe, ocorreu um erro ao favoritar o livro", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Desculpe, ocorreu um erro ao favoritar o livro", LENGTH_SHORT).show()
                 livro.favorito = false
                 onError()
             }
@@ -75,10 +81,10 @@ private fun desfavoritarLivro(context: Context, livro: Livro, onDesfavoritado: (
         livro.favorito = false
         db.collection("livros").document(documentId).set(livro).addOnCompleteListener { it ->
             if (it.isSuccessful) {
-                Toast.makeText(context, "Livro removido dos favoritos!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Livro removido dos favoritos!", LENGTH_SHORT).show()
                 onDesfavoritado()
             } else {
-                Toast.makeText(context, "Desculpe, ocorreu um erro ao remover o livro dos favoritos", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Desculpe, ocorreu um erro ao remover o livro dos favoritos", LENGTH_SHORT).show()
                 livro.favorito = true
                 onError()
             }
@@ -110,6 +116,100 @@ private fun trocarLivro(navController: NavController, id: String?, estante: Bool
     }
 }
 
+@Composable
+fun DropdownMenuItem(
+    onClick: () -> Unit,
+    interactionSource: MutableInteractionSource,
+    text: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    enabled: Boolean = true,
+    colors: MenuItemColors = MenuDefaults.itemColors(),
+    contentPadding: PaddingValues = PaddingValues(16.dp)
+) {
+    androidx.compose.material3.DropdownMenuItem(
+        onClick = onClick,
+        interactionSource = interactionSource,
+        modifier = modifier,
+        enabled = enabled,
+        contentPadding = contentPadding,
+        colors = colors,
+        text = text,
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon
+    )
+}
+
+private fun atualizarStatusLivro(
+    context: Context,
+    livro: Livro?,
+    novoStatus: String,
+    onStatusAtualizado: (Livro) -> Unit,
+    onError: () -> Unit
+) {
+    if (livro == null) {
+        Toast.makeText(context, "Erro: livro não encontrado.", Toast.LENGTH_SHORT).show()
+        onError()
+        return
+    }
+
+    val db = FirebaseFirestore.getInstance()
+    val documentId = livro.document
+    if (documentId == null) {
+        Toast.makeText(context, "Erro: ID do livro não encontrado.", Toast.LENGTH_SHORT).show()
+        onError()
+        return
+    }
+
+    // Criar um mapa de atualização baseado no novo status
+    val statusAtualizado = mapOf(
+        "lido" to (novoStatus == "lido"),
+        "lendo" to (novoStatus == "lendo"),
+        "queroLer" to (novoStatus == "quero ler")
+    )
+
+    db.collection("livros").document(documentId)
+        .update(statusAtualizado)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(context, "Status atualizado para: $novoStatus", Toast.LENGTH_SHORT).show()
+                val livroAtualizado = livro.copy(
+                    lido = statusAtualizado["lido"],
+                    lendo = statusAtualizado["lendo"],
+                    queroLer = statusAtualizado["queroLer"]
+                )
+                onStatusAtualizado(livroAtualizado)
+            } else {
+                Toast.makeText(context, "Erro ao atualizar status", Toast.LENGTH_SHORT).show()
+                onError()
+            }
+        }
+}
+
+
+private fun mudarStatusLivro(
+    context: Context,
+    livro: Livro,
+    novoStatus: String,
+    onStatusAtualizado: () -> Unit
+) {
+    val db = FirebaseFirestore.getInstance()
+    val documentId = livro.document ?: return
+
+    livro.atualizarStatus(novoStatus)
+
+    db.collection("livros").document(documentId).set(livro)
+        .addOnSuccessListener {
+            Toast.makeText(context, "Status atualizado para: $novoStatus", Toast.LENGTH_SHORT).show()
+            onStatusAtualizado()
+        }
+        .addOnFailureListener {
+            Toast.makeText(context, "Erro ao atualizar status", Toast.LENGTH_SHORT).show()
+        }
+}
+
+
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun TelaLivro(navController: NavController, id: String, estante: Boolean? = false) {
@@ -124,6 +224,22 @@ fun TelaLivro(navController: NavController, id: String, estante: Boolean? = fals
     val getNome = { if (livro!!.volumeInfo!!.nome.isNullOrEmpty()) "" else livro!!.volumeInfo!!.nome!! }
     val db = FirebaseFirestore.getInstance()
     var estaNaEstante by remember { mutableStateOf(false) }
+
+    var expanded by remember { mutableStateOf(false) }
+    var selectedStatus by remember {
+        mutableStateOf(
+            when {
+                livro?.lido == true -> "lido"
+                livro?.lendo == true -> "lendo"
+                livro?.queroLer == true -> "quero ler"
+                else -> "quero ler" // Padrão
+            }
+        )
+    }
+
+    var livroState by remember { mutableStateOf(livro) }
+
+    val statusOptions = listOf("Lido", "Lendo", "Quero Ler")
 
     val onAdicionarLivro = { ->
         GlobalScope.launch {
@@ -200,6 +316,44 @@ fun TelaLivro(navController: NavController, id: String, estante: Boolean? = fals
                                     modifier = Modifier.height(157.dp).width(104.dp)
                                         .absoluteOffset(y = 28.dp),
                                 )
+                            }
+                        }
+                        Box {
+                            IconButton(onClick = { expanded = true }) {
+                                Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Menu")
+                            }
+
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }
+                            ) {
+                                listOf("lido", "lendo", "quero ler").forEach { statusOption ->
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            isLoading = true
+                                            atualizarStatusLivro(
+                                                context,
+                                                livroState,
+                                                statusOption,
+                                                onStatusAtualizado = { livroAtualizado ->
+                                                    livroState = livroAtualizado
+                                                    selectedStatus = statusOption
+                                                    isLoading = false
+                                                },
+                                                onError = {
+                                                    isLoading = false
+                                                }
+                                            )
+                                            expanded = false
+                                        },
+                                        text = { Text(text = statusOption) },
+                                        trailingIcon = {
+                                            if (selectedStatus == statusOption) {
+                                                Icon(Icons.Default.Check, contentDescription = "Selecionado")
+                                            }
+                                        }
+                                    )
+                                }
                             }
                         }
                         Column(
@@ -381,6 +535,7 @@ fun TelaLivro(navController: NavController, id: String, estante: Boolean? = fals
         }
     }
 }
+
 
 //@Preview(showBackground = true)
 //@Composable

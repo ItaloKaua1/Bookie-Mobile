@@ -17,7 +17,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner";
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -66,9 +66,12 @@ dependencies {
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.animation.core.lint)
     implementation(libs.firebase.auth.ktx)
+    implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
+    implementation("androidx.datastore:datastore-core-android:1.1.2")
     implementation(libs.accessibility.test.framework)
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.room.ktx)
+    implementation("androidx.room:room-ktx:2.6.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -114,4 +117,8 @@ dependencies {
 
     // data-store
     implementation(libs.androidx.datastore.preferences)
+
+//    implementation("com.patrykandpatrick.vico:compose:1.11.0")
+//    implementation("com.patrykandpatrick.vico:core:1.11.0")
+
 }
