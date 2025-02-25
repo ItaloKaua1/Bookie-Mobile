@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -16,6 +17,7 @@ import com.example.bookie.UserRepository
 import com.example.bookie.components.LayoutVariant
 import com.example.bookie.models.Livro
 import com.example.bookie.models.Post
+import com.example.bookie.models.Usuario
 import com.example.bookie.services.BooksRepositorio
 import com.example.bookie.services.PostRepository
 import java.util.Date
@@ -35,10 +37,11 @@ fun CreatePostScreen(
     var avaliacao by remember { mutableStateOf(0f) }
     var showSuggestions by remember { mutableStateOf(false) }
 
-    // Coleta o nome do usuário logado
-    val userName by userRepository.currentUserName.collectAsState(initial = "Usuário Atual")
+    val context = LocalContext.current
+    // Observe o nome e a foto do usuário:
+    val userNameState = userRepository.currentUserName.collectAsState(initial = "")
+    val userPhotoUrlState = userRepository.currentUserPhotoUrl.collectAsState(initial = null)
 
-    // Busca livros na API do Google Books quando o texto da pesquisa muda
     LaunchedEffect(livroQuery) {
         if (livroQuery.isNotEmpty()) {
             val response = booksRepositorio.buscarLivros(livroQuery)
@@ -61,7 +64,6 @@ fun CreatePostScreen(
 
     LayoutVariant(navController, "Publicar", false) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Campos de título e texto
             TextField(
                 value = titulo,
                 onValueChange = { titulo = it },
@@ -78,7 +80,6 @@ fun CreatePostScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Campo de pesquisa de livros
             TextField(
                 value = livroQuery,
                 onValueChange = { livroQuery = it },
@@ -87,7 +88,6 @@ fun CreatePostScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Lista de sugestões de livros
             if (showSuggestions) {
                 LazyColumn {
                     items(livros) { livro ->
@@ -134,11 +134,12 @@ fun CreatePostScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Botão para publicar o post
             Button(
                 onClick = {
+                    // Cria o post utilizando os dados do usuário, incluindo a foto
                     val post = Post(
-                        usuario = userName,
+                        usuario = userNameState.value,
+                        photoUrl = userPhotoUrlState.value,
                         titulo = titulo,
                         texto = texto,
                         curtidas = 0,
