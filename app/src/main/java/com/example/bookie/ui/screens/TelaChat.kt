@@ -87,7 +87,6 @@ fun TelaChat(navController: NavController) {
     val userEmail = userRepo.currentUserEmail.collectAsState(initial = "")
     val userName = userRepo.currentUserName.collectAsState(initial = "")
 
-
     LaunchedEffect(Unit) {
         launch {
             val userIdLocal = userRepo.currentUserId.first()
