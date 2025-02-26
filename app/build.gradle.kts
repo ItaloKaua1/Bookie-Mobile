@@ -118,6 +118,9 @@ dependencies {
     // data-store
     implementation(libs.androidx.datastore.preferences)
 
+    //google singIn
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
+
 //    implementation("com.patrykandpatrick.vico:compose:1.11.0")
 //    implementation("com.patrykandpatrick.vico:core:1.11.0")
 
