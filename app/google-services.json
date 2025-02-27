@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "128047446609",
+    "firebase_url": "https://bookie-8cb30-default-rtdb.firebaseio.com",
     "project_id": "bookie-8cb30",
     "storage_bucket": "bookie-8cb30.firebasestorage.app"
   },
@@ -12,7 +13,12 @@
           "package_name": "com.example.bookie"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "128047446609-eao5lkscm2um5btrrk4i3qop845icvdm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBzISI8uApo-0_gwB48Ol4R-CiJaqwH2Fs"
@@ -20,7 +26,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "128047446609-eao5lkscm2um5btrrk4i3qop845icvdm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

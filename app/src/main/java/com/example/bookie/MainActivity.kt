@@ -31,6 +31,7 @@ import com.example.bookie.models.FcmToken
 import com.example.bookie.models.ThemeOption
 import com.example.bookie.services.BooksRepositorio
 import com.example.bookie.services.PostRepository
+import com.example.bookie.services.auth.GoogleSignInHelper
 import com.example.bookie.ui.screens.*
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen1
 import com.example.bookie.ui.screens.CadastroScreens.CadastroScreen2
@@ -60,6 +61,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import android.content.Intent
+import com.google.firebase.auth.FirebaseUser
 
 class MainActivity : ComponentActivity() {
     private val configuracoesViewModel: ConfiguracoesViewModel by viewModels()
@@ -73,6 +76,9 @@ class MainActivity : ComponentActivity() {
             // TODO: Inform user that that your app will not show notifications.
         }
     }
+
+
+    private lateinit var googleSignInHelper: GoogleSignInHelper
 
     private fun askNotificationPermission() {
         // This is only necessary for API level >= 33 (TIRAMISU)
@@ -102,6 +108,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         askNotificationPermission()
+
+        googleSignInHelper = GoogleSignInHelper(this)
 
         FirebaseMessaging.getInstance().isAutoInitEnabled = true
 
@@ -161,7 +169,27 @@ class MainActivity : ComponentActivity() {
 
                 val startDestination = intent.getStringExtra("startDestination") ?: "loginScreen"
                 NavHost(navController = navController, startDestination = startDestination) {
-                    composable("loginScreen") { LoginScreen(navController) }
+                    composable("loginScreen") {
+                        LoginScreen(
+                            navController = navController,
+                            onGoogleSignIn = {
+                                googleSignInHelper.signIn(
+                                    onSuccess = { user: FirebaseUser -> // Especificando o tipo explicitamente
+                                        navController.navigate("feedScreen") {
+                                            popUpTo("loginScreen") { inclusive = true }
+                                        }
+                                    },
+                                    onError = { exception ->
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            "Erro no login: ${exception.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                )
+                            }
+                        )
+                    }
                     composable("cadastroScreen1") { CadastroScreen1(navController) }
                     composable("cadastroScreen2") { CadastroScreen2(navController) }
                     composable("cadastroScreen3") { CadastroScreen3(navController) }
@@ -237,7 +265,6 @@ class MainActivity : ComponentActivity() {
                         val descricao = backStackEntry.arguments?.getString("descricao") ?: "Sem descrição"
                         val quantidadeLivros = backStackEntry.arguments?.getInt("quantidadeLivros") ?: 0
 
-                        // Agora passando o ID corretamente
                         ThematicListDetailsScreen(navController, nome, descricao, quantidadeLivros, id)
                     }
                     composable(
@@ -338,5 +365,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RC_SIGN_IN) {
+            googleSignInHelper.handleSignInResult(data)
+        }
+    }
+
+    companion object {
+        private const val RC_SIGN_IN = 9001
     }
 }

@@ -37,6 +37,7 @@ import com.example.bookie.R
 import com.example.bookie.UserRepository
 import com.example.bookie.models.AuthManager
 import com.example.bookie.models.Usuario
+import com.example.bookie.services.auth.GoogleSignInHelper
 import com.example.bookie.ui.theme.PurpleBookie
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -45,6 +46,7 @@ import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.BorderStroke
 
 @OptIn(DelicateCoroutinesApi::class)
 private fun getUsuarioData(id: String?, context: Context, navController: NavHostController) {
@@ -65,7 +67,6 @@ private fun getUsuarioData(id: String?, context: Context, navController: NavHost
                     userRepo.saveUserEmail(usuario.email!!)
                     userRepo.saveUserId(usuario.id!!)
                     userRepo.saveUserName(usuario.nome!!)
-
                 }
 
                 Toast.makeText(context, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show()
@@ -94,7 +95,7 @@ private fun login(email: String, password: String, context: Context, navControll
 }
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(navController: NavHostController, onGoogleSignIn: () -> Unit) {
 
     val context = LocalContext.current
 
@@ -212,6 +213,39 @@ fun LoginScreen(navController: NavHostController) {
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
+
+                        Button(
+                            onClick = { onGoogleSignIn() },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 32.dp)
+                                .height(56.dp)
+                                .padding(bottom = 8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White
+                            ),
+                            border = BorderStroke(1.dp, PurpleBookie),
+                            shape = RoundedCornerShape(6.dp)
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.google_icon),
+                                    contentDescription = "Google Icon",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Entrar com Google",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = PurpleBookie
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
 
                         Button(
                             onClick = { login(email, password, context, navController) },
